@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <!-- Empresa emitente -->
+    <div class="row" align="center">
+        <div class="col-xl-12">
+            <b>
+                DOCUMENTO AUXILIAR DE VENDA - PRÉ-VENDA<br>
+                NÃO É DOCUMENTO FISCAL - NÃO É VÁLIDO COMO RECIBO E COMO GARANTIA DE<br>
+                MERCADORIA - NÃO COMPROVA PAGAMENTO
+            </b>
+        </div>
+    </div>
+    <div class="row border" align="center">
+        <div class="col-xl-12">Identificação do Estabelecimento</div>
+    </div>
+    <div class="row border">
+        <div class="col-xl-6 border-right">Denominação: <b>FERNANDO ALOISIO FONTES - ME</b></div>
+        <div class="col-xl-6 border-right">CNPJ: 08.734.276/0001-05</div>
+        <div class="col-xl-6 border-right">
+            RUA DISTRITO FEDERAL 617 <br />
+            49075190 - Aracaju-SE <br />
+            SIQUEIRA CAMPOS <br />
+            Fone/Fax: 79999767676</div>
+        <div class="col-xl-6 border-right"></div>
+    </div>
+
+    <div class="row border" align="center">
+        <div class="col-xl-12">Identificação do Destinatário</div>
+    </div>
+    <div class="row border">
+        <div class="col-xl-6 border-right">Denominação: <b>{{ Cliente.Nome }}</b></div>
+        <div class="col-xl-6 border-right">{{ Cliente.Tipo }}{{ Cliente.Documento }}</div>
+        <div class="col-xl-6 border-right">
+            {{ Cliente.Logradouro }} <br />
+            {{ Cliente.Cep }} - {{ Cliente.Municipio }} - {{ Cliente.Uf }} <br />
+            {{ Cliente.Bairro }} <br />
+            Fone/Fax: {{ Cliente.Telefone }}</div>
+        <div class="col-xl-6 border-right"></div>
+    </div>
+    <div class="row border">
+        <div class="col-xl-6 border-right"><b>NÚMERO PRÉ-VENDA: {{ Numero }}</b></div>
+        <div class="col-xl-6 border-right"></div>
+    </div>
+    <div class="row clear"></div>
+    <br>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>UNID.</th>
+                <th>Quantid.</th>
+                <th>Valor Unit.</th>
+                <th>Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in Items %}
+            <tr>
+                <td>{{ item.Codigo }}</td>
+                <td>{{ item.Descricao }}</td>
+                <td>{{ item.Unidade }}</td>
+                <td>{{ item.Qtd }}</td>
+                <td>{{ item.Preco }}</td>
+                <td>{{ item.Total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
