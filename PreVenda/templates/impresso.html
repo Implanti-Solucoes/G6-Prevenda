@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>PRE-VENDA - {{ Numero }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
@@ -24,13 +24,13 @@
         <div class="col-xl-12">Identificação do Estabelecimento</div>
     </div>
     <div class="row border">
-        <div class="col-xl-6 border-right">Denominação: <b>FERNANDO ALOISIO FONTES - ME</b></div>
-        <div class="col-xl-6 border-right">CNPJ: 08.734.276/0001-05</div>
+        <div class="col-xl-6 border-right">Denominação: <b>{{ Empresa.Nome }}</b></div>
+        <div class="col-xl-6 border-right">{{ Empresa.Tipo }}{{ Empresa.Documento }}</div>
         <div class="col-xl-6 border-right">
-            RUA DISTRITO FEDERAL 617 <br />
-            49075190 - Aracaju-SE <br />
-            SIQUEIRA CAMPOS <br />
-            Fone/Fax: 79999767676</div>
+            {{ Empresa.Logradouro }} <br />
+            {{ Empresa.Cep }} - {{ Empresa.Municipio }} - {{ Empresa.Uf }} <br />
+            {{ Empresa.Bairro }} <br />
+            Fone/Fax: {{ Empresa.Telefone }}</div>
         <div class="col-xl-6 border-right"></div>
     </div>
 
@@ -60,6 +60,7 @@
                 <th>Descrição</th>
                 <th>UNID.</th>
                 <th>Quantid.</th>
+                <th>Desconto</th>
                 <th>Valor Unit.</th>
                 <th>Valor Total</th>
             </tr>
@@ -71,12 +72,21 @@
                 <td>{{ item.Descricao }}</td>
                 <td>{{ item.Unidade }}</td>
                 <td>{{ item.Qtd }}</td>
-                <td>{{ item.Preco }}</td>
-                <td>{{ item.Total }}</td>
+                <td>R${{ item.Desconto }}</td>
+                <td>R${{ item.Preco }}</td>
+                <td>R${{ item.Total }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="row border">
+        <div class="col-xl-6 border-right"></div>
+        <div class="col-xl-6 border-right">
+            Total produtos: <b>R${{ Total_Produtos }}</b><br />
+            Total desconto: <b>R${{ Total_Produtos }}</b><br />
+            Total geral: <b>R${{ Total_Produtos }}</b><br />
+        </div>
+    </div>
 </div>
 </body>
 </html>
