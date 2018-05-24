@@ -15,9 +15,9 @@ def listagem(request):
     projection["Numero"] = 1.0
     projection["DataHoraEmissao"] = 1.0
     projection["Pessoa.Nome"] = 1.0
-    sort = [(u"Numero", -1)]
+    sort = [(u"DataHoraEmissao", -1)]
     item = []
-    cursor = collection.find(query, projection=projection, sort = sort)
+    cursor = collection.find(query, projection=projection, sort = sort).limit(500)
     for doc in cursor:
         doc['id'] = str(doc['_id'])
         item.append(doc)

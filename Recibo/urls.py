@@ -4,6 +4,6 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    url(r'^(?P<id>[a-zA-Z0-9]+)/$', views.impresso, name='impressao'),
-    url(r'^$', views.listagem, name='listagem'),
+    url(r'^(?P<id>[A-Za-z0-9]+)/$', views.impresso, name='impressao'),
+    url(r'^$', views.listagem, name='listagem')
 ]

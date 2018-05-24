@@ -36,21 +36,24 @@
     <table class="display responsive nowrap table table-striped" id="pre_vendas">
         <thead>
             <tr>
-                <th>Código</th>
+                <th>Documento / Parcela</th>
                 <th>Cliente</th>
                 <th>Data de Vencimento</th>
                 <th>Valor</th>
+                <th>Data de Pagamento</th>
+                <th>Valor Pago</th>
                 <th>#</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in items %}
+            {% for item in Recebimentos %}
             <tr>
-                <td>{{ item.Numero }}</td>
-                <td>{{ item.Pessoa.Nome }}</td>
-                <td>{{ item.DataHoraEmissao }}</td>
-                <td>{{ item.DataHoraEmissao }}</td>
-                <td>{{ item.DataHoraEmissao }}</td>
+                <td>{{ item.Documento }}-{{ item.Ordem }}</td>
+                <td>{{ item.PessoaNome }}</td>
+                <td>{{ item.Vencimento|date:"d/m/Y" }}</td>
+                <td>{{ item.Historico.0.Valor }}</td>
+                <td>{{ item.DataQuitacao|date:"d/m/Y" }}</td>
+                <td>{{ item.valor_pago }}</td>
                 <td><a href="{% url 'impressao' item.id %}">Imprimir</a></td>
             </tr>
             {% endfor %}
