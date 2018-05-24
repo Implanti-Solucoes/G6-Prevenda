@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'PreVenda.apps.CoreConfig',
+    'PreVenda.apps.PrevendaConfig',
+    'Recibo.apps.ReciboConfig',
 ]
 
 MIDDLEWARE = [

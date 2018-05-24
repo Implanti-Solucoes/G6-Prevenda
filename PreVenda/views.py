@@ -6,7 +6,7 @@ client = MongoClient('localhost', username='revenda', password='r3v3nd@', authSo
 database = client["DigisatServer"]
 collection = database["Movimentacoes"]
 
-def impresso(request):
+def listagem(request):
     #Filtro de campos
     query = {}
 
@@ -22,9 +22,9 @@ def impresso(request):
         doc['id'] = str(doc['_id'])
         item.append(doc)
     context = {"items": item}
-    return render(request, 'listagem.html', context)
+    return render(request, 'PreVenda/listagem.html', context)
 
-def impressoid(request, id):
+def impresso(request, id):
     #Filtro de campos
     query = {"_id": ObjectId(id)}
 
@@ -97,5 +97,5 @@ def impressoid(request, id):
                "Total_Desconto": Total_Desconto,
                "Total": Total
                }
-    return render(request, 'impresso.html', context)
+    return render(request, 'PreVenda/impresso.html', context)
 
