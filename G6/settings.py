@@ -72,7 +72,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'G6.wsgi.application'
 
-
+USE_THOUSAND_SEPARATOR = True
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 

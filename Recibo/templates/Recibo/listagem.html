@@ -33,32 +33,40 @@
 </head>
 <body>
 <div class="container-fluid">
-    <table class="display responsive nowrap table table-striped" id="pre_vendas">
-        <thead>
-            <tr>
-                <th>Documento / Parcela</th>
-                <th>Cliente</th>
-                <th>Data de Vencimento</th>
-                <th>Valor</th>
-                <th>Data de Pagamento</th>
-                <th>Valor Pago</th>
-                <th>#</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in Recebimentos %}
-            <tr>
-                <td>{{ item.Documento }}-{{ item.Ordem }}</td>
-                <td>{{ item.PessoaNome }}</td>
-                <td>{{ item.Vencimento|date:"d/m/Y" }}</td>
-                <td>{{ item.Historico.0.Valor }}</td>
-                <td>{{ item.DataQuitacao|date:"d/m/Y" }}</td>
-                <td>{{ item.valor_pago }}</td>
-                <td><a href="{% url 'impressao' item.id %}">Imprimir</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<div class="row">
+		<div class="col-lg-12">
+			<form action="impresso/" method="post">
+				{% csrf_token %}
+				<button class="btn">Gerar Recibo</button>
+				<table class="display responsive nowrap table table-striped" id="pre_vendas">
+					<thead>
+						<tr>
+							<th>Documento / Parcela</th>
+							<th>Cliente</th>
+							<th>Vencimento</th>
+							<th>Valor</th>
+							<th>Pagamento</th>
+							<th>Valor Pago</th>
+							<th>#</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for item in Recebimentos %}
+						<tr>
+							<td>{{ item.Documento }}-{{ item.Ordem }}</td>
+							<td>{{ item.PessoaNome }}</td>
+							<td>{{ item.Vencimento|date:"d/m/Y" }}</td>
+							<td>{{ item.Historico.0.Valor }}</td>
+							<td>{{ item.DataQuitacao|date:"d/m/Y" }}</td>
+							<td>{{ item.valor_pago }}</td>
+							<td><input type="checkbox" name="parcela" value={{ item.id }}></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+	</div>
 </div>
 </body>
 </html>

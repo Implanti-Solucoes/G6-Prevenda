@@ -1,3 +1,5 @@
+from typing import Dict
+
 from bson import ObjectId
 from django.shortcuts import render
 from datetime import datetime
@@ -7,32 +9,62 @@ from core.pessoas import Pessoas
 uteis = Uteis()
 pessoas = Pessoas()
 
-def impresso(request, id):
-    query = {'Situacao._t': u'Quitada', '_id': ObjectId(id)}
-    database = uteis.Conexao()
-    cursor = database['Recebimentos'].find_one(query)
+def impresso(request):
+    if request.method == 'POST':
+        ids = request.POST.getlist('parcela')
 
-    cnpj = pessoas.CnpjEmitente()
-    nome_emitente = pessoas.NomeEmitente()
-    cliente = pessoas.NomeCliente(cursor['PessoaReferencia'])
-    saldo_devedor = pessoas.SaldoDevedor(cursor['PessoaReferencia'])
+        cnpj = pessoas.CnpjEmitente()
+        nome_emitente = pessoas.NomeEmitente()
 
-    for item in cursor['Historico']:
-        if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
-            valor_pago = item['Valor']
-            valor_extenso = uteis.numToCurrency(str(item['Valor']).replace('.', ''))
+        cnpj = "%s.%s.%s/%s-%s" % (cnpj[0:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:14])
+        Emitente = {'Cnpj': cnpj, 'Nome':nome_emitente}
+        recibos = {}
 
-    cnpj = "%s.%s.%s/%s-%s" % (cnpj[0:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:14])
-    context = {'Cliente': cliente,
-            'Valor_pago': valor_pago,
-            'Valor_extenso': valor_extenso,
-            'Total_devedor': saldo_devedor,
-            'Documento': cursor['Documento'],
-            'Parcela': cursor['Ordem'],
-            'Recebimento': cursor['DataQuitacao'],
-            'Data': datetime.now(),
-            'Emitente': {'Nome': nome_emitente, 'Cnpj': cnpj}}
-    return render(request, 'Recibo/impresso.html', context)
+        for id in ids:
+            query = {'Situacao._t': u'Quitada', '_id': ObjectId(id)}
+            database = uteis.Conexao()
+            cursor = database['Recebimentos'].find_one(query)
+            clienteid = str(cursor['PessoaReferencia'])
+
+            if clienteid in recibos:
+                print('ok1')
+                for item in cursor['Historico']:
+                    if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
+                        valor_pago = item['Valor']
+                        recibos[clienteid]['Total'] = recibos[clienteid]['Total'] + valor_pago
+
+                        recibos[clienteid]['Parcelas'].append({'Valor_Pago': valor_pago,
+                                                               'Documento': cursor['Documento'],
+                                                               'Parcela': cursor['Ordem'],
+                                                               'Data_Quitacao': cursor['DataQuitacao']})
+
+            else:
+                print(clienteid)
+                recibos[clienteid] = {}
+                recibos[clienteid]['Parcelas'] = []
+                recibos[clienteid]['Total'] = 0
+                recibos[clienteid]['Total_extenso'] = ''
+
+
+                cliente = pessoas.NomeCliente(cursor['PessoaReferencia'])
+                saldo_devedor = pessoas.SaldoDevedor(cursor['PessoaReferencia'])
+                recibos[clienteid]['Cliente'] = {'Nome': cliente, 'Total_devedor': saldo_devedor}
+
+                for item in cursor['Historico']:
+                    if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
+                        valor_pago = item['Valor']
+                        recibos[clienteid]['Total'] = recibos[clienteid]['Total'] + valor_pago
+
+                        recibos[clienteid]['Parcelas'].append({'Valor_Pago': valor_pago,
+                                                               'Documento': cursor['Documento'],
+                                                               'Parcela': cursor['Ordem'],
+                                                               'Data_Quitacao': cursor['DataQuitacao']})
+
+        for recibo in recibos:
+            recibos[recibo]['Total_extenso'] = uteis.numToCurrency(('%.2f' % recibos[recibo]['Total']).replace('.', ''))
+
+        context = {'Data': datetime.now(), 'Emitente': Emitente, 'Recibos': recibos}
+        return render(request, 'Recibo/impresso.html', context)
 
 def listagem(request):
     database = uteis.Conexao()

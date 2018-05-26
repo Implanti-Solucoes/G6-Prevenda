@@ -17,7 +17,7 @@ class Pessoas():
         return cliente['Nome']
 
     def Emitente(self):
-        database = Uteis.Conexao()
+        database = Uteis.Conexao(self)
         query = {}
         query['_t.2'] = u'Emitente'
         Emitente = database['Pessoas'].find_one(query)
