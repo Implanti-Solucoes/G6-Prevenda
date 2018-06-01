@@ -47,8 +47,8 @@
             <tr>
                 <td>{{ item.Numero }}</td>
                 <td>{{ item.Pessoa.Nome }}</td>
-                <td>{{ item.DataHoraEmissao }}</td>
-                <td><a href="{% url 'impressao' item.id %}">Imprimir</a></td>
+                <td>{{ item.DataHoraEmissao|date:"d/m/Y" }}</td>
+                <td><a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a></td>
             </tr>
             {% endfor %}
         </tbody>

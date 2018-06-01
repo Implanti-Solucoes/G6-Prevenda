@@ -1,33 +1,33 @@
-from typing import Dict
-
 from bson import ObjectId
 from django.shortcuts import render
 from datetime import datetime
-from core.uteis import Uteis
-from core.pessoas import Pessoas
+from core.models import Uteis
+from .models import Pessoas, Parcelas
 
-uteis = Uteis()
-pessoas = Pessoas()
+
 
 def impresso(request):
     if request.method == 'POST':
         ids = request.POST.getlist('parcela')
+        uteis = Uteis()
+        pessoas = Pessoas()
 
-        cnpj = pessoas.CnpjEmitente()
-        nome_emitente = pessoas.NomeEmitente()
+        cnpj = pessoas.get_cnpj_emitente()
+        nome_emitente = pessoas.get_nome_emitente()
 
         cnpj = "%s.%s.%s/%s-%s" % (cnpj[0:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:14])
         Emitente = {'Cnpj': cnpj, 'Nome':nome_emitente}
         recibos = {}
 
         for id in ids:
-            query = {'Situacao._t': u'Quitada', '_id': ObjectId(id)}
-            database = uteis.Conexao()
-            cursor = database['Recebimentos'].find_one(query)
+            parcelas = Parcelas()
+            parcelas.set_query_situacao(u'Quitada')
+            parcelas.set_query_id(ObjectId(id))
+            cursor = parcelas.execute_one()
+            print(cursor)
             clienteid = str(cursor['PessoaReferencia'])
 
             if clienteid in recibos:
-                print('ok1')
                 for item in cursor['Historico']:
                     if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
                         valor_pago = item['Valor']
@@ -39,15 +39,14 @@ def impresso(request):
                                                                'Data_Quitacao': cursor['DataQuitacao']})
 
             else:
-                print(clienteid)
                 recibos[clienteid] = {}
                 recibos[clienteid]['Parcelas'] = []
                 recibos[clienteid]['Total'] = 0
                 recibos[clienteid]['Total_extenso'] = ''
 
 
-                cliente = pessoas.NomeCliente(cursor['PessoaReferencia'])
-                saldo_devedor = pessoas.SaldoDevedor(cursor['PessoaReferencia'])
+                cliente = pessoas.get_nome(cursor['PessoaReferencia'])
+                saldo_devedor = pessoas.get_saldo_devedor(cursor['PessoaReferencia'])
                 recibos[clienteid]['Cliente'] = {'Nome': cliente, 'Total_devedor': saldo_devedor}
 
                 for item in cursor['Historico']:
@@ -61,25 +60,26 @@ def impresso(request):
                                                                'Data_Quitacao': cursor['DataQuitacao']})
 
         for recibo in recibos:
-            recibos[recibo]['Total_extenso'] = uteis.numToCurrency(('%.2f' % recibos[recibo]['Total']).replace('.', ''))
+            recibos[recibo]['Total_extenso'] = uteis.num_to_currency(('%.2f' % recibos[recibo]['Total']).replace('.', ''))
 
         context = {'Data': datetime.now(), 'Emitente': Emitente, 'Recibos': recibos}
-        return render(request, 'Recibo/impresso.html', context)
+        return render(request, 'recibo/impresso.html', context)
 
 def listagem(request):
-    database = uteis.Conexao()
+    pessoas = Pessoas()
+    parcelas = Parcelas()
+    parcelas.set_query_situacao(u'Quitada')
+    parcelas.set_sort_data_quitacao()
+    parcelas.set_sort_vencimento()
+    cursor = parcelas.execute_all()
     Recebimentos = []
-    queryRecebimentos = {'Situacao._t': u'Quitada'}
-    sort = [(u"Vencimento", -1), (u"DataQuitacao", -1)]
 
-    cursor = database['Recebimentos'].find(queryRecebimentos, sort=sort).limit(500)
     for Recebimento in cursor:
-        Recebimento['id'] = str(Recebimento['_id'])
-        Recebimento['PessoaNome'] = pessoas.NomeCliente(Recebimento['PessoaReferencia'])
+        Recebimento['PessoaNome'] = pessoas.get_nome(Recebimento['PessoaReferencia'])
         for item in Recebimento['Historico']:
             if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
                 Recebimento['valor_pago'] = item['Valor']
 
         Recebimentos.append(Recebimento)
 
-    return render(request, 'Recibo/listagem.html', {'Recebimentos': Recebimentos})
+    return render(request, 'recibo/listagem.html', {'Recebimentos': Recebimentos})

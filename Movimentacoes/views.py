@@ -1,46 +1,35 @@
 from django.shortcuts import render
-from pymongo import MongoClient
 from bson import ObjectId
+from .models import Movimentacoes
 
-client = MongoClient('localhost', username='revenda', password='r3v3nd@', authSource='DigisatServer', port=12220)
-database = client["DigisatServer"]
-collection = database["Movimentacoes"]
-
-def listagem(request):
-    #Filtro de campos
-    query = {}
-
-    # Campos selecionados
-    projection = {}
-    projection["Numero"] = 1.0
-    projection["DataHoraEmissao"] = 1.0
-    projection["Pessoa.Nome"] = 1.0
-    sort = [(u"DataHoraEmissao", -1)]
-    item = []
-    cursor = collection.find(query, projection=projection, sort = sort).limit(500)
-    for doc in cursor:
-        doc['id'] = str(doc['_id'])
-        item.append(doc)
+def listagem_prevenda(request):
+    movimentacoes = Movimentacoes()
+    movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_projection_numero()
+    movimentacoes.set_projection_emissao()
+    movimentacoes.set_projection_pessoa_nome()
+    item = movimentacoes.execute_all()
     context = {"items": item}
-    return render(request, 'PreVenda/listagem.html', context)
+    return render(request, 'pre_venda/listagem.html', context)
 
-def impresso(request, id):
-    #Filtro de campos
-    query = {"_id": ObjectId(id)}
-
-    #Campos selecionados
-    projection = {}
-    projection["Numero"] = 1.0
-    projection["ItensBase"] = 1.0
-    projection["Pessoa"] = 1.0
-    projection["Empresa"] = 1.0
-
+def impresso_prevenda(request, id):
+    telefone = ""
+    tipo = ""
+    documento = ""
     items = []
-    cursor = collection.find_one(query, projection=projection)
+
+    movimentacoes = Movimentacoes()
+
+    movimentacoes.set_query_id(ObjectId(id))
+    movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_projection_numero()
+    movimentacoes.set_projection_pessoa()
+    movimentacoes.set_projection_itens()
+    movimentacoes.set_projection_empresa()
+    cursor = movimentacoes.execute_one()
+
     if "TelefonePrincipal" in cursor["Pessoa"]:
         telefone = cursor["Pessoa"]["TelefonePrincipal"]
-    else:
-        telefone = ""
 
     if cursor["Pessoa"]["_t"] == "FisicaHistorico":
         tipo = "CPF: "
@@ -48,9 +37,6 @@ def impresso(request, id):
     elif cursor["Pessoa"]["_t"] == "EmpresaHistorico":
         tipo = "CNPJ: "
         documento = cursor["Pessoa"]["Documento"]
-    else:
-        tipo = ""
-        documento = ""
 
 
     cliente ={"Nome": cursor["Pessoa"]["Nome"],
@@ -77,6 +63,7 @@ def impresso(request, id):
     }
     Total_Produtos = 0
     Total_Desconto = 0
+
     for item in cursor["ItensBase"]:
         items.extend([{"Codigo":item['ProdutoServico']['CodigoInterno'],
                        "Descricao": item['ProdutoServico']['Descricao'],
@@ -97,5 +84,19 @@ def impresso(request, id):
                "Total_Desconto": Total_Desconto,
                "Total": Total
                }
-    return render(request, 'PreVenda/impresso.html', context)
+    return render(request, 'pre_venda/impresso.html', context)
 
+def relatorios(request):
+    movimentacoes = Movimentacoes()
+    relatorios = {
+        1: 'Sintetico de Produtos Pré-Venda',
+        2: 'Operações por Pessoa',
+        3: 'Vendas por forma de pagamento',
+        4: 'Pré-Vendas no periodo',
+    }
+    clientes = movimentacoes.get_clientes()
+    print(clientes)
+    return render(request, 'relatorios/index.html', {'relatorios':relatorios, 'clientes':clientes})
+
+def produtos_sintetico(request):
+    pass
