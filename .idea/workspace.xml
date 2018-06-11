@@ -2,36 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Movimentacoes/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/produtos_sintetico.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/G6-Prevenda.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/G6-Prevenda.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/gerar_financeiro.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/pagamento_impresso.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/pessoa_impresso.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/G6/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/G6/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/G6/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/G6/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/migrations/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/templates/PreVenda/impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/templates/PreVenda/listagem.html" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PreVenda/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/migrations/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/templates/Recibo/impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/templates/recibo/impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/templates/Recibo/listagem.html" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/templates/recibo/listagem.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Recibo/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/pessoas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/uteis.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Financeiro/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Financeiro/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Financeiro/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/produtos_sintetico.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -59,35 +45,56 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Financeiro/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="118" column="33" lean-forward="true" selection-start-line="118" selection-start-column="33" selection-end-line="118" selection-end-column="33" />
+            <state relative-caret-position="85">
+              <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gerar_financeiro.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/pre_venda/gerar_financeiro.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="296">
+              <caret line="40" column="33" selection-start-line="40" selection-start-column="33" selection-end-line="40" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="282">
+              <caret line="152" column="20" selection-start-line="152" selection-start-column="20" selection-end-line="152" selection-end-column="20" />
               <folding>
-                <element signature="e#0#28#0" expanded="true" />
+                <element signature="e#0#32#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="242">
+              <caret line="22" column="16" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="57" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
+        <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="97" column="18" selection-start-line="97" selection-start-column="18" selection-end-line="97" selection-end-column="18" />
+            <state relative-caret-position="178">
+              <caret line="37" column="9" selection-start-line="37" selection-start-column="9" selection-end-line="37" selection-end-column="9" />
               <folding>
-                <element signature="e#0#35#0" expanded="true" />
+                <element signature="e#0#25#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
-              <caret line="22" column="86" selection-start-line="22" selection-start-column="86" selection-end-line="22" selection-end-column="86" />
             </state>
           </provider>
         </entry>
@@ -107,7 +114,14 @@
       <find>url</find>
       <find>cliente</find>
       <find>pessoas</find>
+      <find>Parcelas</find>
+      <find>parcelas</find>
+      <find>Financeiro</find>
+      <find>id</find>
     </findStrings>
+    <replaceStrings>
+      <replace>financeiro</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="DONT_SYNC" />
@@ -136,7 +150,6 @@
         <option value="$PROJECT_DIR$/Recibo/views.py" />
         <option value="$PROJECT_DIR$/core/pessoas.py" />
         <option value="$PROJECT_DIR$/core/uteis.py" />
-        <option value="$PROJECT_DIR$/Financeiro/urls.py" />
         <option value="$PROJECT_DIR$/Financeiro/templates/Recibo/listagem.html" />
         <option value="$PROJECT_DIR$/PreVenda/templates/PreVenda/listagem.html" />
         <option value="$PROJECT_DIR$/PreVenda/models.py" />
@@ -145,15 +158,26 @@
         <option value="$PROJECT_DIR$/G6/settings.py" />
         <option value="$PROJECT_DIR$/G6/urls.py" />
         <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/produtos_sintetico.html" />
-        <option value="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html" />
-        <option value="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/index.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/operacoes_por_pessoa_form.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/operacoes_por_pessoa_impresso.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/forma_de_pagamento_form.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/form.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/operacoes_por_pagamento_impresso.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/pagamento_impresso.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/pagamento_impresso.html" />
+        <option value="$PROJECT_DIR$/Financeiro/templates/prevenda.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/financeiro.html" />
         <option value="$PROJECT_DIR$/Movimentacoes/urls.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/models.py" />
         <option value="$PROJECT_DIR$/core/models.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html" />
+        <option value="$PROJECT_DIR$/Financeiro/urls.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/gerar_financeiro.html" />
         <option value="$PROJECT_DIR$/Financeiro/views.py" />
         <option value="$PROJECT_DIR$/Financeiro/models.py" />
-        <option value="$PROJECT_DIR$/Movimentacoes/models.py" />
-        <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
-        <option value="$PROJECT_DIR$/Movimentacoes/templates/relatorios/index.html" />
       </list>
     </option>
   </component>
@@ -181,6 +205,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -197,6 +222,17 @@
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
               <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="G6" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
@@ -227,7 +263,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -312,13 +347,12 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Python Console" order="11" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2822186" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.2822186" />
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.32626426" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24012157" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24468085" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="right" id="Database" order="4" weight="0.32902735" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32626426" />
-      <window_info anchor="right" id="SciView" order="3" weight="0.32902735" />
+      <window_info anchor="right" id="Database" order="3" weight="0.3275076" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.32902735" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -329,6 +363,7 @@
       <window_info anchor="bottom" id="Inspection Results" order="12" weight="0.32857144" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32626426" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -343,11 +378,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Financeiro/views.py" />
-    <entry file="file://$PROJECT_DIR$/Financeiro/urls.py" />
-    <entry file="file://$PROJECT_DIR$/Financeiro/templates/clientes.html" />
-    <entry file="file://$PROJECT_DIR$/Financeiro/templates/faturas.html" />
-    <entry file="file://$PROJECT_DIR$/Financeiro/views.py" />
     <entry file="file://$PROJECT_DIR$/Financeiro/urls.py" />
     <entry file="file://$PROJECT_DIR$/Financeiro/views.py" />
     <entry file="file://$PROJECT_DIR$/G6/settings.py">
@@ -444,79 +474,11 @@
     <entry file="file://$PROJECT_DIR$/Recibo/templates/recibo.html" />
     <entry file="file://$PROJECT_DIR$/PreVenda/templates/impresso.html" />
     <entry file="file://$PROJECT_DIR$/Recibo/templates/listagem.html" />
-    <entry file="file://$PROJECT_DIR$/core/pessoas.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/templates/recibo/impresso.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="35">
-          <caret line="46" column="59" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="6" column="55" selection-start-line="6" selection-start-column="46" selection-end-line="6" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/produtos_sintetico.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="16" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/G6/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="5" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="34" selection-start-line="34" selection-end-line="34" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-594">
-          <caret line="53" column="19" selection-start-line="53" selection-start-column="19" selection-end-line="53" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/core/pessoas.py" />
     <entry file="file://$PROJECT_DIR$/Financeiro/templates/recibo/listagem.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="69">
           <caret line="52" column="27" lean-forward="true" selection-start-line="52" selection-start-column="27" selection-end-line="52" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="8" column="42" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="12" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -527,50 +489,132 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
+    <entry file="file://$PROJECT_DIR$/Financeiro/templates/recibo/impresso.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="132" column="54" selection-start-line="132" selection-start-column="54" selection-end-line="132" selection-end-column="54" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-200">
+          <caret line="46" column="59" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="59" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/forma_de_pagamento_form.html" />
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/core/handlers/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="26" column="24" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
+        <state relative-caret-position="137">
+          <caret line="138" selection-start-line="138" selection-end-line="138" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/pessoa_impresso.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1496">
+          <caret line="88" column="23" selection-start-line="88" selection-start-column="23" selection-end-line="88" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/pagamento_impresso.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="62" column="65" selection-start-line="62" selection-start-column="65" selection-end-line="62" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/templates/prevenda.html" />
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="8" column="102" selection-start-line="8" selection-start-column="86" selection-end-line="8" selection-end-column="102" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/form.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="15" column="16" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/G6/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="6" column="87" selection-start-line="6" selection-start-column="77" selection-end-line="6" selection-end-column="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="8" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="26" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="118" column="33" lean-forward="true" selection-start-line="118" selection-start-column="33" selection-end-line="118" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="214">
+          <caret line="53" column="50" selection-start-line="53" selection-start-column="37" selection-end-line="53" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="97" column="18" selection-start-line="97" selection-start-column="18" selection-end-line="97" selection-end-column="18" />
+        <state relative-caret-position="243">
+          <caret line="106" column="4" lean-forward="true" selection-start-line="106" selection-start-column="4" selection-end-line="108" selection-end-column="146" />
           <folding>
-            <element signature="e#0#35#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/relatorios/index.html">
+    <entry file="file://$PROJECT_DIR$/Financeiro/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="22" column="86" selection-start-line="22" selection-start-column="86" selection-end-line="22" selection-end-column="86" />
+        <state relative-caret-position="85">
+          <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/templates/pre_venda/gerar_financeiro.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="296">
+          <caret line="40" column="33" selection-start-line="40" selection-start-column="33" selection-end-line="40" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="37" column="9" selection-start-line="37" selection-start-column="9" selection-end-line="37" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="22" column="16" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="57" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="152" column="20" selection-start-line="152" selection-start-column="20" selection-end-line="152" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

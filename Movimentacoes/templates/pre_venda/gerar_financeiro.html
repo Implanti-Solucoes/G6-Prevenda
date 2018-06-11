@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>PRE-VENDA - {{ items.Numero }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script>
+        function somenteNumeros(num) {
+            total = parseFloat({{ items.Total|stringformat:"f" }}).toFixed(2);
+
+            var er = /[^0-9.]/;
+            er.lastIndex = 0;
+            var campo = num;
+            if (er.test(campo.value)) {
+                campo.value = "1";
+            }
+            document.getElementById('valor').value = (total / campo.value).toFixed(2).replace('.', ',');
+        }
+    </script>
+</head>
+<body>
+<div class="container page">
+    <form action="{% url 'financeiro:gerar_financeiro' %}" method="post">
+        <input type="hidden" name="id" value="{{ items.id }}" required="required">
+        <div class="form-row">
+            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                <label for="conta">Conta</label>
+                <select id="conta" name="conta" class="form-control" required="required">
+                    {% for conta in contas %}
+                    <option value="{{ conta.id }}">{{ conta.Descricao }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                <label for="centro_custo">Centro de custo</label>
+                <select id="centro_custo" name="centro_custo" class="form-control" required="required">
+                    {% for custo in centros_custos %}
+                    <option value="{{ custo.id }}">{{ custo.CodigoUnico }} - {{ custo.Descricao }}</option>
+                        {% for filho in custo.Branches %}
+                            <option value="{{ filho.id }}">{{ filho.CodigoUnico }} - {{ filho.Descricao }}</option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                <label for="planos_contas">Plano de contas</label>
+                <select id="planos_contas" name="planos_contas" class="form-control" required="required">
+                    {% for plano in planos_conta %}
+                    <option value="{{ plano.id }}">{{ plano.CodigoUnico }} - {{ plano.Descricao }}</option>
+                        {% for filho in plano.plano %}
+                            <option value="{{ filho.id }}">{{ filho.CodigoUnico }} - {{ filho.Descricao }}</option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <label for="cliente">Cliente</label>
+                <input type="text" class="form-control" value="{{ items.Pessoa.Nome }}" readonly>
+            </div>
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <label for="total">Total</label>
+                <input type="text" class="form-control" value="{{ items.Total }}" readonly>
+            </div>
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <label for="valor">Valor Parcela</label>
+                <input type="text" class="form-control" id="valor" value="0" readonly>
+            </div>
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <label for="parcelas">Parcelas</label>
+                <input type="text" class="form-control" id="parcelas" name="parcelas" onkeyup="somenteNumeros(this);" placeholder="Digite a quantidade de parcelas" required="required">
+            </div>
+        </div>
+        {% csrf_token %}
+        <div class="form-row">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Gerar financeiro</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

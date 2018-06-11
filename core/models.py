@@ -16,6 +16,42 @@ class Uteis:
     def fecha_conexao(self):
         self.client.close()
 
+    def execute(self, tabela, query, projection, sort, limit=500):
+        database = self.conexao
+        if limit == 1:
+            if projection == {} and sort == {}:
+                cursor = database[tabela].find_one(query)
+            elif projection != {} and sort == {}:
+                cursor = database[tabela].find_one(query, projection=projection)
+            elif projection == {} and sort != {}:
+                cursor = database[tabela].find_one(query, sort=sort)
+            else:
+                cursor = database[tabela].find_one(query, projection=projection, sort=sort)
+
+            cursor['id'] = str(cursor['_id'])
+            self.fecha_conexao
+            return cursor
+        else:
+            busca = []
+            if projection == {} and sort == {}:
+                cursor = database[tabela].find(query).limit(limit)
+            elif projection != {} and sort == {}:
+                cursor = database[tabela].find(query, projection=projection).limit(limit)
+            elif projection == {} and sort != {}:
+                cursor = database[tabela].find(query, sort=sort).limit(limit)
+            else:
+                cursor = database[tabela].find(query, projection=projection, sort=sort).limit(limit)
+
+            try:
+                for doc in cursor:
+                    doc['id'] = str(doc['_id'])
+                    busca.append(doc)
+            finally:
+                self.fecha_conexao
+
+            return busca
+
+
     @staticmethod
     def split_number_on_potency(stg):
         # número dividido em partes de 3 dígitos invertidos

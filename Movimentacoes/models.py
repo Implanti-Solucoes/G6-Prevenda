@@ -1,3 +1,4 @@
+from bson import ObjectId
 from bson.regex import Regex
 from bson.tz_util import FixedOffset
 
@@ -8,7 +9,11 @@ class Movimentacoes():
         self.sort = []
 
     def set_query_id(self, con):
-        self.query["_id"] = con
+        if len(con) == 24:
+            self.query["_id"] = ObjectId(con)
+
+    def set_query_situacao_codigo(self, con):
+        self.query["Situacao.Codigo"] = con
 
     def set_query_t(self, con):
         self.query["_t"] = Regex(u".*"+con+".*", "i")
@@ -24,6 +29,18 @@ class Movimentacoes():
             self.query["Convertida"] = True
         else:
             self.query["Convertida"] = False
+
+    def set_query_fiscal(self, con):
+        self.query["ItensBase.0.OperacaoFiscal"] = {
+            u"$exists": True
+        }
+        if con == 'Saida':
+            self.query["_t"] = {
+                u"$not": Regex(u".*NotaFiscalCompra.*", "i")
+            }
+
+    def set_query_pessoa_id(self, con):
+        self.query["Pessoa.PessoaReferencia"] = ObjectId(con)
 
     def set_projection_numero(self):
         self.projection["Numero"] = 1.0
@@ -48,6 +65,9 @@ class Movimentacoes():
     def set_projection_emissao(self):
         self.projection["DataHoraEmissao"] = 1.0
 
+    def set_projection_situacao(self):
+        self.projection["Situacao"] = 1.0
+
     def set_sort_emissao(self, type='desc'):
         if type == 'asc':
             self.sort.append((u"DataHoraEmissao", 1))
@@ -62,44 +82,16 @@ class Movimentacoes():
     def execute_all(self):
         from core.models import Uteis
         uteis = Uteis()
-        database = uteis.conexao
-        busca = []
-
-        if self.projection == {} and self.sort == {}:
-            cursor = database['Movimentacoes'].find(self.query)
-        elif self.projection != {} and self.sort == {}:
-            cursor = database['Movimentacoes'].find(self.query, projection=self.projection)
-        elif self.projection == {} and self.sort != {}:
-            cursor = database['Movimentacoes'].find(self.query, sort=self.sort)
-        else:
-            cursor = database['Movimentacoes'].find(self.query, projection=self.projection, sort=self.sort)
-
-        try:
-            for doc in cursor:
-                doc['id'] = str(doc['_id'])
-                busca.append(doc)
-        finally:
-            self.unset_all()
-            uteis.fecha_conexao
-
+        busca = uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort)
+        self.unset_all()
         return busca
 
     def execute_one(self):
         from core.models import Uteis
         uteis = Uteis()
-        database = uteis.conexao
-
-        if self.projection == {} and self.sort == {}:
-            cursor = database['Movimentacoes'].find_one(self.query)
-        elif self.projection != {} and self.sort == {}:
-            cursor = database['Movimentacoes'].find_one(self.query, projection=self.projection)
-        elif self.projection == {} and self.sort != {}:
-            cursor = database['Movimentacoes'].find_one(self.query, sort=self.sort)
-        else:
-            cursor = database['Movimentacoes'].find_one(self.query, projection=self.projection, sort=self.sort)
-
-        uteis.fecha_conexao()
-        return cursor
+        busca = uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)
+        self.unset_all()
+        return busca
 
 
     def get_clientes(self):

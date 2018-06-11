@@ -1,10 +1,87 @@
 from bson import ObjectId
 from django.shortcuts import render
-from datetime import datetime
+from datetime import datetime, timedelta
+
+from Movimentacoes.models import Movimentacoes
 from core.models import Uteis
-from .models import Pessoas, Parcelas
+from .models import Pessoas, Financeiro
 
+def gerar_financeiro(request):
+    movimentacoes = Movimentacoes()
+    financeiro = Financeiro()
 
+    id = request.POST['id']
+    conta = request.POST['conta']
+    centro_custo = request.POST['centro_custo']
+    planos_contas = request.POST['planos_contas']
+    parcelas = int(request.POST['parcelas'])
+
+    movimentacoes.set_query_id(id)
+    movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_query_situacao_codigo(1)
+    cursor = movimentacoes.execute_one()
+
+    if 'InformacoesPesquisa' in cursor:
+        cursor['Total'] = 0
+        for item in cursor['ItensBase']:
+            cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item[
+                'DescontoDigitado'] - item['DescontoProporcional']
+
+        InformacoesPesquisa = []
+        InformacoesPesquisa.extend(cursor['InformacoesPesquisa'])
+        x = 0
+        extrutura = {}
+        data = datetime.now()
+        valor_parcela = cursor['Total'] / parcelas
+        valor_parcela = "%.2f" % valor_parcela
+        dados = financeiro.get_codigo_unico_centros_custos(centro_custo)
+        #print(dados['CodigoUnico'])
+        while x < parcelas:
+
+            extrutura[x] = {
+                "_t": ["ParcelaRecebimento", "ParcelaRecebimentoManual"],
+                "InformacoesPesquisa": InformacoesPesquisa,
+                "Versao": "736794.19:26:22.9976483",
+                "Ativo": True,
+                "Ordem": x+1,
+                "Descricao": "PRE-VENDA " + str(cursor['Numero']) + ' - ' + str(x+1),
+                "Documento": str(cursor['Numero']),
+                "PessoaReferencia": cursor['Pessoa']['PessoaReferencia'],
+                "Vencimento": data + timedelta(+(30 * (x+1))),
+                "Historico": [
+                    {
+                        "_t": "HistoricoPendente",
+                        "Valor": float(valor_parcela),
+                        "EspeciePagamento": {
+                            "_t": "EspeciePagamentoECF",
+                            "Codigo": 1,
+                            "Descricao": "Dinheiro",
+                            "EspecieRecebimento" : {
+                                "_t": "Dinheiro"
+                            }
+                        },
+                        "PlanoContaCodigoUnico": "1",
+                        "CentroCustoCodigoUnico": "1",
+                        "ContaReferencia": ObjectId("5ace8b8c2454da0648670332"),
+                        "EmpresaReferencia": ObjectId("5ace85402454da14f4f5a0d4"),
+                        "NomeUsuario": "Usuário Administrador",
+                        "Data": data,
+                        "ChequeReferencia" : ObjectId("000000000000000000000000")
+                    }
+                ],
+                "Situacao" : {
+                    "_t" : "Pendente",
+                    "Codigo" : 1
+                },
+                "ContaReferencia": ObjectId("5ace8b8c2454da0648670332"),
+                "EmpresaReferencia": ObjectId("5ace85402454da14f4f5a0d4"),
+                "NomeUsuario": "Usuário Administrador",
+                "DataQuitacao": "0001-01-01T00:00:00.000+0000",
+                "AcrescimoInformado": 0.0,
+                "DescontoInformado": 0.0,
+            }
+            x = x+1
+    return render(request, 'recibo/impresso.html', {})
 
 def impresso(request):
     if request.method == 'POST':
@@ -20,10 +97,10 @@ def impresso(request):
         recibos = {}
 
         for id in ids:
-            parcelas = Parcelas()
-            parcelas.set_query_situacao(u'Quitada')
-            parcelas.set_query_id(ObjectId(id))
-            cursor = parcelas.execute_one()
+            financeiro = Financeiro()
+            financeiro.set_query_situacao(u'Quitada')
+            financeiro.set_query_id(ObjectId(id))
+            cursor = financeiro.execute_one()
             print(cursor)
             clienteid = str(cursor['PessoaReferencia'])
 
@@ -33,14 +110,14 @@ def impresso(request):
                         valor_pago = item['Valor']
                         recibos[clienteid]['Total'] = recibos[clienteid]['Total'] + valor_pago
 
-                        recibos[clienteid]['Parcelas'].append({'Valor_Pago': valor_pago,
+                        recibos[clienteid]['financeiro'].append({'Valor_Pago': valor_pago,
                                                                'Documento': cursor['Documento'],
                                                                'Parcela': cursor['Ordem'],
                                                                'Data_Quitacao': cursor['DataQuitacao']})
 
             else:
                 recibos[clienteid] = {}
-                recibos[clienteid]['Parcelas'] = []
+                recibos[clienteid]['financeiro'] = []
                 recibos[clienteid]['Total'] = 0
                 recibos[clienteid]['Total_extenso'] = ''
 
@@ -54,7 +131,7 @@ def impresso(request):
                         valor_pago = item['Valor']
                         recibos[clienteid]['Total'] = recibos[clienteid]['Total'] + valor_pago
 
-                        recibos[clienteid]['Parcelas'].append({'Valor_Pago': valor_pago,
+                        recibos[clienteid]['financeiro'].append({'Valor_Pago': valor_pago,
                                                                'Documento': cursor['Documento'],
                                                                'Parcela': cursor['Ordem'],
                                                                'Data_Quitacao': cursor['DataQuitacao']})
@@ -67,11 +144,11 @@ def impresso(request):
 
 def listagem(request):
     pessoas = Pessoas()
-    parcelas = Parcelas()
-    parcelas.set_query_situacao(u'Quitada')
-    parcelas.set_sort_data_quitacao()
-    parcelas.set_sort_vencimento()
-    cursor = parcelas.execute_all()
+    financeiro = Financeiro()
+    financeiro.set_query_situacao(u'Quitada')
+    financeiro.set_sort_data_quitacao()
+    financeiro.set_sort_vencimento()
+    cursor = financeiro.execute_all()
     Recebimentos = []
 
     for Recebimento in cursor:

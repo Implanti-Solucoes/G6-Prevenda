@@ -1,3 +1,5 @@
+from bson import ObjectId, Regex
+
 from core.models import Uteis
 from bson.tz_util import FixedOffset
 
@@ -6,15 +8,17 @@ class Pessoas:
         self.uteis = Uteis()
 
     def get_pessoa(self, id):
-        self.database = self.uteis.conexao
-        query = {'_id': id}
-        pessoa = self.database['Pessoas'].find_one(query)
-        self.uteis.fecha_conexao()
+        if len(id) == 24:
+            self.database = self.uteis.conexao
+            query = {'_id': id}
+            pessoa = self.database['Pessoas'].find_one(query)
+            self.uteis.fecha_conexao()
         return pessoa
 
     def get_nome(self, id):
-        pessoa = self.get_pessoa(id)
-        return pessoa['Nome']
+        if len(id) == 24:
+            pessoa = self.get_pessoa(id)
+            return pessoa['Nome']
 
     def get_emitente(self):
         self.database = self.uteis.conexao
@@ -32,34 +36,35 @@ class Pessoas:
         return emitente['Cnpj']
 
     def get_saldo_devedor(self, id):
-        self.database = self.uteis.conexao
-        total_devedor = 0
+        if len(id) == 24:
+            self.database = self.uteis.conexao
+            total_devedor = 0
 
-        query = {}
-        query["Situacao._t"] = {
-            u"$ne": u"Quitada"
-        }
-        query["PessoaReferencia"] = id
+            query = {}
+            query["Situacao._t"] = {
+                u"$ne": u"Quitada"
+            }
+            query["PessoaReferencia"] = id
 
-        projection = {"Historico": 1.0}
+            projection = {"Historico": 1.0}
 
-        cursor = self.database["Recebimentos"].find(query, projection=projection)
-        try:
-            for doc in cursor:
-                total_devedor = total_devedor + doc['Historico'][0]['Valor']
-        finally:
-            self.uteis.fecha_conexao()
-        return total_devedor
+            cursor = self.database["Recebimentos"].find(query, projection=projection)
+            try:
+                for doc in cursor:
+                    total_devedor = total_devedor + doc['Historico'][0]['Valor']
+            finally:
+                self.uteis.fecha_conexao()
+            return total_devedor
 
     def get_saldo_devedor_extenso(self, id):
-        saldo_devedor = self.get_saldo_devedor(id)
-        extenso = self.uteis.num_to_currency(saldo_devedor)
-        return extenso
+        if len(id) == 24:
+            saldo_devedor = self.get_saldo_devedor(id)
+            extenso = self.uteis.num_to_currency(saldo_devedor)
+            return extenso
 
-class Parcelas:
+class Financeiro:
     def __init__(self):
         self.uteis = Uteis()
-
         self.query = {}
         self.projection = {}
         self.sort = []
@@ -70,7 +75,8 @@ class Parcelas:
         self.sort = []
 
     def set_query_id(self, con):
-        self.query['_id'] = con
+        if len(id) == 24:
+            self.query['_id'] = con
 
     def set_query_situacao(self, con):
         self.query['Situacao._t'] = con
@@ -105,35 +111,80 @@ class Parcelas:
         else:
             self.sort.append((u"DataQuitacao", -1))
 
-    def execute_all(self, limit=500):
-        database = self.uteis.conexao
-        busca = []
+    def get_contas(self):
+        uteis = Uteis()
+        self.query["Ativo"] = True
+        self.projection["_id"] = 1.0
+        self.projection["Descricao"] = 1.0
+        busca = uteis.execute('Contas', self.query, projection=self.projection, sort=self.sort)
+        self.unset_all()
+        return busca
 
-        if self.sort == {}:
-            cursor = database['Recebimentos'].find(self.query).limit(500)
-        else:
-            cursor = database['Recebimentos'].find(self.query, sort=self.sort).limit(500)
+    def get_centros_custos(self):
+        uteis = Uteis()
+        self.query["Ativo"] = True
+        self.projection["_id"] = 1.0
+        self.projection["Descricao"] = 1.0
+        self.projection["Branches"] = 1.0
+        self.projection["CodigoUnico"] = 1.0
+        buscas = uteis.execute('CentrosCusto', self.query, projection=self.projection, sort=self.sort)
+        x = 0
+        for busca in buscas:
+            i = 0
+            for branches in busca['Branches']:
+                buscas[x]['Branches'][i]['id'] = str(buscas[x]['Branches'][i]['_id'])
+                i = i + 1
+            x = x + 1
+        self.unset_all()
+        return buscas
 
-        try:
-            for doc in cursor:
-                doc['id'] = str(doc['_id'])
-                busca.append(doc)
-        finally:
+    def get_codigo_unico_centros_custos(self, id):
+        uteis = Uteis()
+        database = uteis.conexao
+        self.query["_id"] = ObjectId(id)
+        if database['CentrosCusto'].count(self.query) == 1:
+            cursor = database['CentrosCusto'].find_one(self.query)
             self.unset_all()
-            self.uteis.fecha_conexao
+            return cursor
 
+        self.query["Branches"] = Regex(u".*"+id+".*", "i")
+        if database['CentrosCusto'].count(self.query) == 1:
+            cursor = database['CentrosCusto'].find_one(self.query)
+            print(id)
+            self.unset_all()
+            return cursor["Branches"]
+
+
+    def get_planos_conta(self):
+        uteis = Uteis()
+        self.query["Ativo"] = True
+        self.projection["_id"] = 1.0
+        self.projection["Descricao"] = 1.0
+        self.projection["Branches"] = 1.0
+        self.projection["CodigoUnico"] = 1.0
+        buscas = uteis.execute('PlanosConta', self.query, projection=self.projection, sort=self.sort)
+        x = 0
+        for busca in buscas:
+            i = 0
+            for branches in busca['Branches']:
+                buscas[x]['Branches'][i]['id'] = str(buscas[x]['Branches'][i]['_id'])
+                i = i + 1
+            x = x + 1
+
+        self.unset_all()
+        return buscas
+
+    def execute_all(self):
+        uteis = Uteis()
+        busca = uteis.execute('Recebimentos', self.query, projection=self.projection, sort=self.sort)
+        self.unset_all()
         return busca
 
     def execute_one(self):
-        from core.models import Uteis
         uteis = Uteis()
-        database = uteis.conexao
+        busca = uteis.execute('Recebimentos', self.query, projection=self.projection, sort=self.sort, limit=1)
+        self.unset_all()
+        return busca
 
-        if self.sort == {}:
-            cursor = database['Recebimentos'].find_one(self.query)
-        else:
-            cursor = database['Recebimentos'].find_one(self.query, sort=self.sort)
-
-        uteis.fecha_conexao()
-        return cursor
-
+    def create_parcela(self):
+        pass

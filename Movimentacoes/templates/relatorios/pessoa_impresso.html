@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatorios</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+            padding: 0;
+        }
+        @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            .page {
+                margin: 0;
+                padding: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                page-break-after: always;
+            }
+            .volta{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="row" align="center">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 volta">
+        <a href="{% url 'movimentacoes:listagem_prevenda' %}"><button type="button">Volta</button></a>
+    </div>
+</div>
+<div class="container page">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
+            <h1>Opereções por pessoa</h1><br />
+            <b>CLIENTE: </b> {{ cliente }}<br />
+            De {{ inicial }} à {{ final }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Numero</th>
+                        <th scope="col" colspan="2">Data</th>
+                        <th scope="col">Operação</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                {% for venda in dados %}
+                <tbody class="thead-dark">
+                    <tr>
+                        <th>{{ venda.Numero }}</th>
+                        <th colspan="2">{{ venda.DataHoraEmissao}}</th>
+                        <th>{{ venda.Modelo.Descricao }}</th>
+                        <th>{{ venda.Total }}</th>
+                    </tr>
+                </tbody>
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">CFOP</th>
+                        <th scope="col">Descricao</th>
+                        <th scope="col">Preço Unitario</th>
+                        <th scope="col">Quantidade</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in venda.ItensBase %}
+                    <tr>
+                        <td>{{ produto.OperacaoFiscal.Cfop.Codigo }}</td>
+                        <td>{{ produto.ProdutoServico.Descricao }}</td>
+                        <td>{{ produto.PrecoUnitario }}</td>
+                        <td>{{ produto.Quantidade }}</td>
+                        <td>{{ produto.Total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endfor %}
+                <tfoot>
+                    <tr class="thead-dark">
+                        <th colspan="5">Total geral: R$ {{ total_geral }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
