@@ -49,9 +49,9 @@
                 <td>{{ item.Pessoa.Nome }}</td>
                 <td>{{ item.DataHoraEmissao|date:"d/m/Y" }}</td>
                 <td>
-                    <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a> |
+                    <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
                     {% if item.Situacao.Codigo == 1 %}
-                    <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
+                     | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
                     {% endif %}
                 </td>
             </tr>

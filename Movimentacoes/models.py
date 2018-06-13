@@ -110,3 +110,23 @@ class Movimentacoes():
         finally:
             uteis.fecha_conexao()
         return clientes
+
+    def edit_status_aprovado(self, id):
+        from core.models import Uteis
+        uteis = Uteis()
+        database = uteis.conexao
+        Aprovado = {
+            "_t": [
+                "SituacaoMovimentacao",
+                "Aprovado"
+            ],
+            "Codigo": 8,
+            "Descricao": "Aprovado",
+            "Cor": "#006400",
+            "DescricaoComando": "Tornar pendente"
+        }
+        try:
+            database['Movimentacoes'].find_one_and_update({"_id": ObjectId(id)},
+                                                          {"$set": {"Situacao": Aprovado}})
+        finally:
+            uteis.fecha_conexao()

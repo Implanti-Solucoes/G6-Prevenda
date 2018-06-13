@@ -24,6 +24,7 @@ class Pessoas:
         self.database = self.uteis.conexao
         query = {'_t.2': u'Emitente'}
         emitente = self.database['Pessoas'].find_one(query)
+        emitente['id'] = str(emitente['_id'])
         self.uteis.fecha_conexao()
         return emitente
 
@@ -128,32 +129,25 @@ class Financeiro:
         self.projection["Branches"] = 1.0
         self.projection["CodigoUnico"] = 1.0
         buscas = uteis.execute('CentrosCusto', self.query, projection=self.projection, sort=self.sort)
-        x = 0
+        dados = []
         for busca in buscas:
-            i = 0
-            for branches in busca['Branches']:
-                buscas[x]['Branches'][i]['id'] = str(buscas[x]['Branches'][i]['_id'])
-                i = i + 1
-            x = x + 1
+            if len(busca['Branches']) > 0:
+                dados.append(busca)
+                dados.extend(self.branches(busca['Branches']))
+            else:
+                dados.append(busca)
         self.unset_all()
-        return buscas
+        return dados
 
-    def get_codigo_unico_centros_custos(self, id):
-        uteis = Uteis()
-        database = uteis.conexao
-        self.query["_id"] = ObjectId(id)
-        if database['CentrosCusto'].count(self.query) == 1:
-            cursor = database['CentrosCusto'].find_one(self.query)
-            self.unset_all()
-            return cursor
-
-        self.query["Branches"] = Regex(u".*"+id+".*", "i")
-        if database['CentrosCusto'].count(self.query) == 1:
-            cursor = database['CentrosCusto'].find_one(self.query)
-            print(id)
-            self.unset_all()
-            return cursor["Branches"]
-
+    def branches(self, dados):
+        branche = []
+        for dado in dados:
+            if len(dado['Branches']) > 0:
+                branche.append(dado)
+                branche.extend(self.branches(dado['Branches']))
+            else:
+                branche.append(dado)
+        return branche
 
     def get_planos_conta(self):
         uteis = Uteis()
@@ -163,16 +157,15 @@ class Financeiro:
         self.projection["Branches"] = 1.0
         self.projection["CodigoUnico"] = 1.0
         buscas = uteis.execute('PlanosConta', self.query, projection=self.projection, sort=self.sort)
-        x = 0
+        dados = []
         for busca in buscas:
-            i = 0
-            for branches in busca['Branches']:
-                buscas[x]['Branches'][i]['id'] = str(buscas[x]['Branches'][i]['_id'])
-                i = i + 1
-            x = x + 1
-
+            if len(busca['Branches']) > 0:
+                dados.append(busca)
+                dados.extend(self.branches(busca['Branches']))
+            else:
+                dados.append(busca)
         self.unset_all()
-        return buscas
+        return dados
 
     def execute_all(self):
         uteis = Uteis()

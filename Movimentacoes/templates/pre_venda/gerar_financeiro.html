@@ -38,10 +38,7 @@
                 <label for="centro_custo">Centro de custo</label>
                 <select id="centro_custo" name="centro_custo" class="form-control" required="required">
                     {% for custo in centros_custos %}
-                    <option value="{{ custo.id }}">{{ custo.CodigoUnico }} - {{ custo.Descricao }}</option>
-                        {% for filho in custo.Branches %}
-                            <option value="{{ filho.id }}">{{ filho.CodigoUnico }} - {{ filho.Descricao }}</option>
-                        {% endfor %}
+                    <option value="{{ custo.CodigoUnico }}">{{ custo.CodigoUnico }} - {{ custo.Descricao }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -49,10 +46,7 @@
                 <label for="planos_contas">Plano de contas</label>
                 <select id="planos_contas" name="planos_contas" class="form-control" required="required">
                     {% for plano in planos_conta %}
-                    <option value="{{ plano.id }}">{{ plano.CodigoUnico }} - {{ plano.Descricao }}</option>
-                        {% for filho in plano.plano %}
-                            <option value="{{ filho.id }}">{{ filho.CodigoUnico }} - {{ filho.Descricao }}</option>
-                        {% endfor %}
+                    <option value="{{ plano.CodigoUnico }}">{{ plano.CodigoUnico }} - {{ plano.Descricao }}</option>
                     {% endfor %}
                 </select>
             </div>

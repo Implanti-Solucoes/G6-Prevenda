@@ -1,5 +1,5 @@
 from bson import ObjectId
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from datetime import datetime, timedelta
 
 from Movimentacoes.models import Movimentacoes
@@ -7,8 +7,10 @@ from core.models import Uteis
 from .models import Pessoas, Financeiro
 
 def gerar_financeiro(request):
+    # Estanciando classes
     movimentacoes = Movimentacoes()
-    financeiro = Financeiro()
+    pessoas = Pessoas()
+    uteis = Uteis()
 
     id = request.POST['id']
     conta = request.POST['conta']
@@ -22,23 +24,29 @@ def gerar_financeiro(request):
     cursor = movimentacoes.execute_one()
 
     if 'InformacoesPesquisa' in cursor:
+        x = 0
+        InformacoesPesquisa = []
+
+        data = datetime.now()
+        database = uteis.conexao
+        emitente = pessoas.get_emitente()
+        movimentacoes.edit_status_aprovado(id)
+
+        # Pegando total da nota com descontos
         cursor['Total'] = 0
         for item in cursor['ItensBase']:
             cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item[
                 'DescontoDigitado'] - item['DescontoProporcional']
 
-        InformacoesPesquisa = []
         InformacoesPesquisa.extend(cursor['InformacoesPesquisa'])
-        x = 0
-        extrutura = {}
-        data = datetime.now()
-        valor_parcela = cursor['Total'] / parcelas
-        valor_parcela = "%.2f" % valor_parcela
-        dados = financeiro.get_codigo_unico_centros_custos(centro_custo)
-        #print(dados['CodigoUnico'])
-        while x < parcelas:
 
-            extrutura[x] = {
+        # Tratando valores da parcela
+        valor_parcela = cursor['Total'] / parcelas
+        valor_parcela = float("%.2f" % valor_parcela)
+
+        while x < parcelas:
+            InformacoesPesquisa.append('pre-venda ' + str(cursor['Numero']) + ' - ' + str(x+1))
+            estrutura = {
                 "_t": ["ParcelaRecebimento", "ParcelaRecebimentoManual"],
                 "InformacoesPesquisa": InformacoesPesquisa,
                 "Versao": "736794.19:26:22.9976483",
@@ -51,7 +59,7 @@ def gerar_financeiro(request):
                 "Historico": [
                     {
                         "_t": "HistoricoPendente",
-                        "Valor": float(valor_parcela),
+                        "Valor": valor_parcela,
                         "EspeciePagamento": {
                             "_t": "EspeciePagamentoECF",
                             "Codigo": 1,
@@ -60,10 +68,10 @@ def gerar_financeiro(request):
                                 "_t": "Dinheiro"
                             }
                         },
-                        "PlanoContaCodigoUnico": "1",
-                        "CentroCustoCodigoUnico": "1",
-                        "ContaReferencia": ObjectId("5ace8b8c2454da0648670332"),
-                        "EmpresaReferencia": ObjectId("5ace85402454da14f4f5a0d4"),
+                        "PlanoContaCodigoUnico": planos_contas,
+                        "CentroCustoCodigoUnico": centro_custo,
+                        "ContaReferencia": ObjectId(conta),
+                        "EmpresaReferencia": emitente['_id'],
                         "NomeUsuario": "Usuário Administrador",
                         "Data": data,
                         "ChequeReferencia" : ObjectId("000000000000000000000000")
@@ -73,15 +81,16 @@ def gerar_financeiro(request):
                     "_t" : "Pendente",
                     "Codigo" : 1
                 },
-                "ContaReferencia": ObjectId("5ace8b8c2454da0648670332"),
-                "EmpresaReferencia": ObjectId("5ace85402454da14f4f5a0d4"),
+                "ContaReferencia": ObjectId(conta),
+                "EmpresaReferencia": emitente['_id'],
                 "NomeUsuario": "Usuário Administrador",
                 "DataQuitacao": "0001-01-01T00:00:00.000+0000",
                 "AcrescimoInformado": 0.0,
                 "DescontoInformado": 0.0,
             }
+            database['Recebimentos'].insert(estrutura)
             x = x+1
-    return render(request, 'recibo/impresso.html', {})
+    return redirect(request, 'recibo/impresso.html', {})
 
 def impresso(request):
     if request.method == 'POST':
