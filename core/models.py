@@ -8,8 +8,8 @@ class Uteis:
 
     @property
     def conexao(self):
-        #username='temp', password='123456',
-        self.client = MongoClient('localhost',  authSource='DigisatServer',
+        #
+        self.client = MongoClient('localhost', username='temp', password='123456', authSource='DigisatServer',
                              port=12220)
         database = self.client['DigisatServer']
         return database
