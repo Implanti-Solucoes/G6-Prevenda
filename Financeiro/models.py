@@ -8,17 +8,16 @@ class Pessoas:
         self.uteis = Uteis()
 
     def get_pessoa(self, id):
-        if len(id) == 24:
-            self.database = self.uteis.conexao
-            query = {'_id': id}
-            pessoa = self.database['Pessoas'].find_one(query)
-            self.uteis.fecha_conexao()
+        self.database = self.uteis.conexao
+        query = {'_id': id}
+        pessoa = self.database['Pessoas'].find_one(query)
+        self.uteis.fecha_conexao()
         return pessoa
 
     def get_nome(self, id):
-        if len(id) == 24:
-            pessoa = self.get_pessoa(id)
-            return pessoa['Nome']
+        pessoa = self.get_pessoa(id)
+        return pessoa['Nome']
+
 
     def get_emitente(self):
         self.database = self.uteis.conexao

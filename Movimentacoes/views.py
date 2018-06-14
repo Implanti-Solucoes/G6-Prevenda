@@ -104,10 +104,19 @@ def gerar_financeiro(request, id):
     centros_custos = financeiro.get_centros_custos
     planos_conta = financeiro.get_planos_conta
 
+
+
+
     cursor['Total'] = 0
     for item in cursor['ItensBase']:
         cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item['DescontoDigitado'] - item['DescontoProporcional']
+
     context = {'items': cursor, 'contas': contas, 'centros_custos': centros_custos, 'planos_conta': planos_conta}
+
+    if 'Vendedor' in cursor:
+        context['Vendedor'] = {
+            'Nome': cursor['Vendedor']['Nome']
+        }
 
     return render(request, 'pre_venda/gerar_financeiro.html', context)
 

@@ -30,11 +30,17 @@
     <form action="{% url 'financeiro:gerar_financeiro' %}" method="post">
         <input type="hidden" name="id" value="{{ items.id }}" required="required">
         <div class="form-row">
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 <label for="cliente">Cliente</label>
                 <input type="text" class="form-control" value="{{ items.Pessoa.Nome }}" readonly>
             </div>
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <label for="vendedor">Vendedor</label>
+                <input type="text" class="form-control" value="{{ items.Vendedor.Nome }}" readonly>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
                 <label for="conta">Conta</label>
                 <select id="conta" name="conta" class="form-control" required="required">
                     {% for conta in contas %}
@@ -42,7 +48,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
                 <label for="centro_custo">Centro de custo</label>
                 <select id="centro_custo" name="centro_custo" class="form-control" required="required">
                     {% for custo in centros_custos %}
@@ -50,7 +56,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
                 <label for="planos_contas">Plano de contas</label>
                 <select id="planos_contas" name="planos_contas" class="form-control" required="required">
                     {% for plano in planos_conta %}
