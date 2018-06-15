@@ -58,13 +58,13 @@
 			Recebi de <span style="font-family: Segoe UI Semibold;">{{ Recibo.Cliente.Nome }}</span>
 		</div>
 		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-			A importância de: {{ Recibo.Total_extenso }}
+			A importância de: {{ Recibo.Total }} ({{ Recibo.Total_extenso }})
 		</div>
 		<br />
 		<br />
 		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 border-top border-dark">
 			Referente ao pagamento da(s) parcela(s): <br />
-            {% for Parcela in Recibo.Parcelas %}
+            {% for Parcela in Recibo.financeiro %}
 			    <span style="font-size: 11pt">
                     Doc.: {{ Parcela.Documento }} - {{ Parcela.Parcela }}  / Valor: {{ Parcela.Valor_Pago }} em
                     {{ Parcela.Data_Quitacao }}</span><br />

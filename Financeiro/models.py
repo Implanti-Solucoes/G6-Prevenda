@@ -36,7 +36,7 @@ class Pessoas:
         return emitente['Cnpj']
 
     def get_saldo_devedor(self, id):
-        if len(id) == 24:
+        if type(id) == ObjectId:
             self.database = self.uteis.conexao
             total_devedor = 0
 
@@ -75,8 +75,8 @@ class Financeiro:
         self.sort = []
 
     def set_query_id(self, con):
-        if len(id) == 24:
-            self.query['_id'] = con
+        if len(con) == 24:
+            self.query['_id'] = ObjectId(con)
 
     def set_query_situacao(self, con):
         self.query['Situacao._t'] = con

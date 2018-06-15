@@ -220,7 +220,7 @@ def impresso(request):
         for id in ids:
             financeiro = Financeiro()
             financeiro.set_query_situacao(u'Quitada')
-            financeiro.set_query_id(ObjectId(id))
+            financeiro.set_query_id(id)
             cursor = financeiro.execute_one()
             clienteid = str(cursor['PessoaReferencia'])
 
@@ -236,13 +236,13 @@ def impresso(request):
                                                                  'Data_Quitacao': cursor['DataQuitacao']})
 
             else:
+                cliente = pessoas.get_nome(cursor['PessoaReferencia'])
+                saldo_devedor = pessoas.get_saldo_devedor(cursor['PessoaReferencia'])
+
                 recibos[clienteid] = {}
                 recibos[clienteid]['financeiro'] = []
                 recibos[clienteid]['Total'] = 0
                 recibos[clienteid]['Total_extenso'] = ''
-
-                cliente = pessoas.get_nome(cursor['PessoaReferencia'])
-                saldo_devedor = pessoas.get_saldo_devedor(cursor['PessoaReferencia'])
                 recibos[clienteid]['Cliente'] = {'Nome': cliente, 'Total_devedor': saldo_devedor}
 
                 for item in cursor['Historico']:

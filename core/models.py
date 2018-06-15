@@ -29,7 +29,8 @@ class Uteis:
             else:
                 cursor = database[tabela].find_one(query, projection=projection, sort=sort)
 
-            cursor['id'] = str(cursor['_id'])
+            if cursor != None:
+                cursor['id'] = str(cursor['_id'])
             self.fecha_conexao
             return cursor
         else:
