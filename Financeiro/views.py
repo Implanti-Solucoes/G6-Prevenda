@@ -36,7 +36,7 @@ def gerar_financeiro(request):
         data = datetime.now()
         database = uteis.conexao
         emitente = pessoas.get_emitente()
-        #movimentacoes.edit_status_aprovado(id)
+        movimentacoes.edit_status_aprovado(id)
 
         # Pegando total da nota com descontos
         cursor['Total'] = 0 - entrada
@@ -152,7 +152,7 @@ def gerar_financeiro(request):
                 "AcrescimoInformado": 0.0,
                 "DescontoInformado": 0.0,
             }
-            #database['Recebimentos'].insert(estrutura)
+            database['Recebimentos'].insert(estrutura)
 
         # Inserindo parcelas gerais no banco
         while x < parcelas+1:
@@ -221,7 +221,7 @@ def gerar_financeiro(request):
                 "AcrescimoInformado": 0.0,
                 "DescontoInformado": 0.0,
             }
-            #database['Recebimentos'].insert(estrutura)
+            database['Recebimentos'].insert(estrutura)
             x = x + 1
 
 

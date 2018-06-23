@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/menu.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/pre_venda/comprovante_de_debito.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Financeiro/templates/recibo/impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/recibo/impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Financeiro/templates/recibo/listagem.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/recibo/listagem.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Financeiro/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/gerar_financeiro.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/pre_venda/gerar_financeiro.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/pre_venda/impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/pre_venda/listagem.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/pre_venda/listagem.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/relatorios/form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/pagamento_impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/relatorios/pagamento_impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/templates/relatorios/pessoa_impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/relatorios/pessoa_impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -53,11 +39,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
-              <caret line="136" column="62" selection-start-line="136" selection-start-column="62" selection-end-line="136" selection-end-column="62" />
+            <state relative-caret-position="282">
+              <caret line="126" column="17" lean-forward="true" selection-start-line="126" selection-start-column="17" selection-end-line="126" selection-end-column="38" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="134">
+              <caret line="38" column="8" lean-forward="true" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -138,13 +133,13 @@
         <option value="$PROJECT_DIR$/templates/pre_venda/listagem.html" />
         <option value="$PROJECT_DIR$/templates/relatorios/form.html" />
         <option value="$PROJECT_DIR$/templates/recibo/listagem.html" />
-        <option value="$PROJECT_DIR$/Financeiro/views.py" />
         <option value="$PROJECT_DIR$/templates/pre_venda/comprovante_de_debito.html" />
         <option value="$PROJECT_DIR$/templates/menu.html" />
         <option value="$PROJECT_DIR$/templates/recibo/impresso.html" />
         <option value="$PROJECT_DIR$/templates/pre_venda/impresso.html" />
         <option value="$PROJECT_DIR$/templates/pre_venda/gerar_financeiro.html" />
         <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
+        <option value="$PROJECT_DIR$/Financeiro/views.py" />
       </list>
     </option>
   </component>
@@ -179,6 +174,11 @@
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
@@ -486,16 +486,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="550">
-          <caret line="232" column="24" selection-start-line="232" selection-start-column="17" selection-end-line="232" selection-end-column="24" />
-          <folding>
-            <element signature="e#1878#5700#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/relatorios/pagamento_impresso.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -508,8 +498,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="136" column="62" selection-start-line="136" selection-start-column="62" selection-end-line="136" selection-end-column="62" />
+        <state relative-caret-position="282">
+          <caret line="126" column="17" lean-forward="true" selection-start-line="126" selection-start-column="17" selection-end-line="126" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="38" column="8" lean-forward="true" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
         </state>
       </provider>
     </entry>
