@@ -12,13 +12,13 @@ def listagem_prevenda(request):
     movimentacoes.set_projection_emissao()
     movimentacoes.set_projection_pessoa_nome()
     movimentacoes.set_projection_situacao()
+    movimentacoes.set_sort_emissao()
     item = movimentacoes.execute_all()
     context = {'items': item}
     return render(request, 'pre_venda/listagem.html', context)
 
 
 def impresso_prevenda(request, id):
-
     telefone = ''
     tipo = ''
     documento = ''
@@ -105,8 +105,6 @@ def gerar_financeiro(request, id):
     planos_conta = financeiro.get_planos_conta
 
 
-
-
     cursor['Total'] = 0
     for item in cursor['ItensBase']:
         cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item['DescontoDigitado'] - item['DescontoProporcional']
@@ -125,16 +123,16 @@ def relatorios(request):
     if request.method != 'POST':
         relatorios = {
             1: 'Operações por pessoa',
-            2: 'Vendas por Forma de Pagamento',
-            3: 'Pre-Vendas no período',
-            4: 'Sintetios de produtos',
+            #2: 'Vendas por Forma de Pagamento',
+            #3: 'Pre-Vendas no período',
+            4: 'Sinteticos de produtos',
         }
         clientes = movimentacoes.get_clientes()
-        return render(request, 'relatorios/form.html', {
-                'clientes': clientes,
-                'relatorios': relatorios,
-            }
-                      )
+        context = {}
+        context['clientes'] = clientes
+        context['relatorios'] = relatorios
+
+        return render(request, 'relatorios/form.html', context)
     else:
         relatorio = int(request.POST['relatorio'])
         if relatorio == 1:
@@ -179,16 +177,16 @@ def relatorios(request):
 
             total_geral = ('%.2f' % total_geral).replace('.', ',')
             cliente = vendas[0]['Pessoa']['Nome']
+            context = {}
+            context['dados'] = vendas
+            context['inicial'] = inicial
+            context['final'] = final
+            context['cliente'] = cliente
+            context['total_geral'] = total_geral
+            return render(request, 'relatorios/pessoa_impresso.html', context)
+        elif relatorio == 4:
+            produtos = {}
 
-            return render(request, 'relatorios/pessoa_impresso.html', {
-                    'dados': vendas,
-                    'inicial': inicial,
-                    'final': final,
-                    'cliente': cliente,
-                    'total_geral': total_geral,
-                }
-                          )
-        if relatorio == 2:
             cliente = request.POST['cliente']
             inicial = request.POST['inical']
             year, month, day = map(int, inicial.split('-'))
@@ -198,26 +196,24 @@ def relatorios(request):
             year, month, day = map(int, final.split('-'))
             final = datetime.datetime(year, month, day, 23, 59, 59)
 
-            movimentacoes.set_query_fiscal('Saida')
-            movimentacoes.set_query_situacao_codigo(2)
-            movimentacoes.set_query_periodo(inicial, final)
             if len(cliente) == 24:
                 movimentacoes.set_query_pessoa_id(cliente)
-            movimentacoes.set_sort_emissao('asc')
-            dados = movimentacoes.execute_all()
 
-            vendas = []
-            total_geral = 0
+            movimentacoes.set_query_t('PreVenda')
+            movimentacoes.set_query_periodo(inicial, final)
+            movimentacoes.set_projection_itens()
+            cursor = movimentacoes.execute_all()
 
-            for venda in dados:
-                total = 0.0
+            for x in cursor:
+                for y in x['ItensBase']:
+                    id = str(y['ProdutoServico']['ProdutoServicoReferencia'])
+                    if id in produtos:
+                        produtos[id]['Qtd'] = produtos[id]['Qtd'] + y['Quantidade']
+                        produtos[id]['Total'] = produtos[id]['Total'] + (y['Quantidade'] * y['PrecoUnitario'])
+                    else:
+                        produtos[id] = {}
+                        produtos[id]['Descricao'] = y['ProdutoServico']['Descricao']
+                        produtos[id]['Qtd'] = y['Quantidade']
+                        produtos[id]['Total'] = y['Quantidade'] * y['PrecoUnitario']
 
-                for item in venda['ItensBase']:
-                    total = total + (item['PrecoUnitario'] * item['Quantidade'])
-
-                venda['Total'] = ('%.2f' % total).replace('.', ',')
-                vendas.append(venda)
-                if 'Pagamentos' not in venda:
-                    print(venda)
-                    print('\n \n \n')
-            return render(request, 'relatorios/pagamento_impresso.html', {'vendas':vendas})
+            return render(request, 'relatorios/pagamento_impresso.html', {'produtos': produtos})

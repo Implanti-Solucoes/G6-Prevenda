@@ -42,13 +42,8 @@
     </style>
 </head>
 <body>
-<div class="row" align="center">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 volta">
-        <a href="{% url 'movimentacoes:listagem_prevenda' %}"><button type="button">Volta</button></a>
-    </div>
-</div>
+{% include "menu.html" %}
 <div class="container page">
-
     <!-- Empresa emitente -->
     <div class="row" align="center">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -109,11 +104,11 @@
             <tr>
                 <td>{{ item.Codigo }}</td>
                 <td>{{ item.Descricao }}</td>
-                <td>{{ item.Unidade }}</td>
-                <td>{{ item.Qtd }}</td>
-                <td>R${{ item.Desconto }}</td>
-                <td>R${{ item.Preco }}</td>
-                <td>R${{ item.Total }}</td>
+                <td>{{ item.Unidade|floatformat:2 }}</td>
+                <td>{{ item.Qtd|floatformat:2 }}</td>
+                <td>R${{ item.Desconto|floatformat:2 }}</td>
+                <td>R${{ item.Preco|floatformat:2 }}</td>
+                <td>R${{ item.Total|floatformat:2 }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -121,9 +116,9 @@
     <div class="row border">
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            Total produtos: <b>R${{ Total_Produtos }}</b><br />
-            Total desconto: <b>R${{ Total_Produtos }}</b><br />
-            Total geral: <b>R${{ Total_Produtos }}</b><br />
+            Total produtos: <b>R${{ Total_Produtos|floatformat:2 }}</b><br />
+            Total desconto: <b>R${{ Total_Produtos|floatformat:2 }}</b><br />
+            Total geral: <b>R${{ Total_Produtos|floatformat:2 }}</b><br />
         </div>
     </div>
 </div>

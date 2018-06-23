@@ -8,11 +8,14 @@ from .models import Pessoas, Financeiro
 
 
 def gerar_financeiro(request):
+    template_name = 'pre_venda/comprovante_de_debito.html'
+
     # Estanciando classes
     movimentacoes = Movimentacoes()
     pessoas = Pessoas()
     uteis = Uteis()
 
+    # Recebendo valores e tratando
     id = request.POST['id']
     conta = request.POST['conta']
     centro_custo = request.POST['centro_custo']
@@ -22,6 +25,7 @@ def gerar_financeiro(request):
     entrada = float(entrada)
     parcelas = int(request.POST['parcelas'])
 
+    # Fazendo busca das prevendas
     movimentacoes.set_query_id(id)
     movimentacoes.set_query_t('PreVenda')
     movimentacoes.set_query_situacao_codigo(1)
@@ -32,13 +36,19 @@ def gerar_financeiro(request):
         data = datetime.now()
         database = uteis.conexao
         emitente = pessoas.get_emitente()
-        movimentacoes.edit_status_aprovado(id)
+        #movimentacoes.edit_status_aprovado(id)
 
         # Pegando total da nota com descontos
         cursor['Total'] = 0 - entrada
         for item in cursor['ItensBase']:
-            cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item[
-                'DescontoDigitado'] - item['DescontoProporcional']
+            # Gerando total dos itens
+            cursor['ItensBase'][x]['Total_Bruto'] = item['Quantidade'] * item['PrecoUnitario']
+            cursor['ItensBase'][x]['Total'] = cursor['ItensBase'][x]['Total_Bruto'] - item['DescontoProporcional']
+            cursor['ItensBase'][x]['Total'] = cursor['ItensBase'][x]['Total_Bruto'] - item['DescontoDigitado']
+            cursor['Total'] = cursor['Total'] + cursor['ItensBase'][x]['Total']
+            x = x+1
+
+        cursor['Total_Bruto'] = cursor['Total'] + entrada
 
         # Configurando informações de pesquisa
         informacoes_pesquisa = []
@@ -49,10 +59,17 @@ def gerar_financeiro(request):
         valor_parcela = cursor['Total'] / parcelas
         valor_parcela = float("%.2f" % valor_parcela)
 
+        # Criando parcelamento para comprovante de debito
+        parcelamento = []
+
+        # Reconfigurando contador pra reutilizar
+        x = 0
+
         # Começando a inserir parcelas no banco
         if entrada > 0:
+            x = x+1
+            parcelamento.append({"Vencimento": data, "Valor": entrada, "Pago": entrada})
             # Verificando se tem entradas
-            x = x + 1
             estrutura = {
                 "_t": ["ParcelaRecebimento", "ParcelaRecebimentoManual"],
                 "InformacoesPesquisa": informacoes_pesquisa,
@@ -135,10 +152,15 @@ def gerar_financeiro(request):
                 "AcrescimoInformado": 0.0,
                 "DescontoInformado": 0.0,
             }
-            database['Recebimentos'].insert(estrutura)
+            #database['Recebimentos'].insert(estrutura)
 
         # Inserindo parcelas gerais no banco
-        while x < parcelas:
+        while x < parcelas+1:
+            Vencimento = data + timedelta(+(30 * (x + 1)))
+            parcelamento.append({"Vencimento": Vencimento,
+                                 "Valor": valor_parcela,
+                                 "Pago": 0
+                                })
             estrutura = {
                 "_t": ["ParcelaRecebimento", "ParcelaRecebimentoManual"],
                 "InformacoesPesquisa": informacoes_pesquisa,
@@ -148,7 +170,7 @@ def gerar_financeiro(request):
                 "Descricao": "PRE-VENDA " + str(cursor['Numero']) + ' - ' + str(x + 1),
                 "Documento": str(cursor['Numero']),
                 "PessoaReferencia": cursor['Pessoa']['PessoaReferencia'],
-                "Vencimento": data + timedelta(+(30 * (x + 1))),
+                "Vencimento": Vencimento,
                 "Historico": [
                     {
                         "_t": "HistoricoAguardando",
@@ -199,9 +221,17 @@ def gerar_financeiro(request):
                 "AcrescimoInformado": 0.0,
                 "DescontoInformado": 0.0,
             }
-            database['Recebimentos'].insert(estrutura)
+            #database['Recebimentos'].insert(estrutura)
             x = x + 1
-    return redirect('movimentacoes:listagem_prevenda')
+
+
+        context = {}
+        context['Emitente'] = emitente
+        context['Prevenda'] = cursor
+        context['Data'] = datetime.now()
+        context['Parcelamento'] = parcelamento
+        context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
+    return render(request, template_name, context)
 
 
 def impresso(request):
@@ -264,6 +294,7 @@ def impresso(request):
 
 
 def listagem(request):
+    template_name = 'recibo/listagem.html'
     pessoas = Pessoas()
     financeiro = Financeiro()
     financeiro.set_query_situacao(u'Quitada')
@@ -280,4 +311,5 @@ def listagem(request):
 
         Recebimentos.append(Recebimento)
 
-    return render(request, 'recibo/listagem.html', {'Recebimentos': Recebimentos})
+    context = {'Recebimentos': Recebimentos}
+    return render(request, template_name, context)

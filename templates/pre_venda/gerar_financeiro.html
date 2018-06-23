@@ -16,9 +16,16 @@
             var campo = num;
             if (er.test(campo.value)) {
                 campo.value = "1";
+            };
+            if(campo.id == "parcelas" && campo.value < 1 || campo.id == "parcelas" && Number.isInteger(campo.value)) {
+                campo.value = "1";
             }
-            document.getElementById('valor').value = ((total - parseFloat(document.getElementById('entrada').value)) / campo.value).toFixed(2).replace('.', ',');
-            console.log(parseFloat(document.getElementById('entrada').value))
+            if(parseFloat(document.getElementById('parcelas').value) >= 1 && campo.id == 'parcelas') {
+                document.getElementById('valor').value = ((total - parseFloat(document.getElementById('entrada').value)) / campo.value).toFixed(2).replace('.', ',');
+            }
+            if(parseFloat(document.getElementById('parcelas').value) >= 1 && campo.id == 'entrada') {
+                document.getElementById('valor').value = ((total - parseFloat(campo.value)) / document.getElementById('parcelas').value).toFixed(2).replace('.', ',');
+            }
         }
         function setTwoNumberDecimal(event) {
             this.value = parseFloat(this.value).toFixed(2);
@@ -26,6 +33,7 @@
     </script>
 </head>
 <body>
+{% include "menu.html" %}
 <div class="container page">
     <form action="{% url 'financeiro:gerar_financeiro' %}" method="post">
         <input type="hidden" name="id" value="{{ items.id }}" required="required">
