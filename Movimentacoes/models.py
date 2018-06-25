@@ -93,6 +93,22 @@ class Movimentacoes():
         self.unset_all()
         return busca
 
+    def get_vendedores(self):
+        from core.models import Uteis
+        uteis = Uteis()
+        database = uteis.conexao
+
+        vendedores = []
+        query = {"Vendedor": {u"$exists": True}}
+        projection = {"_id":1.0, "Nome":1.0}
+        cursor = database['Pessoas'].find(query, projection=projection)
+        try:
+            for cliente in cursor:
+                vendedores['id'] = str(cliente['_id'])
+                vendedores.append(cliente)
+        finally:
+            uteis.fecha_conexao()
+        return vendedores
 
     def get_clientes(self):
         from core.models import Uteis

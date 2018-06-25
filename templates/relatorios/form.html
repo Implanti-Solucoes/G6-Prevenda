@@ -7,28 +7,61 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        window.onload=function() {
+            document.getElementById('relatorio').relatorioAction.onchange = function () {
+                clientediv = document.getElementById('clientediv');
+                cliente = document.getElementById('cliente');
+
+                vendedordiv = document.getElementById('vendedordiv');
+                vendedor = document.getElementById('vendedor');
+
+                var newaction = this.value;
+                document.getElementById('relatorio').action = newaction;
+
+                if (newaction == "{% url 'relatorios:operacoes_por_pessoa' %}"){
+                    clientediv.style.display = "block";
+                    cliente.required = true;
+                }else{
+                    clientediv.style.display = "none";
+                    cliente.required = false;
+                }
+            };
+        }
+    </script>
 </head>
 <body>
 {% include "menu.html" %}
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <form method="post" action="{% url 'movimentacoes:relatorios' %}" class="form">
+            <form method="post" action="#" class="form" id="relatorio">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="relatorio" class="col-sm-6 col-form-label">Selecione o relatorio</label>
-                    <select name="relatorio" id="relatorio" class="form-control" required="required">
-                        {% for key, value in relatorios.items %}
-                        <option value="{{ key }}">{{ value }}</option>
-                        {% endfor %}
+                    <label for="relatorioAction" class="col-sm-6 col-form-label">Selecione o relatorio</label>
+                    <select name="relatorioAction" id="relatorioAction" class="form-control" required="required">
+                        <option>Selecione o relatorio</option>
+                        <option value="{% url 'relatorios:operacoes_por_pessoa' %}">Operações por pessoa</option>
+                        <option value="{% url 'relatorios:sintetico_produtos' %}">Sinteticos de produtos</option>
+                        <!--<option value="">Pre-Vendas no período</option>-->
+                        <!--<option value="">Sinteticos de produtos</option>-->
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="clientediv" style="display: none;">
                     <label for="cliente" class="col-sm-6 col-form-label">Selecione o cliente</label>
                     <select name="cliente" id="cliente" class="form-control">
                         <option value="">Sem filtro de cliente</option>
                         {% for cliente in clientes %}
                         <option value="{{ cliente.id }}">{{ cliente.Nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" id="vendedordiv" style="display: none;">
+                    <label for="vendedor" class="col-sm-6 col-form-label">Selecione o cliente</label>
+                    <select name="vendedor" id="vendedor" class="form-control">
+                        <option value="">Sem filtro de cliente</option>
+                        {% for vendedor in vendedores %}
+                        <option value="{{ vendedor.id }}">{{ vendedor.Nome }}</option>
                         {% endfor %}
                     </select>
                 </div>
