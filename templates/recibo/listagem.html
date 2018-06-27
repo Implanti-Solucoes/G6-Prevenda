@@ -57,9 +57,9 @@
 							<td>{{ item.Documento }}-{{ item.Ordem }}</td>
 							<td>{{ item.PessoaNome }}</td>
 							<td>{{ item.Vencimento|date:"d/m/Y" }}</td>
-							<td>{{ item.Historico.0.Valor }}</td>
+							<td>{{ item.Historico.0.Valor|floatformat:2 }}</td>
 							<td>{{ item.DataQuitacao|date:"d/m/Y" }}</td>
-							<td>{{ item.valor_pago }}</td>
+							<td>{{ item.valor_pago|floatformat:2 }}</td>
 							<td><input type="checkbox" name="parcela" value={{ item.id }}></td>
 						</tr>
 						{% endfor %}

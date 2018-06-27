@@ -12,6 +12,8 @@
             size: A4;
             margin: 0;
             padding: 0;
+            width: 210mm;
+            height: 297mm;
         }
         @media print {
             html, body {
@@ -38,23 +40,40 @@
 <div class="container page">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
-            <h1>Pre ve</h1><br />
-            <b>CLIENTE: </b> {{ cliente }}<br />
+            <h1>Pré-Vendas por Vendedor</h1><br />
             De {{ inicial }} à {{ final }}
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <table class="table">
                 <thead class="thead-light">
                     <tr>
-                        <th scope="col">Numero</th>
-                        <th scope="col" colspan="2">Data</th>
-                        <th scope="col">Operação</th>
+                        <th scope="col">Vendedor / Numero</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Comissao</th>
                         <th scope="col">Total</th>
                     </tr>
                 </thead>
+                <tbody>
+                    {% for key, value in vendas.items %}
+                    <tr class="thead-light">
+                        <th>{{ value.Nome }}</th>
+                        <th></th>
+                        <th>{{ value.Comissao|floatformat:2 }}</th>
+                        <th>{{ value.Total|floatformat:2 }}</th>
+                    </tr>
+                        {% for venda in value.Vendas %}
+                        <tr>
+                            <td>{{ venda.Numero }}</td>
+                            <td>{{ venda.Data }}</td>
+                            <td>{{ venda.Comissao|floatformat:2 }}</td>
+                            <td>{{ venda.Total|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
                 <tfoot>
                     <tr class="thead-dark">
-                        <th colspan="5">Total geral: R$ {{ total_geral|floatformat:2 }}</th>
+                        <th colspan="3">Total geral: R$ {{ total_geral|floatformat:2 }}</th>
                     </tr>
                 </tfoot>
             </table>

@@ -7,6 +7,7 @@ class Movimentacoes():
         self.query = {}
         self.projection = {}
         self.sort = []
+        self.limit = 500
 
     def set_query_id(self, con):
         if len(con) == 24:
@@ -20,8 +21,8 @@ class Movimentacoes():
 
     def set_query_periodo(self, inicial, final):
         self.query['DataHoraEmissao'] = {
-            u"$gte": inicial.replace(tzinfo = FixedOffset(-180, "-0300")),
-            u"$lt": final.replace(tzinfo = FixedOffset(-180, "-0300"))
+            u"$gte": inicial,
+            u"$lt": final
         }
 
     def set_query_convertida(self, con = False):
@@ -74,6 +75,9 @@ class Movimentacoes():
         else:
             self.sort.append((u"DataHoraEmissao", -1))
 
+    def set_limit(self, limit):
+        self.limit = limit
+
     def unset_all(self):
         self.query = {}
         self.projection = {}
@@ -82,7 +86,11 @@ class Movimentacoes():
     def execute_all(self):
         from core.models import Uteis
         uteis = Uteis()
-        busca = uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort)
+        busca = uteis.execute('Movimentacoes',
+                              self.query,
+                              projection=self.projection,
+                              sort=self.sort,
+                              limit=self.limit)
         self.unset_all()
         return busca
 
@@ -102,12 +110,14 @@ class Movimentacoes():
         query = {"Vendedor": {u"$exists": True}}
         projection = {"_id":1.0, "Nome":1.0}
         cursor = database['Pessoas'].find(query, projection=projection)
+
         try:
-            for cliente in cursor:
-                vendedores['id'] = str(cliente['_id'])
-                vendedores.append(cliente)
+            for vendedor in cursor:
+                vendedor['id'] = str(vendedor['_id'])
+                vendedores.append(vendedor)
         finally:
             uteis.fecha_conexao()
+
         return vendedores
 
     def get_clientes(self):

@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf.urls import url
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from Movimentacoes.models import Movimentacoes
 from Financeiro.models import Financeiro
 
@@ -61,6 +61,9 @@ def sintetico_produtos(request):
                 'final':final
             }
         return render(request, 'relatorios/sintetico_produtos.html', context)
+    else:
+        return redirect('relatorios:index')
+
 
 def operacoes_por_pessoa(request):
     if request.method == 'POST':
@@ -113,12 +116,15 @@ def operacoes_por_pessoa(request):
         context['cliente'] = cliente
         context['total_geral'] = total_geral
         return render(request, 'relatorios/operacoes_por_pessoa.html', context)
+    else:
+        return redirect('relatorios:index')
+
 
 def prevendas_por_vendedor(request):
     if request.method == 'POST':
         movimentacoes = Movimentacoes()
         total_geral = 0
-        vendas = []
+        vendas = {}
 
         inicial = request.POST['inical']
         year, month, day = map(int, inicial.split('-'))
@@ -130,7 +136,7 @@ def prevendas_por_vendedor(request):
 
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
-        movimentacoes.set_projection_itens()
+        movimentacoes.set_limit(0)
         cursor = movimentacoes.execute_all()
 
         for venda in cursor:
@@ -138,21 +144,25 @@ def prevendas_por_vendedor(request):
                 vendedor_id = str(venda['Vendedor']['PessoaReferencia'])
 
                 if vendedor_id not in vendas:
-                    vendas[vendedor_id] = []
-                    vendas[vendedor_id]['comissao'] = 0
+                    vendas[vendedor_id] = {}
                     vendas[vendedor_id]['Nome'] = venda['Vendedor']['Nome']
+                    vendas[vendedor_id]['Comissao'] = 0
+                    vendas[vendedor_id]['Total'] = 0
+                    vendas[vendedor_id]['Vendas'] = []
 
                 total = 0
                 for item in venda['ItensBase']:
                     total = total + (item['PrecoUnitario'] * item['Quantidade'])
 
-                vendas[vendedor_id].append(
+                vendas[vendedor_id]['Vendas'].append(
                     {
                         "Numero": venda["Numero"],
                         "Data": venda["DataHoraEmissao"],
+                        "Comissao": 0,
                         "Total": total
                     }
                 )
+                vendas[vendedor_id]['Total'] = vendas[vendedor_id]['Total'] + total
                 total_geral = total_geral + total
 
         context = {
@@ -162,3 +172,5 @@ def prevendas_por_vendedor(request):
             'final': final
         }
         return render(request, 'relatorios/prevendas_por_vendedor.html', context)
+    else:
+        return redirect('relatorios:index')

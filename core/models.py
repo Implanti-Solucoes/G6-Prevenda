@@ -22,7 +22,26 @@ class Uteis:
 
     def execute(self, tabela, query, projection, sort, limit=500):
         database = self.conexao
-        if limit == 1:
+        if limit == 0:
+            busca = []
+            if projection == {} and sort == {}:
+                cursor = database[tabela].find(query)
+            elif projection != {} and sort == {}:
+                cursor = database[tabela].find(query, projection=projection)
+            elif projection == {} and sort != {}:
+                cursor = database[tabela].find(query, sort=sort)
+            else:
+                cursor = database[tabela].find(query, projection=projection, sort=sort)
+
+            try:
+                for doc in cursor:
+                    doc['id'] = str(doc['_id'])
+                    busca.append(doc)
+            finally:
+                self.fecha_conexao
+
+            return busca
+        elif limit == 1:
             if projection == {} and sort == {}:
                 cursor = database[tabela].find_one(query)
             elif projection != {} and sort == {}:
