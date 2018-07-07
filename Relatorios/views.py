@@ -42,24 +42,30 @@ def sintetico_produtos(request):
 
                 if id in produtos:
                     produtos[id]['Quantidade'] = produtos[id]['Quantidade'] + y['Quantidade']
-                    produtos[id]['Total'] = produtos[id]['Total'] + (y['Quantidade'] * y['PrecoUnitario'])
+                    produtos[id]['PrecoUnitario'] = produtos[id]['PrecoUnitario'] + y['PrecoUnitario']
+                    produtos[id]['Total'] = produtos[id]['Total']+int(1)
+
                 else:
                     produtos[id] = {}
                     produtos[id]['Codigo'] = y['ProdutoServico']['CodigoInterno']
                     produtos[id]['Descricao'] = y['ProdutoServico']['Descricao']
                     produtos[id]['Quantidade'] = y['Quantidade']
-                    produtos[id]['Total'] = y['Quantidade'] * y['PrecoUnitario']
+                    produtos[id]['PrecoUnitario'] = y['PrecoUnitario']
+                    produtos[id]['Total'] = int(1)
 
-            for produto in produtos:
-                total_geral = total_geral + produtos[produto]['Total']
-                produtos[produto]['Medio'] = produtos[produto]['Quantidade'] / produtos[produto]['Total']
+        for produto in produtos:
+            print(produtos[produto]['PrecoUnitario'])
+            print(produtos[produto]['Total'])
+            produtos[produto]['Medio'] = round(round(produtos[produto]['PrecoUnitario'], 2) / round(produtos[produto]['Total'], 2),2)
+            produtos[produto]['Total'] = round(round(produtos[produto]['Medio'], 2) * round(produtos[produto]['Quantidade'], 2), 2)
 
-            context={
-                'total_geral':total_geral,
-                'produtos': produtos,
-                'inicial':inicial,
-                'final':final
-            }
+            total_geral = total_geral + produtos[produto]['Total']
+
+        context = {}
+        context['total_geral'] = total_geral
+        context['produtos'] = produtos
+        context['inicial'] = inicial
+        context['final'] = final
         return render(request, 'relatorios/sintetico_produtos.html', context)
     else:
         return redirect('relatorios:index')
@@ -134,6 +140,8 @@ def prevendas_por_vendedor(request):
         year, month, day = map(int, final.split('-'))
         final = datetime.datetime(year, month, day, 23, 59, 59)
 
+        mostra_vendas = request.POST.getlist('vendas')
+        print(mostra_vendas)
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_limit(0)
@@ -150,18 +158,35 @@ def prevendas_por_vendedor(request):
                     vendas[vendedor_id]['Total'] = 0
                     vendas[vendedor_id]['Vendas'] = []
 
+                # Gerando totais para calculos de comissão e exibição
                 total = 0
+                desconto = 0
                 for item in venda['ItensBase']:
                     total = total + (item['PrecoUnitario'] * item['Quantidade'])
+                    desconto = item['DescontoDigitado'] + item['DescontoProporcional']
 
-                vendas[vendedor_id]['Vendas'].append(
-                    {
-                        "Numero": venda["Numero"],
-                        "Data": venda["DataHoraEmissao"],
-                        "Comissao": 0,
-                        "Total": total
-                    }
-                )
+                # Calculando comissão
+                if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                        venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
+                    comissao = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+
+                elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                        venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
+                    comissao = (total - desconto) * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                else:
+                    comissao = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+
+                if mostra_vendas != []:
+                    vendas[vendedor_id]['Vendas'].append(
+                        {
+                            "Numero": venda["Numero"],
+                            "Data": venda["DataHoraEmissao"],
+                            "Comissao": comissao,
+                            "Total": total
+                        }
+                    )
+
+                vendas[vendedor_id]['Comissao'] = vendas[vendedor_id]['Comissao'] + comissao
                 vendas[vendedor_id]['Total'] = vendas[vendedor_id]['Total'] + total
                 total_geral = total_geral + total
 

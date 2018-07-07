@@ -55,12 +55,22 @@
                 </thead>
                 <tbody>
                     {% for key, value in vendas.items %}
-                    <tr class="thead-light">
-                        <th>{{ value.Nome }}</th>
-                        <th></th>
-                        <th>{{ value.Comissao|floatformat:2 }}</th>
-                        <th>{{ value.Total|floatformat:2 }}</th>
-                    </tr>
+                        {% if venda in Vendas %}
+                            <tr class="thead-light">
+                                <th>{{ value.Nome }}</th>
+                                <th></th>
+                                <th>{{ value.Comissao|floatformat:2 }}</th>
+                                <th>{{ value.Total|floatformat:2 }}</th>
+                            </tr>
+                        {% else %}
+                            <tr class="thead-light">
+                                <td>{{ value.Nome }}</td>
+                                <td></td>
+                                <td>{{ value.Comissao|floatformat:2 }}</td>
+                                <td>{{ value.Total|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+
                         {% for venda in value.Vendas %}
                         <tr>
                             <td>{{ venda.Numero }}</td>
@@ -73,7 +83,7 @@
                 </tbody>
                 <tfoot>
                     <tr class="thead-dark">
-                        <th colspan="3">Total geral: R$ {{ total_geral|floatformat:2 }}</th>
+                        <th colspan="4">Total geral: R$ {{ total_geral|floatformat:2 }}</th>
                     </tr>
                 </tfoot>
             </table>

@@ -9,10 +9,10 @@ class Uteis:
     @property
     def conexao(self):
         #
-        #self.client = MongoClient('localhost', username='temp', password='123456', authSource='DigisatServer',
-        #                           port=12220)
-        self.client = MongoClient('localhost', username='revenda', password='r3v3nd@', authSource='DigisatServer',
-                                  port=12220)
+        self.client = MongoClient('localhost', username='temp', password='123456', authSource='DigisatServer',
+                                   port=12220)
+        #self.client = MongoClient('localhost', username='revenda', password='r3v3nd@', authSource='DigisatServer',
+        #                          port=12220)
 
         database = self.client['DigisatServer']
         return database

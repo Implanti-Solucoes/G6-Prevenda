@@ -67,6 +67,7 @@ def gerar_financeiro(request):
 
         # Começando a inserir parcelas no banco
         if entrada > 0:
+            parcelas = parcelas+1
             x = x+1
             parcelamento.append({"Vencimento": data, "Valor": entrada, "Pago": entrada})
             # Verificando se tem entradas
@@ -83,7 +84,7 @@ def gerar_financeiro(request):
                 "Historico": [
                     {
                         "_t": "HistoricoAguardando",
-                        "Valor": valor_parcela,
+                        "Valor": entrada,
                         "EspeciePagamento": {
                             "_t": "EspeciePagamentoECF",
                             "Codigo": 1,
@@ -101,7 +102,7 @@ def gerar_financeiro(request):
                     },
                     {
                         "_t": "HistoricoPendente",
-                        "Valor": valor_parcela,
+                        "Valor": entrada,
                         "EspeciePagamento": {
                             "_t": "EspeciePagamentoECF",
                             "Codigo": 1,
@@ -120,7 +121,7 @@ def gerar_financeiro(request):
                     },
                     {
                         "_t": "HistoricoQuitado",
-                        "Valor": valor_parcela,
+                        "Valor": entrada,
                         "EspeciePagamento": {
                             "_t": "EspeciePagamentoECF",
                             "Codigo": 1,
@@ -155,7 +156,7 @@ def gerar_financeiro(request):
             database['Recebimentos'].insert(estrutura)
 
         # Inserindo parcelas gerais no banco
-        while x < parcelas+1:
+        while x < parcelas:
             Vencimento = data + timedelta(+(30 * (x + 1)))
             parcelamento.append({"Vencimento": Vencimento,
                                  "Valor": valor_parcela,
