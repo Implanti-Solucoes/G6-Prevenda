@@ -54,8 +54,6 @@ def sintetico_produtos(request):
                     produtos[id]['Total'] = int(1)
 
         for produto in produtos:
-            print(produtos[produto]['PrecoUnitario'])
-            print(produtos[produto]['Total'])
             produtos[produto]['Medio'] = round(round(produtos[produto]['PrecoUnitario'], 2) / round(produtos[produto]['Total'], 2),2)
             produtos[produto]['Total'] = round(round(produtos[produto]['Medio'], 2) * round(produtos[produto]['Quantidade'], 2), 2)
 
@@ -72,9 +70,12 @@ def sintetico_produtos(request):
 
 
 def operacoes_por_pessoa(request):
+    # Relatorio fiscal de movimentação por cliente
     if request.method == 'POST':
         movimentacoes = Movimentacoes()
         cliente = request.POST['cliente']
+        fiscal = request.POST.getlist('fiscal')
+
         inicial = request.POST['inical']
         year, month, day = map(int, inicial.split('-'))
         inicial = datetime.datetime(year, month, day, 00, 00, 00)
@@ -83,8 +84,10 @@ def operacoes_por_pessoa(request):
         year, month, day = map(int, final.split('-'))
         final = datetime.datetime(year, month, day, 23, 59, 59)
 
-        movimentacoes.set_query_fiscal('Saida')
-        movimentacoes.set_query_situacao_codigo(2)
+        if fiscal != []:
+            movimentacoes.set_query_fiscal('Saida')
+            movimentacoes.set_query_situacao_codigo(2)
+
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_query_pessoa_id(cliente)
         movimentacoes.set_sort_emissao('asc')
@@ -99,13 +102,8 @@ def operacoes_por_pessoa(request):
 
             for item in venda['ItensBase']:
                 total_item = item['PrecoUnitario'] * item['Quantidade']
-                venda['ItensBase'][x]['Total'] = ('%.2f' % total_item).replace('.', ',')
+                venda['ItensBase'][x]['Total'] = total_item
                 total = total + (item['PrecoUnitario'] * item['Quantidade'])
-                venda['ItensBase'][x]['PrecoUnitario'] = ('%.2f' % venda['ItensBase'][x]['PrecoUnitario']).replace(
-                    '.',
-                    ',')
-                venda['ItensBase'][x]['Quantidade'] = ('%.2f' % venda['ItensBase'][x]['Quantidade']).replace('.',
-                                                                                                             ',')
                 x = x + 1
 
             total_geral = total_geral + total
@@ -113,7 +111,6 @@ def operacoes_por_pessoa(request):
             venda['Total'] = total
             vendas.append(venda)
 
-        total_geral = ('%.2f' % total_geral).replace('.', ',')
         cliente = vendas[0]['Pessoa']['Nome']
         context = {}
         context['dados'] = vendas
@@ -141,7 +138,6 @@ def prevendas_por_vendedor(request):
         final = datetime.datetime(year, month, day, 23, 59, 59)
 
         mostra_vendas = request.POST.getlist('vendas')
-        print(mostra_vendas)
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_limit(0)

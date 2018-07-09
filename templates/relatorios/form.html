@@ -19,6 +19,9 @@
                 mostradiv = document.getElementById('mostradiv');
                 vendas = document.getElementById('vendas');
 
+                fiscaldiv = document.getElementById('fiscaldiv');
+                fiscal = document.getElementById('fiscal');
+
                 var newaction = this.value;
                 document.getElementById('relatorio').action = newaction;
 
@@ -30,6 +33,7 @@
                     vendedor.required = false;
 
                     mostradiv.style.display = "none";
+                    fiscaldiv.style.display = "block";
 
                 }else if (newaction == "{% url 'relatorios:prevendas_por_vendedor' %}"){
                     mostradiv.style.display = "block";
@@ -39,6 +43,8 @@
 
                     vendedordiv.style.display = "none";
                     vendedor.required = false;
+
+                    fiscaldiv.style.display = "none";
                 }
                 else{
                     clientediv.style.display = "none";
@@ -47,6 +53,7 @@
                     vendedordiv.style.display = "none";
                     vendedor.required = false;
 
+                    fiscaldiv.style.display = "none";
                     mostradiv.style.display = "none";
 
                 }
@@ -100,6 +107,10 @@
                 <div class="form-group" style="display: none;" id="mostradiv" align="left">
                     <label for="vendas" class="col-sm-6 col-form-label">Mostrar vendas</label>
                     <input type="checkbox" name="vendas" id="vendas" class="form-control">
+                </div>
+                <div class="form-group" style="display: none;" id="fiscaldiv" align="left">
+                    <label for="fiscal" class="col-sm-6 col-form-label">Somente notas fiscais</label>
+                    <input type="checkbox" name="fiscal" id="fiscal" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-success">Gerar relatorio</button>
             </form>
