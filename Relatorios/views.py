@@ -122,11 +122,12 @@ def operacoes_por_pessoa(request):
     else:
         return redirect('relatorios:index')
 
-
 def prevendas_por_vendedor(request):
     if request.method == 'POST':
-        movimentacoes = Movimentacoes()
-        total_geral = 0
+        liquido = 0
+        desconto = 0
+        bruto = 0
+        comissao = 0
         vendas = {}
 
         inicial = request.POST['inical']
@@ -138,6 +139,8 @@ def prevendas_por_vendedor(request):
         final = datetime.datetime(year, month, day, 23, 59, 59)
 
         mostra_vendas = request.POST.getlist('vendas')
+
+        movimentacoes = Movimentacoes()
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_limit(0)
@@ -149,10 +152,12 @@ def prevendas_por_vendedor(request):
 
                 if vendedor_id not in vendas:
                     vendas[vendedor_id] = {}
-                    vendas[vendedor_id]['Nome'] = venda['Vendedor']['Nome']
-                    vendas[vendedor_id]['Comissao'] = 0
-                    vendas[vendedor_id]['Total'] = 0
-                    vendas[vendedor_id]['Vendas'] = []
+                    vendas[vendedor_id]['nome'] = venda['Vendedor']['Nome']
+                    vendas[vendedor_id]['comissao'] = 0
+                    vendas[vendedor_id]['bruto'] = 0
+                    vendas[vendedor_id]['liquido'] = 0
+                    vendas[vendedor_id]['desconto'] = 0
+                    vendas[vendedor_id]['vendas'] = []
 
                 # Gerando totais para calculos de comissão e exibição
                 total = 0
@@ -164,34 +169,121 @@ def prevendas_por_vendedor(request):
                 # Calculando comissão
                 if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
                         venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
-                    comissao = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                    comissao_venda = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
 
                 elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
                         venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
-                    comissao = (total - desconto) * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                    comissao_venda = (total - desconto) * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
                 else:
-                    comissao = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                    comissao_venda = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
 
                 if mostra_vendas != []:
-                    vendas[vendedor_id]['Vendas'].append(
+                    vendas[vendedor_id]['vendas'].append(
                         {
-                            "Numero": venda["Numero"],
-                            "Data": venda["DataHoraEmissao"],
-                            "Comissao": comissao,
-                            "Total": total
+                            "numero": venda["Numero"],
+                            "data": venda["DataHoraEmissao"],
+                            "comissao": comissao_venda,
+                            "desconto": desconto,
+                            "bruto": total,
+                            "liquido": total - desconto
                         }
                     )
 
-                vendas[vendedor_id]['Comissao'] = vendas[vendedor_id]['Comissao'] + comissao
-                vendas[vendedor_id]['Total'] = vendas[vendedor_id]['Total'] + total
-                total_geral = total_geral + total
+                vendas[vendedor_id]['bruto'] = vendas[vendedor_id]['bruto'] + total
+                vendas[vendedor_id]['liquido'] = vendas[vendedor_id]['liquido'] + total - desconto
+                vendas[vendedor_id]['desconto'] = vendas[vendedor_id]['desconto'] + desconto
+                vendas[vendedor_id]['comissao'] = vendas[vendedor_id]['comissao'] + comissao_venda
+
+                liquido = liquido + total - desconto
+                total = total + desconto
+                bruto = bruto + total
+                comissao = comissao + comissao_venda
 
         context = {
-            'total_geral': total_geral,
+            'comissao': comissao,
+            'liquido': liquido,
+            'desconto': desconto,
+            'bruto': bruto,
             'vendas': vendas,
             'inicial': inicial,
             'final': final
         }
         return render(request, 'relatorios/prevendas_por_vendedor.html', context)
+    else:
+        return redirect('relatorios:index')
+
+def prevendas_por_usuario(request):
+    if request.method == 'POST':
+        # Declaração de variaveis uteis
+        liquido = 0
+        desconto = 0
+        bruto = 0
+        vendas = {}
+
+        # Recebendo dados post
+        inicial = request.POST['inical']
+        year, month, day = map(int, inicial.split('-'))
+        inicial = datetime.datetime(year, month, day, 00, 00, 00)
+
+        final = request.POST['final']
+        year, month, day = map(int, final.split('-'))
+        final = datetime.datetime(year, month, day, 23, 59, 59)
+
+        mostra_vendas = request.POST.getlist('vendas')
+
+        # Setando filtros para busca no banco
+        movimentacoes = Movimentacoes()
+        movimentacoes.set_query_t('PreVenda')
+        movimentacoes.set_query_periodo(inicial, final)
+        movimentacoes.set_limit(0)
+        cursor = movimentacoes.execute_all()
+
+        # Tratando dados para gerar totais e separação por usuarios
+        for venda in cursor:
+            usuario = venda['Historicos'][0]['NomeUsuario']
+
+            # Separando usuarios
+            if usuario not in vendas:
+                vendas[usuario] = {}
+                vendas[usuario]['bruto'] = 0
+                vendas[usuario]['desconto'] = 0
+                vendas[usuario]['liquido'] = 0
+                vendas[usuario]['vendas'] = []
+
+            # Gerando totais para exibição
+            total = 0
+            desconto = 0
+            for item in venda['ItensBase']:
+                total = total + (item['PrecoUnitario'] * item['Quantidade'])
+                desconto = item['DescontoDigitado'] + item['DescontoProporcional']
+
+            if mostra_vendas != []:
+                vendas[usuario]['vendas'].append(
+                    {
+                        "numero": venda["Numero"],
+                        "data": venda["DataHoraEmissao"],
+                        "desconto": desconto,
+                        "bruto": total,
+                        "liquido": total - desconto
+                    }
+                )
+
+            vendas[usuario]['bruto'] = vendas[usuario]['bruto'] + total
+            vendas[usuario]['liquido'] = vendas[usuario]['liquido'] + total - desconto
+            vendas[usuario]['desconto'] = vendas[usuario]['desconto'] + desconto
+
+            liquido = liquido + total - desconto
+            total = total + desconto
+            bruto = bruto + total
+
+        context = {
+            'liquido': liquido,
+            'desconto': desconto,
+            'bruto': bruto,
+            'vendas': vendas,
+            'inicial': inicial,
+            'final': final
+        }
+        return render(request, 'relatorios/prevendas_por_usuario.html', context)
     else:
         return redirect('relatorios:index')

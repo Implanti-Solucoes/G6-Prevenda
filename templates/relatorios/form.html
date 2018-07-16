@@ -35,7 +35,7 @@
                     mostradiv.style.display = "none";
                     fiscaldiv.style.display = "block";
 
-                }else if (newaction == "{% url 'relatorios:prevendas_por_vendedor' %}"){
+                }else if (newaction == "{% url 'relatorios:prevendas_por_vendedor' %}" || newaction == {% url 'relatorios:prevendas_por_usuario' %}){
                     mostradiv.style.display = "block";
 
                     clientediv.style.display = "none";
@@ -75,7 +75,7 @@
                         <option value="{% url 'relatorios:operacoes_por_pessoa' %}">Operações por pessoa</option>
                         <option value="{% url 'relatorios:sintetico_produtos' %}">Sinteticos de produtos</option>
                         <option value="{% url 'relatorios:prevendas_por_vendedor' %}">Pré-Vendas por Vendedor</option>
-                        <!--<option value="">Pre-Vendas no período</option>-->
+                        <option value="{% url 'relatorios:prevendas_por_usuario' %}">Pré-Vendas por Usuario</option>
                     </select>
                 </div>
                 <div class="form-group" id="clientediv" style="display: none;">

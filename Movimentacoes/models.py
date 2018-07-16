@@ -128,7 +128,7 @@ class Movimentacoes():
         clientes = []
         query = {"Cliente": {u"$exists": True}}
         projection = {"_id":1.0, "Nome":1.0}
-        cursor = database['Pessoas'].find(query, projection=projection)
+        cursor = database['Pessoas'].find(query, projection=projection, sort=[('Nome', 1)])
         try:
             for cliente in cursor:
                 cliente['id'] = str(cliente['_id'])

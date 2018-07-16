@@ -47,21 +47,19 @@
             <table class="table">
                 <thead class="thead-light">
                     <tr>
-                        <th scope="col" colspan="2">Vendedor</th>
+                        <th scope="col" colspan="2">Usuario</th>
                         <th scope="col">Total Bruto</th>
                         <th scope="col">Desconto</th>
                         <th scope="col">Total Liquido</th>
-                        <th scope="col">Comissão</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for key, value in vendas.items %}
                         <tr class="thead-light">
-                            <td colspan="2" style="background-color: #5f6877;">{{ value.nome }}</td>
+                            <td colspan="2" style="background-color: #5f6877;">{{ key }}</td>
                             <td style="background-color: #5f6877;">{{ value.bruto|floatformat:2 }}</td>
                             <td style="background-color: #5f6877;">{{ value.desconto|floatformat:2 }}</td>
                             <td style="background-color: #5f6877;">{{ value.liquido|floatformat:2 }}</td>
-                            <td style="background-color: #5f6877;">{{ value.comissao|floatformat:2 }}</td>
                         </tr>
                         <tr class="thead-light">
                             <td scope="row" style="background-color: #d4dbff;">Numero</td>
@@ -69,7 +67,6 @@
                             <td scope="row" style="background-color: #d4dbff;">Total Bruto</td>
                             <td scope="row" style="background-color: #d4dbff;">Desconto</td>
                             <td scope="row" style="background-color: #d4dbff;">Total Liquido</td>
-                            <td scope="row" style="background-color: #d4dbff;">Comissão</td>
                         </tr>
                         {% for venda in value.vendas %}
                         <tr>
@@ -78,7 +75,6 @@
                             <td scope="row">{{ venda.bruto|floatformat:2 }}</td>
                             <td scope="row">{{ venda.desconto|floatformat:2 }}</td>
                             <td scope="row">{{ venda.liquido|floatformat:2 }}</td>
-                            <td scope="row">{{ venda.comissao|floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     {% endfor %}
@@ -87,8 +83,7 @@
                     <tr class="thead-dark" align="center" style="font-family: 'Roboto', 'Lucida Grande', 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, Arial, sans-serif">
                         <th>Total Bruto: R$ {{ bruto|floatformat:2 }}</th>
                         <th>Total Desconto: R$ {{ desconto|floatformat:2 }}</th>
-                        <th>Total Liquido: R$ {{ liquido|floatformat:2 }}</th>
-                        <th colspan="3">Total Comissão: R$ {{ comissao|floatformat:2 }}</th>
+                        <th colspan="3">Total Liquido: R$ {{ liquido|floatformat:2 }}</th>
                     </tr>
                 </tfoot>
             </table>

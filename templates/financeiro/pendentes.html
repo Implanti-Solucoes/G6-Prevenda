@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Financeiro</title>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+       $(document).ready(function() {
+            $('#pre_vendas').DataTable({
+                "language": {
+                        "lengthMenu": "Quantidade de parcelas por pagina _MENU_",
+                        "zeroRecords": "Nem uma parcela encontrada",
+                        "info": "Pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nem uma parcela encontrado",
+                        "infoFiltered": "(Filtrado de _MAX_ total de parcelas)",
+                        "search":         "Pesquisar:",
+                        "paginate": {
+                            "first":      "Primeira",
+                            "last":       "Ultima",
+                            "next":       "Proxima",
+                            "previous":   "Voltar"
+                        },
+                },
+            });
+       });
+    </script>
+</head>
+<body>
+{% include "menu.html" %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+				<table class="display responsive nowrap table table-striped" id="pre_vendas">
+					<thead>
+						<tr>
+							<th>Documento / Parcela</th>
+							<th>Cliente</th>
+							<th>Vencimento</th>
+							<th>Valor</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for item in recebimentos %}
+						<tr>
+							<td>{{ item.Documento }}-{{ item.Ordem }}</td>
+							<td>{{ item.PessoaNome }}</td>
+							<td>{{ item.Vencimento|date:"d/m/Y" }}</td>
+							<td>{{ item.Historico.0.Valor|floatformat:2 }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

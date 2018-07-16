@@ -234,8 +234,7 @@ def gerar_financeiro(request):
         context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
     return render(request, template_name, context)
 
-
-def impresso(request):
+def recibo(request):
     if request.method == 'POST':
         ids = request.POST.getlist('parcela')
         uteis = Uteis()
@@ -291,11 +290,10 @@ def impresso(request):
                 ('%.2f' % recibos[recibo]['Total']).replace('.', ''))
 
         context = {'Data': datetime.now(), 'Emitente': Emitente, 'Recibos': recibos}
-        return render(request, 'recibo/impresso.html', context)
+        return render(request, 'financeiro/recibo.html', context)
 
-
-def listagem(request):
-    template_name = 'recibo/listagem.html'
+def recebidas(request):
+    template_name = 'financeiro/recebidas.html'
     pessoas = Pessoas()
     financeiro = Financeiro()
     financeiro.set_query_situacao(u'Quitada')
@@ -313,4 +311,21 @@ def listagem(request):
         Recebimentos.append(Recebimento)
 
     context = {'Recebimentos': Recebimentos}
+    return render(request, template_name, context)
+
+def pendentes(request):
+    template_name = 'financeiro/pendentes.html'
+    pessoas = Pessoas()
+    financeiro = Financeiro()
+    financeiro.set_query_situacao(u'Pendente')
+    financeiro.set_sort_vencimento()
+    cursor = financeiro.execute_all()
+    recebimentos = []
+
+    for recebimento in cursor:
+        recebimento['PessoaNome'] = pessoas.get_nome(recebimento['PessoaReferencia'])
+        recebimento['Historico'][0]['Valor']
+        recebimentos.append(recebimento)
+
+    context = {'recebimentos': recebimentos}
     return render(request, template_name, context)
