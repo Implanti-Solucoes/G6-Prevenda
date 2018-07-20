@@ -1,6 +1,7 @@
 from bson import ObjectId
 from bson.regex import Regex
 from bson.tz_util import FixedOffset
+from core.models import Uteis
 
 class Movimentacoes():
     def __init__(self):
@@ -8,10 +9,13 @@ class Movimentacoes():
         self.projection = {}
         self.sort = []
         self.limit = 500
+        self.uteis = Uteis()
 
     def set_query_id(self, con):
         if len(con) == 24:
             self.query["_id"] = ObjectId(con)
+        elif type(con) == ObjectId:
+            self.query["_id"] = con
 
     def set_query_situacao_codigo(self, con):
         self.query["Situacao.Codigo"] = con
@@ -41,7 +45,16 @@ class Movimentacoes():
             }
 
     def set_query_pessoa_id(self, con):
-        self.query["Pessoa.PessoaReferencia"] = ObjectId(con)
+        if len(con) == 24:
+            self.query["Pessoa.PessoaReferencia"] = ObjectId(con)
+        elif type(con) == ObjectId:
+            self.query["Pessoa.PessoaReferencia"] = con
+
+    def set_query_vendedor_id(self, con):
+        if len(con) == 24:
+            self.query["Vendedor.PessoaReferencia"] = ObjectId(con)
+        elif type(con) == ObjectId:
+            self.query["Vendedor.PessoaReferencia"] = con
 
     def set_projection_numero(self):
         self.projection["Numero"] = 1.0
@@ -82,11 +95,10 @@ class Movimentacoes():
         self.query = {}
         self.projection = {}
         self.sort = []
+        self.limit = 500
 
     def execute_all(self):
-        from core.models import Uteis
-        uteis = Uteis()
-        busca = uteis.execute('Movimentacoes',
+        busca = self.uteis.execute('Movimentacoes',
                               self.query,
                               projection=self.projection,
                               sort=self.sort,
@@ -95,20 +107,16 @@ class Movimentacoes():
         return busca
 
     def execute_one(self):
-        from core.models import Uteis
-        uteis = Uteis()
-        busca = uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)
+        busca = self.uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)
         self.unset_all()
         return busca
 
     def get_vendedores(self):
-        from core.models import Uteis
-        uteis = Uteis()
-        database = uteis.conexao
+        database = self.uteis.conexao
 
         vendedores = []
         query = {"Vendedor": {u"$exists": True}}
-        projection = {"_id":1.0, "Nome":1.0}
+        projection = {"_id": 1.0, "Nome": 1.0}
         cursor = database['Pessoas'].find(query, projection=projection)
 
         try:
@@ -116,31 +124,27 @@ class Movimentacoes():
                 vendedor['id'] = str(vendedor['_id'])
                 vendedores.append(vendedor)
         finally:
-            uteis.fecha_conexao()
+            self.uteis.fecha_conexao()
 
         return vendedores
 
     def get_clientes(self):
-        from core.models import Uteis
-        uteis = Uteis()
-        database = uteis.conexao
+        database = self.uteis.conexao
 
         clientes = []
         query = {"Cliente": {u"$exists": True}}
-        projection = {"_id":1.0, "Nome":1.0}
+        projection = {"_id": 1.0, "Nome": 1.0}
         cursor = database['Pessoas'].find(query, projection=projection, sort=[('Nome', 1)])
         try:
             for cliente in cursor:
                 cliente['id'] = str(cliente['_id'])
                 clientes.append(cliente)
         finally:
-            uteis.fecha_conexao()
+            self.uteis.fecha_conexao()
         return clientes
 
     def edit_status_aprovado(self, id):
-        from core.models import Uteis
-        uteis = Uteis()
-        database = uteis.conexao
+        database = self.uteis.conexao
         Aprovado = {
             "_t": [
                 "SituacaoMovimentacao",
@@ -155,4 +159,4 @@ class Movimentacoes():
             database['Movimentacoes'].find_one_and_update({"_id": ObjectId(id)},
                                                           {"$set": {"Situacao": Aprovado}})
         finally:
-            uteis.fecha_conexao()
+            self.uteis.fecha_conexao()

@@ -56,27 +56,28 @@ class Pessoas:
                 self.uteis.fecha_conexao()
             return total_devedor
 
-    def get_saldo_devedor_extenso(self, id):
-        if len(id) == 24:
-            saldo_devedor = self.get_saldo_devedor(id)
+    def get_saldo_devedor_extenso(self, con):
+        if len(con) == 24:
+            saldo_devedor = self.get_saldo_devedor(con)
             extenso = self.uteis.num_to_currency(saldo_devedor)
             return extenso
 
 class Financeiro:
     def __init__(self):
         self.uteis = Uteis()
-        self.query = {}
-        self.projection = {}
-        self.sort = []
+        self.unset_all()
 
     def unset_all(self):
         self.query = {}
         self.projection = {}
         self.sort = []
+        self.limit = 500
 
     def set_query_id(self, con):
         if len(con) == 24:
             self.query['_id'] = ObjectId(con)
+        elif type(con) == ObjectId:
+            self.query['_id'] = con
 
     def set_query_situacao(self, con):
         self.query['Situacao._t'] = con

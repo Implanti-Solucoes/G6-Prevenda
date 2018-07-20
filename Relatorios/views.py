@@ -22,7 +22,6 @@ def sintetico_produtos(request):
         produtos = {}
         total_geral = 0
 
-        cliente = request.POST['cliente']
         inicial = request.POST['inical']
         year, month, day = map(int, inicial.split('-'))
         inicial = datetime.datetime(year, month, day, 00, 00, 00)
@@ -139,6 +138,7 @@ def prevendas_por_vendedor(request):
         final = datetime.datetime(year, month, day, 23, 59, 59)
 
         mostra_vendas = request.POST.getlist('vendas')
+        print(vendedor = request.POST['vendedor'])
 
         movimentacoes = Movimentacoes()
         movimentacoes.set_query_t('PreVenda')
