@@ -1,9 +1,9 @@
 import datetime
-
 from django.conf.urls import url
 from django.shortcuts import render, redirect
 from Movimentacoes.models import Movimentacoes
 from Financeiro.models import Financeiro
+from core.models import totais
 
 def index(request):
     movimentacoes = Movimentacoes()
@@ -147,6 +147,7 @@ def prevendas_por_vendedor(request):
         cursor = movimentacoes.execute_all()
 
         for venda in cursor:
+            print()
             if 'Vendedor' in venda:
                 vendedor_id = str(venda['Vendedor']['PessoaReferencia'])
 

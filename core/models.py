@@ -252,3 +252,33 @@ class Uteis:
                 else:
                     stg = '%s reais%s' % (self.num_to_str(inteiro), stg)
         return stg
+
+    def total_venda(self, venda):
+        venda['bruto'] = 0
+        venda['desconto'] = 0
+        venda['liquido'] = 0
+        venda['comissao'] = 0
+
+        for item in venda['ItensBase']:
+            bruto = item['PrecoUnitario'] * item['Quantidade']
+            desconto = item['DescontoDigitado'] + item['DescontoProporcional']
+            liquido = bruto - desconto
+
+            venda['bruto'] = bruto + venda['bruto']
+            venda['desconto'] = desconto + venda['desconto']
+            venda['liquido'] = liquido + venda['liquido']
+
+            # Calculando comissão
+            if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                    venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
+                comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+
+            elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                    venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
+                comissao_venda = liquido * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+            else:
+                comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+
+            venda['comissao'] = venda['comissao'] + comissao_venda
+
+        return venda
