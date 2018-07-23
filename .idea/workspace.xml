@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/financeiro/recebidas.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/relatorios/prevendas_por_usuario.html" afterDir="false" />
+    <list default="true" id="87e324c3-37f1-4eca-8a7b-1c4566859e55" name="dev" comment="dev">
+      <change afterPath="$PROJECT_DIR$/templates/relatorios/impresso_dav_80mm.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Financeiro/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Financeiro/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Financeiro/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/G6/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/G6/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Movimentacoes/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Relatorios/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Relatorios/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Relatorios/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Relatorios/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/menu.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/recibo/impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/financeiro/recibo.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/recibo/listagem.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/financeiro/pendentes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/relatorios/form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/relatorios/form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/relatorios/prevendas_por_vendedor.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/relatorios/prevendas_por_vendedor.html" afterDir="false" />
     </list>
+    <list id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,32 +38,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/core/models.py">
+      <file leaf-file-name="impresso_dav_80mm.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/relatorios/impresso_dav_80mm.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="444">
-              <caret line="268" column="57" selection-start-line="268" selection-start-column="57" selection-end-line="268" selection-end-column="57" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1873">
-              <caret line="2" selection-start-line="2" selection-end-line="2" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Relatorios/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="169" selection-start-line="169" selection-end-line="178" selection-end-column="102" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="229">
+              <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
             </state>
           </provider>
         </entry>
@@ -96,6 +69,11 @@
       <find>vendedor</find>
       <find>url</find>
       <find>imp</find>
+      <find>set_query_fiscal</find>
+      <find>set_query_t</find>
+      <find>estrutura</find>
+      <find>&quot;</find>
+      <find>aprovado</find>
     </findStrings>
     <replaceStrings>
       <replace>financeiro</replace>
@@ -108,7 +86,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/core/pessoas.py" />
         <option value="$PROJECT_DIR$/core/uteis.py" />
         <option value="$PROJECT_DIR$/Financeiro/templates/Recibo/listagem.html" />
         <option value="$PROJECT_DIR$/PreVenda/templates/PreVenda/listagem.html" />
@@ -137,28 +114,29 @@
         <option value="$PROJECT_DIR$/templates/recibo/impresso.html" />
         <option value="$PROJECT_DIR$/templates/pre_venda/gerar_financeiro.html" />
         <option value="$PROJECT_DIR$/G6/urls.py" />
-        <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
-        <option value="$PROJECT_DIR$/Movimentacoes/urls.py" />
         <option value="$PROJECT_DIR$/templates/relatorios/vendas_por_vendedor.html" />
         <option value="$PROJECT_DIR$/templates/recibo/listagem.html" />
         <option value="$PROJECT_DIR$/Relatorios/models.py" />
         <option value="$PROJECT_DIR$/templates/pre_venda/impresso.html" />
         <option value="$PROJECT_DIR$/templates/relatorios/sintetico_produtos.html" />
-        <option value="$PROJECT_DIR$/templates/relatorios/operacoes_por_pessoa.html" />
         <option value="$PROJECT_DIR$/Relatorios/urls.py" />
         <option value="$PROJECT_DIR$/templates/relatorios/prevendas_por_usuario.html" />
         <option value="$PROJECT_DIR$/templates/relatorios/prevendas_por_vendedor.html" />
         <option value="$PROJECT_DIR$/Financeiro/urls.py" />
-        <option value="$PROJECT_DIR$/templates/menu.html" />
         <option value="$PROJECT_DIR$/templates/financeiro/recebidas.html" />
-        <option value="$PROJECT_DIR$/Financeiro/views.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/pendentes.html" />
         <option value="$PROJECT_DIR$/templates/relatorios/form.html" />
         <option value="$PROJECT_DIR$/G6/settings.py" />
-        <option value="$PROJECT_DIR$/Movimentacoes/models.py" />
-        <option value="$PROJECT_DIR$/Financeiro/models.py" />
         <option value="$PROJECT_DIR$/Relatorios/views.py" />
+        <option value="$PROJECT_DIR$/templates/relatorios/operacoes_por_pessoa.html" />
+        <option value="$PROJECT_DIR$/Financeiro/models.py" />
         <option value="$PROJECT_DIR$/core/models.py" />
+        <option value="$PROJECT_DIR$/Financeiro/views.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/urls.py" />
+        <option value="$PROJECT_DIR$/templates/menu.html" />
+        <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/models.py" />
+        <option value="$PROJECT_DIR$/templates/relatorios/impresso_dav_80mm.html" />
       </list>
     </option>
   </component>
@@ -172,10 +150,10 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="60" />
-    <option name="y" value="292" />
-    <option name="width" value="1260" />
-    <option name="height" value="788" />
+    <option name="x" value="10" />
+    <option name="y" value="20" />
+    <option name="width" value="1340" />
+    <option name="height" value="688" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -186,7 +164,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -202,28 +179,24 @@
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
-              <item name="models.py" type="8704e2dd:PyFileNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
               <item name="Movimentacoes" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Relatorios" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="relatorios" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -236,14 +209,14 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\Desenvolvimentos\G6-Prevenda\templates\financeiro" />
-      <recent name="E:\Desenvolvimentos\G6-Prevenda\templates\relatorios" />
-      <recent name="E:\Desenvolvimentos\G6-Prevenda\Relatorios" />
-      <recent name="E:\Desenvolvimentos\G6-Prevenda\Movimentacoes\templates\relatorios" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\Desenvolvimentos\G6-Prevenda\templates" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Desenvolvimentos\G6-Prevenda\templates\relatorios" />
+      <recent name="E:\Desenvolvimentos\G6-Prevenda\templates\financeiro" />
+      <recent name="E:\Desenvolvimentos\G6-Prevenda\Relatorios" />
+      <recent name="E:\Desenvolvimentos\G6-Prevenda\Movimentacoes\templates\relatorios" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -275,7 +248,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="launchJavascriptDebuger" value="false" />
       <option name="port" value="81" />
-      <option name="host" value="192.168.25.52" />
+      <option name="host" value="192.168.0.4" />
       <option name="additionalOptions" value="" />
       <option name="browserUrl" value="" />
       <option name="runTestServer" value="false" />
@@ -294,6 +267,7 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="" />
+      <changelist id="87e324c3-37f1-4eca-8a7b-1c4566859e55" name="dev" comment="" />
       <created>1525990739483</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -311,20 +285,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
+    <frame x="-8" y="-8" width="1376" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32857144" />
       <window_info anchor="bottom" id="Event Log" order="13" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32908458" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32789558" />
       <window_info anchor="bottom" id="Python Console" order="11" weight="0.32952693" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32097334" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.31973898" />
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.32626426" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3511327" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3662614" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="right" id="Database" order="4" weight="0.32674772" />
-      <window_info anchor="right" id="SciView" order="3" weight="0.32902735" />
+      <window_info anchor="right" id="Database" order="3" weight="0.32674772" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32626426" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.32902735" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -335,22 +310,49 @@
       <window_info anchor="bottom" id="Inspection Results" order="12" weight="0.32789558" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32626426" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="9" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/setup.py" />
     <entry file="file://$PROJECT_DIR$/G6/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1819">
@@ -390,29 +392,10 @@
     <entry file="file://$PROJECT_DIR$/Financeiro/templates/prevenda.html" />
     <entry file="file://$PROJECT_DIR$/templates/pre_venda/gerar_financeiro.html" />
     <entry file="file://$PROJECT_DIR$/templates/pre_venda/comprovante_de_debito.html" />
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="6" column="66" selection-start-line="6" selection-start-column="66" selection-end-line="6" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/pre_venda/listagem.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-612" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/G6/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="7" column="58" selection-start-line="7" selection-start-column="58" selection-end-line="7" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="412">
-          <caret line="82" column="9" selection-start-line="82" selection-start-column="4" selection-end-line="82" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -427,13 +410,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="67" column="37" lean-forward="true" selection-start-line="67" selection-start-column="37" selection-end-line="67" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/relatorios/operacoes_por_pessoa.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="76" column="59" selection-start-line="76" selection-start-column="59" selection-end-line="76" selection-end-column="59" />
         </state>
       </provider>
     </entry>
@@ -462,13 +438,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/menu.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="10" selection-start-line="36" selection-start-column="10" selection-end-line="36" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Relatorios/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -483,13 +452,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="830">
-          <caret line="331" selection-start-line="331" selection-end-line="331" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/G6/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -497,34 +459,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
+    <entry file="file://$PROJECT_DIR$/templates/relatorios/operacoes_por_pessoa.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="833">
-          <caret line="70" column="1" selection-start-line="70" selection-start-column="1" selection-end-line="70" selection-end-column="1" />
+        <state relative-caret-position="-1147">
+          <caret line="11" column="21" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1873">
-          <caret line="2" selection-start-line="2" selection-end-line="2" selection-end-column="36" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/templates/pre_venda/listagem.html">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Relatorios/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="169" selection-start-line="169" selection-end-line="178" selection-end-column="102" />
+        <state relative-caret-position="265">
+          <caret line="84" column="42" selection-start-line="84" selection-start-column="26" selection-end-line="84" selection-end-column="42" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2992">
+          <caret line="179" column="20" selection-start-line="179" selection-start-column="20" selection-end-line="179" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/core/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="444">
-          <caret line="268" column="57" selection-start-line="268" selection-start-column="57" selection-end-line="268" selection-end-column="57" />
+        <state relative-caret-position="264">
+          <caret line="306" column="17" selection-start-line="306" selection-start-column="12" selection-end-line="306" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="228" column="26" selection-start-line="228" selection-start-column="26" selection-end-line="228" selection-end-column="26" />
+          <folding>
+            <element signature="e#10804#13665#0" />
+            <element signature="e#12967#13700#0" />
+            <element signature="e#13730#14272#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="9" column="46" lean-forward="true" selection-start-line="9" selection-start-column="46" selection-end-line="9" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/menu.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="41" selection-start-line="8" selection-start-column="41" selection-end-line="8" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="6" column="63" lean-forward="true" selection-start-line="6" selection-start-column="54" selection-end-line="6" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/relatorios/impresso_dav_80mm.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
         </state>
       </provider>
     </entry>

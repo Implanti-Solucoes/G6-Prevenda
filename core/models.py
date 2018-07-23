@@ -268,17 +268,44 @@ class Uteis:
             venda['desconto'] = desconto + venda['desconto']
             venda['liquido'] = liquido + venda['liquido']
 
-            # Calculando comissão
-            if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
-                    venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
-                comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+            # Verificando se existe vendedor para criar comissão
+            if 'Vendedor' in venda:
+                # Calculando comissão
+                if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                        venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
+                    comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
 
-            elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
-                    venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
-                comissao_venda = liquido * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
-            else:
-                comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                        venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
+                    comissao_venda = liquido * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                else:
+                    comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
 
-            venda['comissao'] = venda['comissao'] + comissao_venda
+                venda['comissao'] = venda['comissao'] + comissao_venda
 
+        return venda
+
+    def totais(self, vendas):
+        totais_vendas = {}
+        totais_vendas['bruto'] = 0
+        totais_vendas['desconto'] = 0
+        totais_vendas['liquido'] = 0
+        totais_vendas['comissao'] = 0
+        totais_vendas['vendas'] = []
+
+        for venda in vendas:
+            venda = self.total_venda(venda)
+            totais_vendas['vendas'].append(venda)
+            totais_vendas['bruto'] = totais_vendas['bruto'] + venda['bruto']
+            totais_vendas['desconto'] = totais_vendas['desconto'] + venda['desconto']
+            totais_vendas['liquido'] = totais_vendas['liquido'] + venda['liquido']
+            totais_vendas['comissao'] = totais_vendas['comissao'] + venda['comissao']
+
+        return totais_vendas
+
+    def remover_totais(self, venda):
+        del venda['bruto']
+        del venda['liquido']
+        del venda['desconto']
+        del venda['comissao']
         return venda

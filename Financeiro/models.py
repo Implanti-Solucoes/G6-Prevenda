@@ -71,7 +71,7 @@ class Financeiro:
         self.query = {}
         self.projection = {}
         self.sort = []
-        self.limit = 500
+        self.limit = 250
 
     def set_query_id(self, con):
         if len(con) == 24:
@@ -169,7 +169,7 @@ class Financeiro:
 
     def execute_all(self):
         uteis = Uteis()
-        busca = uteis.execute('Recebimentos', self.query, projection=self.projection, sort=self.sort)
+        busca = uteis.execute('Recebimentos', self.query, projection=self.projection, sort=self.sort, limit=self.limit)
         self.unset_all()
         return busca
 
@@ -178,6 +178,3 @@ class Financeiro:
         busca = uteis.execute('Recebimentos', self.query, projection=self.projection, sort=self.sort, limit=1)
         self.unset_all()
         return busca
-
-    def create_parcela(self):
-        pass

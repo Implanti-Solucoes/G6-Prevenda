@@ -7,7 +7,8 @@ from Financeiro.models import Financeiro
 
 def listagem_prevenda(request):
     movimentacoes = Movimentacoes()
-    movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_query_t('PreVenda', 'or')
+    movimentacoes.set_query_t('DocumentoAuxiliarVenda', 'or')
     movimentacoes.set_projection_numero()
     movimentacoes.set_projection_emissao()
     movimentacoes.set_projection_pessoa_nome()
@@ -16,7 +17,6 @@ def listagem_prevenda(request):
     item = movimentacoes.execute_all()
     context = {'items': item}
     return render(request, 'pre_venda/listagem.html', context)
-
 
 def impresso_prevenda(request, id):
     telefone = ''
