@@ -28,9 +28,13 @@ def gerar_financeiro(request):
     # Fazendo busca das prevendas
     movimentacoes.set_query_id(id)
     movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_query_convertida('False')
     cursor = movimentacoes.execute_one()
 
-    if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 6:
+    context = {}
+
+    if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 1:
+        print(cursor)
         x = 0
         data = datetime.now()
         database = uteis.conexao
@@ -234,8 +238,6 @@ def gerar_financeiro(request):
         except Exception as e:
             print(e)
 
-
-        context = {}
         context['Emitente'] = emitente
         context['Prevenda'] = cursor
         context['Data'] = datetime.now()
@@ -245,7 +247,6 @@ def gerar_financeiro(request):
     # Verificando se é uma Pre-Venda com financeiro gerado e re-exibindo o comprovante_de_debito
     elif cursor['Situacao']['Codigo'] == 8 and 'Parcelas' in cursor['PagamentoRecebimento']:
         emitente = pessoas.get_emitente()
-        context = {}
         context['Emitente'] = emitente
         context['Prevenda'] = cursor
         context['Data'] = datetime.now()
@@ -261,6 +262,38 @@ def gerar_financeiro(request):
             context['Parcelamento'].append({'Vencimento': parcela['Vencimento'], 'Valor': parcela['Historico'][0]['Valor'], 'Pago': pago})
 
     return render(request, template_name, context)
+
+def comprovante_de_debito(request, id):
+    template_name = 'pre_venda/comprovante_de_debito.html'
+
+    # Estanciando classes
+    movimentacoes = Movimentacoes()
+    pessoas = Pessoas()
+
+    # Fazendo busca das prevendas
+    movimentacoes.set_query_pagamento_recebimento(id)
+    movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_query_convertida('False')
+    cursor = movimentacoes.execute_one()
+
+    emitente = pessoas.get_emitente()
+    context = {}
+    context['Emitente'] = emitente
+    context['Prevenda'] = cursor
+    context['Data'] = datetime.now()
+    context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
+
+    context['Parcelamento'] = []
+    for parcela in cursor['PagamentoRecebimento']['Parcelas']:
+        pago = 0
+        for hist in parcela['Historico']:
+            if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
+                pago = hist['Valor']
+
+        context['Parcelamento'].append({'Vencimento': parcela['Vencimento'], 'Valor': parcela['Historico'][0]['Valor'], 'Pago': pago})
+
+    return render(request, template_name, context)
+
 
 def recibo(request):
     if request.method == 'POST':

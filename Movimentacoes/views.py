@@ -9,14 +9,24 @@ def listagem_prevenda(request):
     movimentacoes = Movimentacoes()
     movimentacoes.set_query_t('PreVenda', 'or')
     movimentacoes.set_query_t('DocumentoAuxiliarVenda', 'or')
+    movimentacoes.set_query_convertida('False')
+    movimentacoes.set_projection_t()
     movimentacoes.set_projection_numero()
     movimentacoes.set_projection_emissao()
     movimentacoes.set_projection_pessoa_nome()
     movimentacoes.set_projection_situacao()
     movimentacoes.set_sort_emissao()
     item = movimentacoes.execute_all()
-    context = {'items': item}
-    return render(request, 'pre_venda/listagem.html', context)
+    items = []
+
+    for x in item:
+        if 'PreVenda' in x['t']:
+            x['Gerar_Financeiro'] = 1
+
+        items.append(x)
+
+    context = {'items': items}
+    return render(request, 'movimentacoes/listagem.html', context)
 
 def impresso_prevenda(request, id):
     telefone = ''
@@ -90,7 +100,15 @@ def impresso_prevenda(request, id):
                'Total_Desconto': Total_Desconto,
                'Total': Total
                }
-    return render(request, 'pre_venda/impresso.html', context)
+    return render(request, 'movimentacoes/impresso.html', context)
+
+def impresso_prevenda_80(request, id):
+    movimentacoes = Movimentacoes()
+    movimentacoes.set_query_id(id)
+    movimentacoes.set_query_t('DocumentoAuxiliarVenda')
+    cursor = movimentacoes.execute_one()
+
+    return render(request, 'movimentacoes/impresso_dav_80mm.html', {'item':cursor})
 
 def gerar_financeiro(request, id):
     movimentacoes = Movimentacoes()
@@ -116,4 +134,4 @@ def gerar_financeiro(request, id):
             'Nome': cursor['Vendedor']['Nome']
         }
 
-    return render(request, 'pre_venda/gerar_financeiro.html', context)
+    return render(request, 'movimentacoes/gerar_financeiro.html', context)

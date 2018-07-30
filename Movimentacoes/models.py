@@ -16,10 +16,17 @@ class Movimentacoes():
         elif type(con) == ObjectId:
             self.query['_id'] = con
 
-    def set_query_situacao_codigo(self, con):
-        self.query['Situacao.Codigo'] = con
+    def set_query_pagamento_recebimento(self, con):
+        self.query["PagamentoRecebimento"] = Regex(u'.'+con+'.*', 'i')
 
-    def set_query_t(self, con, and_or):
+    def set_query_situacao_codigo(self, con, ne = 0):
+        self.query['Situacao.Codigo'] = con
+        if ne != 0:
+            self.query['Situacao.Codigo'] = {
+                u"$ne": con
+            }
+
+    def set_query_t(self, con, and_or = ''):
         if and_or == 'and':
             if '$and' not in self.query:
                 self.query['$and'] = {}
@@ -102,6 +109,9 @@ class Movimentacoes():
 
     def set_projection_numero(self):
         self.projection['Numero'] = 1.0
+
+    def set_projection_t(self):
+        self.projection['_t'] = 1.0
 
     def set_projection_pessoa(self):
         self.projection['Pessoa'] = 1.0

@@ -87,6 +87,8 @@ def operacoes_por_pessoa(request):
 
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_query_pessoa_id(cliente)
+        movimentacoes.set_query_situacao_codigo(12, 1)
+        movimentacoes.set_query_convertida('False')
         movimentacoes.set_sort_emissao('asc')
         dados = movimentacoes.execute_all()
 
@@ -135,11 +137,14 @@ def prevendas_por_vendedor(request):
 
         mostra_vendas = request.POST.getlist('vendas')
         vendedor = request.POST['vendedor']
-        print(vendedor)
 
         movimentacoes = Movimentacoes()
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
+        if vendedor != '':
+            movimentacoes.set_query_vendedor_id(vendedor)
+        movimentacoes.set_query_situacao_codigo(12, 1)
+        movimentacoes.set_query_convertida('False')
         movimentacoes.set_limit(0)
         cursor = movimentacoes.execute_all()
 
@@ -213,6 +218,8 @@ def prevendas_por_usuario(request):
         movimentacoes = Movimentacoes()
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
+        movimentacoes.set_query_situacao_codigo(12, 1)
+        movimentacoes.set_query_convertida('False')
         movimentacoes.set_limit(0)
         cursor = movimentacoes.execute_all()
 

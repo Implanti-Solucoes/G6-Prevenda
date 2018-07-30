@@ -33,6 +33,8 @@ class Uteis:
             try:
                 for doc in cursor:
                     doc['id'] = str(doc['_id'])
+                    if '_t' in doc:
+                        doc['t'] = str(doc['_t'])
                     busca.append(doc)
             finally:
                 self.fecha_conexao
@@ -66,6 +68,8 @@ class Uteis:
             try:
                 for doc in cursor:
                     doc['id'] = str(doc['_id'])
+                    if '_t' in doc:
+                        doc['t'] = str(doc['_t'])
                     busca.append(doc)
             finally:
                 self.fecha_conexao

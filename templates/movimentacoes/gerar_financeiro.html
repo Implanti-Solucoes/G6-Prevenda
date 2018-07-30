@@ -76,7 +76,7 @@
         <div class="form-row">
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="total">Total</label>
-                <input type="text" class="form-control" value="{{ items.Total }}" readonly>
+                <input type="text" class="form-control" value="{{ items.Total|floatformat:2 }}" readonly>
             </div>
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="valor">Valor Parcela</label>

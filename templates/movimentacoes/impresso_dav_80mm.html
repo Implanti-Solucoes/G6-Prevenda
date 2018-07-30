@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatorios</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background-color: #FAFAFA;
+            margin: 0;
+            padding: 0;
+        }
+        hr {
+            border-top: 1px dashed #000000;
+            width: 80mm;
+        }
+        .page{
+            width: 80mm;
+            padding: 0;
+            background-color: #FFFFFF;
+            margin-top: 0;
+            margin-bottom: 0;
+            font: 10pt Tahoma;
+            border: 1px solid #000000;
+            overflow: hidden;
+        }
+        .table {
+            margin: 0;
+            padding: 0;
+            width: 80mm;
+            size: 80mm;
+            overflow: hidden;
+        }
+        @page {
+            width: 80mm;
+            padding: 0;
+            background-color: #FFFFFF;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        @media print {
+            html, body {
+                width: 80mm;
+                size: 80mm;
+                margin: 0;
+                padding: 0;
+            }
+            .volta{
+                display: none;
+                margin: -1000px;
+                width: 0px;
+                height: 0px;
+            }
+            .page *{
+                margin: 0;
+                padding: 0;
+            }
+            .table1{
+                width: 80mm;
+                size: 80mm;
+                font-weight: bold;
+                font: 15px Tahoma;
+                background-color: #FFFFFF;
+                width: 80mm;
+            }
+            .page {
+                margin: 0;
+                padding: 0;
+                color: #000000;
+                font-weight: bold;
+                font: 15px Tahoma;
+                background-color: #FFFFFF;
+                border: initial;
+                border-radius: initial;
+                width: 100%;
+                min-height: initial;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+{% include "menu.html" %}
+<div class="container page">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            {{ item.Empresa.Nome }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            {{ item.Empresa.NomeFantasia }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            CNPJ: {{ item.Empresa.Documento }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            TEL.: {{ item.Empresa.TelefonePrincipal }}
+        </div>
+        <hr />
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            DAV.: {{ item.Numero }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            DATA.: {{ item.DataHoraEmissao }}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div style="text-align: center;">NÃO É COMPROVANTE FISCAL</div>
+        </div>
+        <table class="table1">
+            <tr>
+                <th colspan="2">COD.</th>
+                <th colspan="3">DESCRIÇÃO</th>
+            </tr>
+            <tr>
+                <th>UND</th>
+                <th>QTD.</th>
+                <th>UNIT.</th>
+                <th>DESC</th>
+                <th>TOTAL</th>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -43,6 +43,7 @@
 							<th>Cliente</th>
 							<th>Vencimento</th>
 							<th>Valor</th>
+							<!--<th>Ações</th>-->
 						</tr>
 					</thead>
 					<tbody>
@@ -52,6 +53,7 @@
 							<td>{{ item.PessoaNome }}</td>
 							<td>{{ item.Vencimento|date:"d/m/Y" }}</td>
 							<td>{{ item.Historico.0.Valor|floatformat:2 }}</td>
+                            <!--<td><a href="{% url 'financeiro:comprovante_de_debito' item.id %}">Comprovante de Debito</a></td>-->
 						</tr>
 						{% endfor %}
 					</tbody>
