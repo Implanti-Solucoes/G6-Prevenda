@@ -50,9 +50,13 @@
                 <td>{{ item.Pessoa.Nome }}</td>
                 <td>{{ item.DataHoraEmissao|date:"d/m/Y" }}</td>
                 <td>
-                    <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
-                    {% if item.Situacao.Codigo == 1 and item.Gerar_Financeiro == 1 %}
-                     | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
+                    {% if item.prevenda == 1 %}
+                        <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
+                        {% if item.Situacao.Codigo == 1 %}
+                            | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
+                        {% endif %}
+                    {% elif item.dav == 1 %}
+                        <a href="{% url 'movimentacoes:impressao_dav' item.id %}">Imprimir</a>
                     {% endif %}
                 </td>
             </tr>

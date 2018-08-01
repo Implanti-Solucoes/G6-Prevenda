@@ -21,8 +21,9 @@ def listagem_prevenda(request):
 
     for x in item:
         if 'PreVenda' in x['t']:
-            x['Gerar_Financeiro'] = 1
-
+            x['prevenda'] = 1
+        else:
+            x['dav'] = 1
         items.append(x)
 
     context = {'items': items}
@@ -102,7 +103,7 @@ def impresso_prevenda(request, id):
                }
     return render(request, 'movimentacoes/impresso.html', context)
 
-def impresso_prevenda_80(request, id):
+def impresso_dav_80(request, id):
     movimentacoes = Movimentacoes()
     movimentacoes.set_query_id(id)
     movimentacoes.set_query_t('DocumentoAuxiliarVenda')

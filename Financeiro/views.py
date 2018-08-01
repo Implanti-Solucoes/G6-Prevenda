@@ -8,7 +8,7 @@ from .models import Pessoas, Financeiro
 
 
 def gerar_financeiro(request):
-    template_name = 'pre_venda/comprovante_de_debito.html'
+    template_name = 'movimentacoes/comprovante_de_debito.html'
 
     # Estanciando classes
     movimentacoes = Movimentacoes()
@@ -34,7 +34,6 @@ def gerar_financeiro(request):
     context = {}
 
     if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 1:
-        print(cursor)
         x = 0
         data = datetime.now()
         database = uteis.conexao
@@ -264,7 +263,7 @@ def gerar_financeiro(request):
     return render(request, template_name, context)
 
 def comprovante_de_debito(request, id):
-    template_name = 'pre_venda/comprovante_de_debito.html'
+    template_name = 'movimentacoes/comprovante_de_debito.html'
 
     # Estanciando classes
     movimentacoes = Movimentacoes()
