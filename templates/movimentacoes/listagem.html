@@ -54,6 +54,8 @@
                         <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
                         {% if item.Situacao.Codigo == 1 %}
                             | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
+                        {% elif 'PagamentoRecebimento' in item %}
+                            | <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.id %}">Comprovante de Débito</a>
                         {% endif %}
                     {% elif item.dav == 1 %}
                         <a href="{% url 'movimentacoes:impressao_dav' item.id %}">Imprimir</a>

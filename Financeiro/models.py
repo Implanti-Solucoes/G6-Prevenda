@@ -18,7 +18,6 @@ class Pessoas:
         pessoa = self.get_pessoa(id)
         return pessoa['Nome']
 
-
     def get_emitente(self):
         self.database = self.uteis.conexao
         query = {'_t.2': u'Emitente'}
@@ -74,7 +73,7 @@ class Financeiro:
         self.limit = 250
 
     def set_query_id(self, con):
-        if len(con) == 24:
+        if type(con) == str and len(con) == 24:
             self.query['_id'] = ObjectId(con)
         elif type(con) == ObjectId:
             self.query['_id'] = con

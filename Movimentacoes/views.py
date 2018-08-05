@@ -1,6 +1,6 @@
 import datetime
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import Movimentacoes
 from Financeiro.models import Financeiro
 
@@ -10,11 +10,6 @@ def listagem_prevenda(request):
     movimentacoes.set_query_t('PreVenda', 'or')
     movimentacoes.set_query_t('DocumentoAuxiliarVenda', 'or')
     movimentacoes.set_query_convertida('False')
-    movimentacoes.set_projection_t()
-    movimentacoes.set_projection_numero()
-    movimentacoes.set_projection_emissao()
-    movimentacoes.set_projection_pessoa_nome()
-    movimentacoes.set_projection_situacao()
     movimentacoes.set_sort_emissao()
     item = movimentacoes.execute_all()
     items = []

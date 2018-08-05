@@ -11,13 +11,10 @@ class Movimentacoes():
         self.uteis = Uteis()
 
     def set_query_id(self, con):
-        if len(con) == 24:
+        if type(con) == str and len(con) == 24:
             self.query['_id'] = ObjectId(con)
         elif type(con) == ObjectId:
             self.query['_id'] = con
-
-    def set_query_pagamento_recebimento(self, con):
-        self.query["PagamentoRecebimento"] = Regex(u'.'+con+'.*', 'i')
 
     def set_query_situacao_codigo(self, con, ne = 0):
         self.query['Situacao.Codigo'] = con
@@ -106,6 +103,22 @@ class Movimentacoes():
             self.query['Vendedor.PessoaReferencia'] = ObjectId(con)
         elif type(con) == ObjectId:
             self.query['Vendedor.PessoaReferencia'] = con
+
+    def set_query_movimentacao_por_recebimento(self, con):
+        if type(con) == str and len(con) == 24:
+            self.query["PagamentoRecebimento.Parcelas"] = {
+                u"$elemMatch": {
+                    u"_id": ObjectId(con)
+                }
+            }
+        elif type(con) == ObjectId:
+            self.query["PagamentoRecebimento.Parcelas"] = {
+                u"$elemMatch": {
+                    u"_id": con
+                }
+            }
+    def set_projection_id(self):
+        self.projection['_id'] = 1.0
 
     def set_projection_numero(self):
         self.projection['Numero'] = 1.0

@@ -48,7 +48,8 @@
 							<th>Valor</th>
 							<th>Pagamento</th>
 							<th>Valor Pago</th>
-							<th>#</th>
+							<th>Ações</th>
+                            <th>#</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -60,7 +61,12 @@
 							<td>{{ item.Historico.0.Valor|floatformat:2 }}</td>
 							<td>{{ item.DataQuitacao|date:"d/m/Y" }}</td>
 							<td>{{ item.valor_pago|floatformat:2 }}</td>
-							<td><input type="checkbox" name="parcela" value={{ item.id }}></td>
+                            <td>
+                                {% if item.MovimentacaoID != 0 %}
+                                <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.MovimentacaoID %}">Comprovante de Débito</a>
+                                {% endif %}
+                            </td>
+                            <td><input type="checkbox" name="parcela" value={{ item.id }}></td>
 						</tr>
 						{% endfor %}
 					</tbody>

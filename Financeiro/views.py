@@ -8,8 +8,6 @@ from .models import Pessoas, Financeiro
 
 
 def gerar_financeiro(request):
-    template_name = 'movimentacoes/comprovante_de_debito.html'
-
     # Estanciando classes
     movimentacoes = Movimentacoes()
     pessoas = Pessoas()
@@ -31,10 +29,7 @@ def gerar_financeiro(request):
     movimentacoes.set_query_convertida('False')
     cursor = movimentacoes.execute_one()
 
-    context = {}
-
     if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 1:
-        x = 0
         data = datetime.now()
         database = uteis.conexao
         emitente = pessoas.get_emitente()
@@ -65,9 +60,6 @@ def gerar_financeiro(request):
         valor_parcela = cursor['liquido'] / parcelas
         valor_parcela = float('%.2f' % valor_parcela)
 
-        # Criando parcelamento para comprovante de debito
-        parcelamento = []
-
         # Reconfigurando contador pra reutilizar
         x = 0
 
@@ -75,7 +67,6 @@ def gerar_financeiro(request):
         if entrada > 0:
             parcelas = parcelas+1
             x = x+1
-            parcelamento.append({'Vencimento': data, 'Valor': entrada, 'Pago': entrada})
 
             cursor['PagamentoRecebimento']['Parcelas'].append({
                 '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
@@ -160,10 +151,8 @@ def gerar_financeiro(request):
                 'DescontoInformado': 0.0,
             })
 
-        # Inserindo parcelas gerais no banco
         while x < parcelas:
             Vencimento = data + timedelta(+(30 * (x + 1)))
-            parcelamento.append({'Vencimento': Vencimento, 'Valor': valor_parcela, 'Pago': 0})
             cursor['PagamentoRecebimento']['Parcelas'].append({
                 '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
                 'InformacoesPesquisa': informacoes_pesquisa,
@@ -226,73 +215,64 @@ def gerar_financeiro(request):
             })
             x = x + 1
 
+        # Removendo totais para pode inserir no banco
         cursor = uteis.remover_totais(cursor)
+
         try:
             z = 0
+
+            # Removendo ID tratado para pode inserir no banco
             del cursor['id']
+
+            # Inserindo parcelas gerais no banco
             for x in cursor['PagamentoRecebimento']['Parcelas']:
                 cursor['PagamentoRecebimento']['Parcelas'][z]['_id'] = database['Recebimentos'].insert(x)
 
+            # Atualizando movimentação com parcela financeira para identificação no sistema
             database['Movimentacoes'].update({'_id': cursor['_id']}, cursor)
+
+            # Redirecionando para o Comprovante de debito
+            return redirect('financeiro:comprovante_de_debito_por_movimentacao', id)
         except Exception as e:
             print(e)
 
-        context['Emitente'] = emitente
-        context['Prevenda'] = cursor
-        context['Data'] = datetime.now()
-        context['Parcelamento'] = parcelamento
-        context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
-
-    # Verificando se é uma Pre-Venda com financeiro gerado e re-exibindo o comprovante_de_debito
-    elif cursor['Situacao']['Codigo'] == 8 and 'Parcelas' in cursor['PagamentoRecebimento']:
-        emitente = pessoas.get_emitente()
-        context['Emitente'] = emitente
-        context['Prevenda'] = cursor
-        context['Data'] = datetime.now()
-        context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
-
-        context['Parcelamento'] = []
-        for parcela in cursor['PagamentoRecebimento']['Parcelas']:
-            pago = 0
-            for hist in parcela['Historico']:
-                if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
-                    pago = hist['Valor']
-
-            context['Parcelamento'].append({'Vencimento': parcela['Vencimento'], 'Valor': parcela['Historico'][0]['Valor'], 'Pago': pago})
-
-    return render(request, template_name, context)
-
-def comprovante_de_debito(request, id):
+def comprovante_de_debito_por_movimentacao(request, id):
     template_name = 'movimentacoes/comprovante_de_debito.html'
 
     # Estanciando classes
     movimentacoes = Movimentacoes()
     pessoas = Pessoas()
+    financeiro = Financeiro()
 
     # Fazendo busca das prevendas
-    movimentacoes.set_query_pagamento_recebimento(id)
-    movimentacoes.set_query_t('PreVenda')
+    movimentacoes.set_query_id(id)
     movimentacoes.set_query_convertida('False')
     cursor = movimentacoes.execute_one()
+    parcelamento = []
+    for x in cursor['PagamentoRecebimento']['Parcelas']:
+        # Realizando busca no banco pelas parcelas atualizadas no sistema
+        pago = 0
+        financeiro.set_query_id(x['_id'])
+        result = financeiro.execute_one()
+        for hist in result['Historico']:
+            if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
+                pago = hist['Valor']
 
+        parcelamento.append({'Vencimento': result['Vencimento'],
+                             'Valor': result['Historico'][0]['Valor'],
+                             'Pago': pago})
+
+    # Reordenando para exibição
+    parcelamento.sort(key=lambda t: t['Vencimento'])
     emitente = pessoas.get_emitente()
     context = {}
     context['Emitente'] = emitente
     context['Prevenda'] = cursor
     context['Data'] = datetime.now()
     context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
-
-    context['Parcelamento'] = []
-    for parcela in cursor['PagamentoRecebimento']['Parcelas']:
-        pago = 0
-        for hist in parcela['Historico']:
-            if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
-                pago = hist['Valor']
-
-        context['Parcelamento'].append({'Vencimento': parcela['Vencimento'], 'Valor': parcela['Historico'][0]['Valor'], 'Pago': pago})
+    context['Parcelamento'] = parcelamento
 
     return render(request, template_name, context)
-
 
 def recibo(request):
     if request.method == 'POST':
@@ -354,37 +334,76 @@ def recibo(request):
 
 def recebidas(request):
     template_name = 'financeiro/recebidas.html'
+
+    # Estanciando classes necessarias
     pessoas = Pessoas()
     financeiro = Financeiro()
+    movimentacao = Movimentacoes()
+
+    # Buscando parcelas na situação quitadas
     financeiro.set_query_situacao(u'Quitada')
     financeiro.set_sort_data_quitacao()
     financeiro.set_sort_vencimento()
     cursor = financeiro.execute_all()
-    Recebimentos = []
 
-    for Recebimento in cursor:
-        Recebimento['PessoaNome'] = pessoas.get_nome(Recebimento['PessoaReferencia'])
-        for item in Recebimento['Historico']:
+    # Declarando variavel de listagem
+    recebimentos = []
+
+    for recebimento in cursor:
+        # Localizando o nome do cliente
+        recebimento['PessoaNome'] = pessoas.get_nome(recebimento['PessoaReferencia'])
+
+        # Verificando valor pago
+        for item in recebimento['Historico']:
             if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
-                Recebimento['valor_pago'] = item['Valor']
+                recebimento['valor_pago'] = item['Valor']
 
-        Recebimentos.append(Recebimento)
+        # Partindo procurar movimentacoes que envolva essa parcela
+        movimentacao.set_query_movimentacao_por_recebimento(recebimento['_id'])
+        movimentacao.set_projection_id()
+        result = movimentacao.execute_one()
 
-    context = {'Recebimentos': Recebimentos}
+        # Verificando se a parcela tem movimentacao criada
+        if result == None:
+            recebimento['MovimentacaoID'] = 0
+        else:
+            recebimento['MovimentacaoID'] = result['_id']
+        recebimentos.append(recebimento)
+
+    context = {'Recebimentos': recebimentos}
     return render(request, template_name, context)
 
 def pendentes(request):
     template_name = 'financeiro/pendentes.html'
+
+    # Estanciando classes necessarias
     pessoas = Pessoas()
     financeiro = Financeiro()
+    movimentacao = Movimentacoes()
+
+    # Buscando parcelas na situação pendente
     financeiro.set_query_situacao(u'Pendente')
     financeiro.set_sort_vencimento()
     cursor = financeiro.execute_all()
+
+    # Declarando variavel de listagem
     recebimentos = []
 
     for recebimento in cursor:
+        # Localizando o nome do cliente
         recebimento['PessoaNome'] = pessoas.get_nome(recebimento['PessoaReferencia'])
-        recebimento['Historico'][0]['Valor']
+
+        # Partindo procurar movimentacoes que envolva essa parcela
+        movimentacao.set_query_movimentacao_por_recebimento(recebimento['_id'])
+        movimentacao.set_projection_id()
+        result = movimentacao.execute_one()
+
+        # Verificando se a parcela tem movimentacao criada
+        if result == None:
+            recebimento['MovimentacaoID'] = 0
+        else:
+            recebimento['MovimentacaoID'] = result['_id']
+
         recebimentos.append(recebimento)
 
     context = {'recebimentos': recebimentos}
