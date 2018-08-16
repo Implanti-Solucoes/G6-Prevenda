@@ -8,8 +8,11 @@ class Uteis:
 
     @property
     def conexao(self):
-        self.client = MongoClient('localhost', username='root', password='|cSFu@5rFv#h8*=', authSource='DigisatServer',
-                                   port=12220)
+        self.client = MongoClient('192.168.25.53',
+                                  username='root',
+                                  password='|cSFu@5rFv#h8*=',
+                                  authSource='DigisatServer',
+                                  port=12220)
 
         database = self.client['DigisatServer']
         return database
@@ -257,12 +260,14 @@ class Uteis:
                     stg = '%s reais%s' % (self.num_to_str(inteiro), stg)
         return stg
 
-    def total_venda(self, venda):
+    @staticmethod
+    def total_venda(venda):
         venda['bruto'] = 0
         venda['desconto'] = 0
         venda['liquido'] = 0
         venda['comissao'] = 0
 
+        x = 0
         for item in venda['ItensBase']:
             if item['Cancelado'] == False:
                 bruto = item['PrecoUnitario'] * item['Quantidade']
@@ -272,6 +277,9 @@ class Uteis:
                 venda['bruto'] = bruto + venda['bruto']
                 venda['desconto'] = desconto + venda['desconto']
                 venda['liquido'] = liquido + venda['liquido']
+
+                venda['ItensBase'][x]['desconto_total'] = desconto
+                venda['ItensBase'][x]['bruto'] = bruto
 
                 # Verificando se existe vendedor para criar comissão
                 if 'Vendedor' in venda:
@@ -287,7 +295,7 @@ class Uteis:
                         comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
 
                     venda['comissao'] = venda['comissao'] + comissao_venda
-
+            x = x+1
         return venda
 
     def totais(self, vendas):
