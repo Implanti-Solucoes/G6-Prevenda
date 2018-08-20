@@ -1,3 +1,4 @@
+from datetime import datetime
 from bson import ObjectId
 from django.shortcuts import render, redirect
 from datetime import datetime, timedelta
@@ -12,16 +13,24 @@ def gerar_financeiro(request):
     movimentacoes = Movimentacoes()
     pessoas = Pessoas()
     uteis = Uteis()
+    financeiro = Financeiro()
 
     # Recebendo valores e tratando
     id = request.POST['id']
     conta = request.POST['conta']
     centro_custo = request.POST['centro_custo']
     planos_contas = request.POST['planos_contas']
+
+    # Recebendo valores de entrada e tratando
     entrada = request.POST['entrada']
     entrada = entrada.replace(',', '.')
     entrada = float(entrada)
+
+    # Recebendo valores e tratando
     parcelas = int(request.POST['parcelas'])
+
+    # Recebendo datas de vecimento
+    vencimentos = request.POST.getlist('vencimentos[]')
 
     # Fazendo busca das prevendas
     movimentacoes.set_query_id(id)
@@ -29,13 +38,16 @@ def gerar_financeiro(request):
     movimentacoes.set_query_convertida('False')
     cursor = movimentacoes.execute_one()
 
+
     if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 1:
         data = datetime.now()
         database = uteis.conexao
         emitente = pessoas.get_emitente()
 
-        # Modificando Pre-Venda para criar atrelar parcelas financeiras e modificar para status aprovado
+        # Modificando Pre-Venda para criar atrelar parcelas financeiras
         cursor['PagamentoRecebimento'] = {'_t': 'Recebimento', 'Parcelas': []}
+
+        # Modificar para status aprovado
         cursor['Situacao'] = {
             '_t': [
                 'SituacaoMovimentacao',
@@ -151,82 +163,97 @@ def gerar_financeiro(request):
                 'DescontoInformado': 0.0,
             })
 
-        while x < parcelas:
-            Vencimento = data + timedelta(+(30 * (x + 1)))
-            cursor['PagamentoRecebimento']['Parcelas'].append({
-                '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
-                'InformacoesPesquisa': informacoes_pesquisa,
-                'Versao': '736794.19:26:22.9976483',
-                'Ativo': True,
-                'Ordem': x + 1,
-                'Descricao': 'PRE-VENDA ' + str(cursor['Numero']) + ' - ' + str(x + 1),
-                'Documento': str(cursor['Numero']),
-                'PessoaReferencia': cursor['Pessoa']['PessoaReferencia'],
-                'Vencimento': Vencimento,
-                'Historico': [
-                    {
-                        '_t': 'HistoricoAguardando',
-                        'Valor': valor_parcela,
-                        'EspeciePagamento': {
-                            '_t': 'EspeciePagamentoECF',
-                            'Codigo': 1,
-                            'Descricao': 'Dinheiro',
-                            'EspecieRecebimento': {
-                                '_t': 'Dinheiro'
-                            }
+        if valor_parcela > 0:
+            y = 0
+            while x < parcelas:
+                cursor['PagamentoRecebimento']['Parcelas'].append({
+                    '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
+                    'InformacoesPesquisa': informacoes_pesquisa,
+                    'Versao': '736794.19:26:22.9976483',
+                    'Ativo': True,
+                    'Ordem': x + 1,
+                    'Descricao': 'PRE-VENDA ' + str(cursor['Numero']) + ' - ' + str(x + 1),
+                    'Documento': str(cursor['Numero']),
+                    'PessoaReferencia': cursor['Pessoa']['PessoaReferencia'],
+                    'Vencimento': datetime.strptime(vencimentos[y], '%Y-%m-%d'),
+                    'Historico': [
+                        {
+                            '_t': 'HistoricoAguardando',
+                            'Valor': valor_parcela,
+                            'EspeciePagamento': {
+                                '_t': 'EspeciePagamentoECF',
+                                'Codigo': 1,
+                                'Descricao': 'Dinheiro',
+                                'EspecieRecebimento': {
+                                    '_t': 'Dinheiro'
+                                }
+                            },
+                            'PlanoContaCodigoUnico': planos_contas,
+                            'CentroCustoCodigoUnico': centro_custo,
+                            'ContaReferencia': ObjectId(conta),
+                            'EmpresaReferencia': emitente['_id'],
+                            'Data': data,
+                            'ChequeReferencia': ObjectId('000000000000000000000000')
                         },
-                        'PlanoContaCodigoUnico': planos_contas,
-                        'CentroCustoCodigoUnico': centro_custo,
-                        'ContaReferencia': ObjectId(conta),
-                        'EmpresaReferencia': emitente['_id'],
-                        'Data': data,
-                        'ChequeReferencia': ObjectId('000000000000000000000000')
+                        {
+                            '_t': 'HistoricoPendente',
+                            'Valor': valor_parcela,
+                            'EspeciePagamento': {
+                                '_t': 'EspeciePagamentoECF',
+                                'Codigo': 1,
+                                'Descricao': 'Dinheiro',
+                                'EspecieRecebimento': {
+                                    '_t': 'Dinheiro'
+                                }
+                            },
+                            'PlanoContaCodigoUnico': planos_contas,
+                            'CentroCustoCodigoUnico': centro_custo,
+                            'ContaReferencia': ObjectId(conta),
+                            'EmpresaReferencia': emitente['_id'],
+                            'NomeUsuario': 'Usuário Administrador',
+                            'Data': data,
+                            'ChequeReferencia': ObjectId('000000000000000000000000')
+                        }
+                    ],
+                    'Situacao': {
+                        '_t': 'Pendente',
+                        'Codigo': 1
                     },
-                    {
-                        '_t': 'HistoricoPendente',
-                        'Valor': valor_parcela,
-                        'EspeciePagamento': {
-                            '_t': 'EspeciePagamentoECF',
-                            'Codigo': 1,
-                            'Descricao': 'Dinheiro',
-                            'EspecieRecebimento': {
-                                '_t': 'Dinheiro'
-                            }
-                        },
-                        'PlanoContaCodigoUnico': planos_contas,
-                        'CentroCustoCodigoUnico': centro_custo,
-                        'ContaReferencia': ObjectId(conta),
-                        'EmpresaReferencia': emitente['_id'],
-                        'NomeUsuario': 'Usuário Administrador',
-                        'Data': data,
-                        'ChequeReferencia': ObjectId('000000000000000000000000')
-                    }
-                ],
-                'Situacao': {
-                    '_t': 'Pendente',
-                    'Codigo': 1
-                },
-                'ContaReferencia': ObjectId(conta),
-                'EmpresaReferencia': emitente['_id'],
-                'NomeUsuario': 'Usuário Administrador',
-                'DataQuitacao': '0001-01-01T00:00:00.000+0000',
-                'AcrescimoInformado': 0.0,
-                'DescontoInformado': 0.0,
-            })
-            x = x + 1
+                    'ContaReferencia': ObjectId(conta),
+                    'EmpresaReferencia': emitente['_id'],
+                    'NomeUsuario': 'Usuário Administrador',
+                    'DataQuitacao': '0001-01-01T00:00:00.000+0000',
+                    'AcrescimoInformado': 0.0,
+                    'DescontoInformado': 0.0,
+                })
+                x = x + 1
+                y = y+1
 
-        # Removendo totais para pode inserir no banco
-        cursor = uteis.remover_totais(cursor)
 
         try:
             z = 0
+            # Começando procedimento de insert no banco
+            for x in cursor['PagamentoRecebimento']['Parcelas']:
+                # Inserindo parcelas no banco
+                id_parcela = database['Recebimentos'].insert(x)
+
+                # Consultando ID para atualizar na tabela de movimentações
+                financeiro.set_query_id(id_parcela)
+
+                # Atualizando na tabela de movimentações
+                cursor['PagamentoRecebimento']['Parcelas'][z]['_id'] = financeiro.execute_one()
+
+            # Configurando CFOP para não gerar financeiro
+            z = 0
+            for item in cursor['ItensBase']:
+                cursor['ItensBase'][z]['OperacaoFiscal']['Tipo'] = 5
+                z = z+1
+
+            # Removendo totais para pode atualizar no banco
+            cursor = uteis.remover_totais(cursor)
 
             # Removendo ID tratado para pode inserir no banco
             del cursor['id']
-
-            # Inserindo parcelas gerais no banco
-            for x in cursor['PagamentoRecebimento']['Parcelas']:
-                cursor['PagamentoRecebimento']['Parcelas'][z]['_id'] = database['Recebimentos'].insert(x)
 
             # Atualizando movimentação com parcela financeira para identificação no sistema
             database['Movimentacoes'].update({'_id': cursor['_id']}, cursor)
@@ -236,6 +263,7 @@ def gerar_financeiro(request):
         except Exception as e:
             print(e)
 
+
 def comprovante_de_debito_por_movimentacao(request, id):
     template_name = 'movimentacoes/comprovante_de_debito.html'
 
@@ -243,21 +271,30 @@ def comprovante_de_debito_por_movimentacao(request, id):
     movimentacoes = Movimentacoes()
     pessoas = Pessoas()
     financeiro = Financeiro()
+    uteis = Uteis()
+
 
     # Fazendo busca das prevendas
     movimentacoes.set_query_id(id)
-    movimentacoes.set_query_convertida('False')
     cursor = movimentacoes.execute_one()
+
+    # Inserindo informações de totais parar exibição posterior no impresso
+    cursor = uteis.total_venda(cursor)
+
     parcelamento = []
     for x in cursor['PagamentoRecebimento']['Parcelas']:
+
         # Realizando busca no banco pelas parcelas atualizadas no sistema
         pago = 0
         financeiro.set_query_id(x['_id'])
         result = financeiro.execute_one()
+
+        # Verificando quais parcelas foram quitadas
         for hist in result['Historico']:
             if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
                 pago = hist['Valor']
 
+        # Inserindo a informação de qual valor foi quitado
         parcelamento.append({'Vencimento': result['Vencimento'],
                              'Valor': result['Historico'][0]['Valor'],
                              'Pago': pago})
@@ -265,11 +302,12 @@ def comprovante_de_debito_por_movimentacao(request, id):
     # Reordenando para exibição
     parcelamento.sort(key=lambda t: t['Vencimento'])
     emitente = pessoas.get_emitente()
+
+    # Criando a variavel context para passa dados para template
     context = {}
     context['Emitente'] = emitente
     context['Prevenda'] = cursor
     context['Data'] = datetime.now()
-    context['Devedor'] = pessoas.get_saldo_devedor(cursor['Pessoa']['PessoaReferencia'])
     context['Parcelamento'] = parcelamento
 
     return render(request, template_name, context)

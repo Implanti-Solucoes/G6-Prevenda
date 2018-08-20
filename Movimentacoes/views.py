@@ -54,7 +54,7 @@ def impresso_dav_80(request, id):
     movimentacoes.set_query_t('DocumentoAuxiliarVenda')
     cursor = movimentacoes.execute_one()
 
-    return render(request, 'movimentacoes/impresso_dav_80mm.html', {'item':cursor})
+    return render(request, 'movimentacoes/impresso_dav_80mm.html', {'item': cursor})
 
 def gerar_financeiro(request, id):
     movimentacoes = Movimentacoes()

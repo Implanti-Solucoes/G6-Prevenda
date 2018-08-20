@@ -7,28 +7,43 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js" crossorigin="anonymous"></script>
     <script>
         function somenteNumeros(num) {
-            total = parseFloat({{ items.Total|stringformat:"f" }}).toFixed(2);
-
             var er = /[^0-9.]/;
             er.lastIndex = 0;
-            var campo = num;
+            var campo = num, vencimento;
             if (er.test(campo.value)) {
                 campo.value = "1";
             };
-            if(campo.id == "parcelas" && campo.value < 1 || campo.id == "parcelas" && Number.isInteger(campo.value)) {
+
+            data = Date.now();
+            console.log(data);
+
+            total = parseFloat({{ items.Total|stringformat:"f" }}).toFixed(2);
+            parcelas = parseFloat(document.getElementById('parcelas').value);
+            entrada = parseFloat(document.getElementById('entrada').value);
+            vencimentos = document.getElementById('vencimentos');
+
+            if(campo.id === "parcelas" && campo.value < 1 || campo.id === "parcelas" && Number.isInteger(campo.value)) {
                 campo.value = "1";
             }
-            if(parseFloat(document.getElementById('parcelas').value) >= 1 && campo.id == 'parcelas') {
-                document.getElementById('valor').value = ((total - parseFloat(document.getElementById('entrada').value)) / campo.value).toFixed(2).replace('.', ',');
+
+            if (parcelas >= 1 && campo.id == 'parcelas') {
+                document.getElementById('valor').value = ((total - parseFloat(entrada)) / campo.value).toFixed(2).replace('.', ',');
+                vencimento = '';
+                for (i = 0; i < campo.value; i++) {
+                    date = moment().add((i+1), 'months').format('YYYY-MM-DD');
+                    vencimento = vencimento + '<div class="form-group col-xs-2 col-sm-2 col-md-2 col-lg-2">' +
+                        '<label for="vencimentos">'+(i+1)+'º Parcela</label>' +
+                        '<input type="date" value="'+date+'" class="form-control" name="vencimentos[]" required="required">' +
+                        '</div>';
+                }
+                vencimentos.innerHTML = vencimento
             }
-            if(parseFloat(document.getElementById('parcelas').value) >= 1 && campo.id == 'entrada') {
-                document.getElementById('valor').value = ((total - parseFloat(campo.value)) / document.getElementById('parcelas').value).toFixed(2).replace('.', ',');
+            if(parcelas >= 1 && campo.id == 'entrada') {
+                document.getElementById('valor').value = ((total - parseFloat(campo.value)) / parcelas).toFixed(2).replace('.', ',');
             }
-        }
-        function setTwoNumberDecimal(event) {
-            this.value = parseFloat(this.value).toFixed(2);
         }
     </script>
 </head>
@@ -90,6 +105,8 @@
                 <label for="parcelas">Parcelas</label>
                 <input type="text" class="form-control" id="parcelas" name="parcelas" maxlength="2" onkeyup="somenteNumeros(this);" placeholder="Digite a quantidade de parcelas" required="required">
             </div>
+        </div>
+        <div class="form-row" id="vencimentos">
         </div>
         {% csrf_token %}
         <div class="form-row">

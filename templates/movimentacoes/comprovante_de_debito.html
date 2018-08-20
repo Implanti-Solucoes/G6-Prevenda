@@ -127,7 +127,7 @@
             {{ item.PrecoUnitario|floatformat:2 }}
         </div>
         <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            {{ item.Total|floatformat:2 }}
+            {{ item.bruto|floatformat:2 }}
         </div>
     </div>
     {% endfor %}
@@ -219,7 +219,7 @@
     <br />
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Saldo devedor.: {{ Devedor|floatformat:2 }}
+            Saldo devedor.: {{ Prevenda.bruto|floatformat:2 }}
         </div>
     </div>
     <br />

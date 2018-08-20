@@ -262,6 +262,7 @@ class Uteis:
 
     @staticmethod
     def total_venda(venda):
+        # Setando variaveis de totalizadores globais das vendas
         venda['bruto'] = 0
         venda['desconto'] = 0
         venda['liquido'] = 0
@@ -269,15 +270,18 @@ class Uteis:
 
         x = 0
         for item in venda['ItensBase']:
-            if item['Cancelado'] == False:
+            if not item['Cancelado']:
+                # Variavel de calculo descartavel
                 bruto = item['PrecoUnitario'] * item['Quantidade']
                 desconto = item['DescontoDigitado'] + item['DescontoProporcional']
                 liquido = bruto - desconto
 
+                # Gerando totais nos totalizadores gerais
                 venda['bruto'] = bruto + venda['bruto']
                 venda['desconto'] = desconto + venda['desconto']
                 venda['liquido'] = liquido + venda['liquido']
 
+                # Gerando totais do item
                 venda['ItensBase'][x]['desconto_total'] = desconto
                 venda['ItensBase'][x]['bruto'] = bruto
 
@@ -321,4 +325,12 @@ class Uteis:
         del venda['liquido']
         del venda['desconto']
         del venda['comissao']
+
+        for item in venda['ItensBase']:
+            if 'desconto_total' in item:
+                del item['desconto_total']
+
+            if 'bruto' in item:
+                del item['bruto']
+
         return venda
