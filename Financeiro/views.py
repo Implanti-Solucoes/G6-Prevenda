@@ -240,8 +240,9 @@ def gerar_financeiro(request):
                 # Consultando ID para atualizar na tabela de movimentações
                 financeiro.set_query_id(id_parcela)
 
-                # Atualizando na tabela de movimentações
-                cursor['PagamentoRecebimento']['Parcelas'][z]['_id'] = financeiro.execute_one()
+                # Atualizando na tabela de
+                cursor['PagamentoRecebimento']['Parcelas'][z] = financeiro.execute_one()
+                z = z+1
 
             # Configurando CFOP para não gerar financeiro
             z = 0
