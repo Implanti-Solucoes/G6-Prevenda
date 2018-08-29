@@ -1,10 +1,8 @@
 from datetime import datetime
 from bson import ObjectId
 from django.shortcuts import render, redirect
-from datetime import datetime, timedelta
-
-from Movimentacoes.models import Movimentacoes
 from core.models import Uteis
+from Movimentacoes.models import Movimentacoes
 from .models import Pessoas, Financeiro
 
 
@@ -37,7 +35,6 @@ def gerar_financeiro(request):
     movimentacoes.set_query_t('PreVenda')
     movimentacoes.set_query_convertida('False')
     cursor = movimentacoes.execute_one()
-
 
     if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 1:
         data = datetime.now()
@@ -77,8 +74,8 @@ def gerar_financeiro(request):
 
         # Verificando se tem entradas
         if entrada > 0:
-            parcelas = parcelas+1
-            x = x+1
+            parcelas = parcelas + 1
+            x = x + 1
 
             cursor['PagamentoRecebimento']['Parcelas'].append({
                 '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
@@ -227,8 +224,7 @@ def gerar_financeiro(request):
                     'DescontoInformado': 0.0,
                 })
                 x = x + 1
-                y = y+1
-
+                y = y + 1
 
         try:
             z = 0
@@ -242,13 +238,13 @@ def gerar_financeiro(request):
 
                 # Atualizando na tabela de
                 cursor['PagamentoRecebimento']['Parcelas'][z] = financeiro.execute_one()
-                z = z+1
+                z = z + 1
 
             # Configurando CFOP para não gerar financeiro
             z = 0
-            for item in cursor['ItensBase']:
+            for _ in cursor['ItensBase']:
                 cursor['ItensBase'][z]['OperacaoFiscal']['Tipo'] = 5
-                z = z+1
+                z = z + 1
 
             # Removendo totais para pode atualizar no banco
             cursor = uteis.remover_totais(cursor)
@@ -273,7 +269,6 @@ def comprovante_de_debito_por_movimentacao(request, id):
     pessoas = Pessoas()
     financeiro = Financeiro()
     uteis = Uteis()
-
 
     # Fazendo busca das prevendas
     movimentacoes.set_query_id(id)
@@ -305,13 +300,10 @@ def comprovante_de_debito_por_movimentacao(request, id):
     emitente = pessoas.get_emitente()
 
     # Criando a variavel context para passa dados para template
-    context = {}
-    context['Emitente'] = emitente
-    context['Prevenda'] = cursor
-    context['Data'] = datetime.now()
-    context['Parcelamento'] = parcelamento
+    context = {'Emitente': emitente, 'Prevenda': cursor, 'Data': datetime.now(), 'Parcelamento': parcelamento}
 
     return render(request, template_name, context)
+
 
 def recibo(request):
     if request.method == 'POST':
@@ -323,7 +315,7 @@ def recibo(request):
         nome_emitente = pessoas.get_nome_emitente()
 
         cnpj = '%s.%s.%s/%s-%s' % (cnpj[0:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:14])
-        Emitente = {'Cnpj': cnpj, 'Nome': nome_emitente}
+        emitente = {'Cnpj': cnpj, 'Nome': nome_emitente}
         recibos = {}
 
         for id in ids:
@@ -368,8 +360,9 @@ def recibo(request):
             recibos[recibo]['Total_extenso'] = uteis.num_to_currency(
                 ('%.2f' % recibos[recibo]['Total']).replace('.', ''))
 
-        context = {'Data': datetime.now(), 'Emitente': Emitente, 'Recibos': recibos}
+        context = {'Data': datetime.now(), 'emitente': emitente, 'Recibos': recibos}
         return render(request, 'financeiro/recibo.html', context)
+
 
 def recebidas(request):
     template_name = 'financeiro/recebidas.html'
@@ -403,7 +396,7 @@ def recebidas(request):
         result = movimentacao.execute_one()
 
         # Verificando se a parcela tem movimentacao criada
-        if result == None:
+        if result is None:
             recebimento['MovimentacaoID'] = 0
         else:
             recebimento['MovimentacaoID'] = result['_id']
@@ -411,6 +404,7 @@ def recebidas(request):
 
     context = {'Recebimentos': recebimentos}
     return render(request, template_name, context)
+
 
 def pendentes(request):
     template_name = 'financeiro/pendentes.html'
@@ -438,7 +432,7 @@ def pendentes(request):
         result = movimentacao.execute_one()
 
         # Verificando se a parcela tem movimentacao criada
-        if result == None:
+        if result is None:
             recebimento['MovimentacaoID'] = 0
         else:
             recebimento['MovimentacaoID'] = result['_id']

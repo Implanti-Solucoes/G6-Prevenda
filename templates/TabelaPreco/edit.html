@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tabela de Preço</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+</head>
+<body>
+{% include "menu.html" %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+            <form action="{% url 'estoque:tabela_edit_post' %}" method="post">
+                <table class="display responsive nowrap table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Produto</th>
+                            <th>Custo</th>
+                            <th>Venda</th>
+                            <th>Preço</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <input type="hidden" name="id" value="{{ tabelas.id }}" />
+                        {% for produto in produtos %}
+                            <tr>
+                                <td>{{ produto.ProdutoServico.0.CodigoInterno }}</td>
+                                <td>{{ produto.ProdutoServico.0.Descricao }}</td>
+                                <td>{{ produto.Precos.0.Custo.Valor }}</td>
+                                <td>{{ produto.Precos.0.Venda.Valor }}</td>
+                                <td>
+                                    <input type="hidden" name="id_prod[]" value="{{ produto.Precos.0.id }}" />
+                                    {% if not produto.Precos.0.Venda.PValor %}
+                                        <input type="text" class="form-control" name="price[]" placeholder="{{ produto.Precos.0.Venda.CValor|floatformat:2 }}" />
+                                    {% else %}
+                                        <input type="text" class="form-control" name="price[]" value="{{ produto.Precos.0.Venda.PValor|floatformat:2 }}" />
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            <button type="submit" class="btn btn-success">Salvar</button>
+            {% csrf_token %}
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

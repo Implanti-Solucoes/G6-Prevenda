@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tabela de Preço</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8">
+       $(document).ready(function() {
+            $('#pre_vendas').DataTable({
+                "language": {
+                        "lengthMenu": "Quantidade de produto por pagina _MENU_",
+                        "zeroRecords": "Nem um produto encontrada",
+                        "info": "Pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nem um produto encontrado",
+                        "infoFiltered": "(Filtrado de _MAX_ total de produtos)",
+                        "search":         "Pesquisar:",
+                        "paginate": {
+                            "first":      "Primeira",
+                            "last":       "Ultima",
+                            "next":       "Proxima",
+                            "previous":   "Voltar"
+                        },
+                },
+            });
+       });
+    </script>
+</head>
+<body>
+{% include "menu.html" %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+            <table class="display responsive nowrap table table-striped">
+                <thead>
+					<tr>
+						<th>Descrição</th>
+						<th>Tipo</th>
+						<th>Percentual</th>
+						<th>Base de Calculo</th>
+						<th>#</th>
+					</tr>
+				</thead>
+                <tbody>
+                    {% for tabela in tabelas %}
+                    <tr>
+                        <td>{{ tabela.Descricao }}</td>
+						<td>{{ tabela.Operacao.t }}</td>
+						<td>{{ tabela.Operacao.Percentual }}%</td>
+						<td>{{ tabela.Operacao.BaseCalculoTabelaPrecoEx }}</td>
+                        <td><a href="{% url 'estoque:tabela_edit' tabela.id %}">Editar</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

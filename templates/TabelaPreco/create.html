@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tabela de Preço</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="container">
+        <form action="{% url 'estoque:tabela_create_post' %}" method="post">
+            <div class="form-check row">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="situacao" checked="checked">
+                    Ativo
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="descricao">Descrição</label>
+                <input type="text" class="form-control" name="descricao" placeholder="Digite a Descrição" required="required">
+            </div>
+            <div class="form-group row">
+                <label for="porcent">Percentual</label>
+                <input type="number" class="form-control" name="porcent" placeholder="Digite o Percentual" step="0.01" min="0" max="99.99" required="required">
+            </div>
+            <div class="form-group row">
+                <label for="tipo">Tipo de Alteração</label>
+                <select class="form-control" name="tipo" required="required">
+                    <option value="0">Acréscimo</option>
+                    <option value="1">Desconto</option>
+                </select>
+            </div>
+            <div class="form-group row">
+                <label for="base">Preço base para cálculo</label>
+                <select class="form-control" name="base" required="required">
+                    <option value="0">Preço de Venda</option>
+                    <option value="1">Preço de Custo</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Salvar</button>
+            {% csrf_token %}
+        </form>
+    </div>
+</body>
+</html>

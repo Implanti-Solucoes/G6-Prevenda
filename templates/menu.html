@@ -32,6 +32,19 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item dropdown" role="presentation">
+                    <a class="nav-link text-white" href="#" data-toggle="dropdown">Estoque</a>
+                    <div class="dropdown">
+                        <ul class="dropdown-menu">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link text-dark" href="{% url 'estoque:tabelas' %}">Tabela Preço - Listagem</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link text-dark" href="{% url 'estoque:tabela_create' %}">Tabela Preço - Novo</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
