@@ -70,28 +70,41 @@ def tabela_edit(request, id):
             if valor == 0:
                 # Verificando se a tabela dar Acrescimo ou Desconto
                 if tabelas['Operacao']['_t'] == 'Acrescimo':
-                    # Verificando qual base de calculo deve ser usado no calculo
-                    if tabelas['Operacao']['BaseCalculoTabelaPreco'] == 0:
+                    # Caso o sistema esteja desatualizado so trabalha
+                    # em cima do preço de venda
+                    if 'BaseCalculoTabelaPreco' in tabelas['Operacao']:
+                        # Verificando qual base de calculo deve ser usado no calculo
+                        if tabelas['Operacao']['BaseCalculoTabelaPreco'] == 0:
+                            # Aplicando Acrescimo em cima do preço de venda
+                            produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Venda']['Valor'] + (
+                                    produto['Precos'][0]['Venda']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
+
+                        elif tabelas['Operacao']['BaseCalculoTabelaPreco'] == 1:
+                            # Aplicando Acrescimo em cima do preço de custo
+                            produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Custo']['Valor'] + (
+                                    produto['Precos'][0]['Custo']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
+                    else:
                         # Aplicando Acrescimo em cima do preço de venda
                         produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Venda']['Valor'] + (
                                 produto['Precos'][0]['Venda']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
 
-                    elif tabelas['Operacao']['BaseCalculoTabelaPreco'] == 1:
-                        # Aplicando Acrescimo em cima do preço de custo
-                        produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Custo']['Valor'] + (
-                                produto['Precos'][0]['Custo']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
-
                 elif tabelas['Operacao']['_t'] == 'Desconto':
-                    if tabelas['Operacao']['BaseCalculoTabelaPreco'] == 0:
+                    # Caso o sistema esteja desatualizado so trabalha
+                    # em cima do preço de venda
+                    if 'BaseCalculoTabelaPreco' in tabelas['Operacao']:
+                        if tabelas['Operacao']['BaseCalculoTabelaPreco'] == 0:
+                            # Aplicando Desconto em cima do preço de venda
+                            produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Venda']['Valor'] - (
+                                    produto['Precos'][0]['Venda']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
+
+                        elif tabelas['Operacao']['BaseCalculoTabelaPreco'] == 1:
+                            # Aplicando Desconto em cima do preço de custo
+                            produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Custo']['Valor'] - (
+                                    produto['Precos'][0]['Custo']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
+                    else:
                         # Aplicando Desconto em cima do preço de venda
                         produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Venda']['Valor'] - (
                                 produto['Precos'][0]['Venda']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
-
-                    elif tabelas['Operacao']['BaseCalculoTabelaPreco'] == 1:
-                        # Aplicando Desconto em cima do preço de custo
-                        produto['Precos'][0]['Venda']['CValor'] = produto['Precos'][0]['Custo']['Valor'] - (
-                                produto['Precos'][0]['Custo']['Valor'] * tabelas['Operacao']['Percentual'] / 100)
-
             if valor > 0:
                 produto['Precos'][0]['Venda']['PValor'] = valor
 

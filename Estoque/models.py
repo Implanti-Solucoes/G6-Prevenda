@@ -88,14 +88,19 @@ class Tabela_Preco:
         cursor = collection.find(query)
         try:
             for doc in cursor:
+                # Adicionando campos personalizados
                 doc['id'] = str(doc['_id'])
                 doc['Operacao']['t'] = doc['Operacao']['_t']
-                del doc['Operacao']['_t']
-                del doc['_id']
-                if doc['Operacao']['BaseCalculoTabelaPreco'] == 0:
+
+                # Caso o sistema esteja desatualizado so trabalha
+                # em cima do preço de venda
+                if 'BaseCalculoTabelaPreco' in doc['Operacao']:
+                    if doc['Operacao']['BaseCalculoTabelaPreco'] == 0:
+                        doc['Operacao']['BaseCalculoTabelaPrecoEx'] = 'Venda'
+                    elif doc['Operacao']['BaseCalculoTabelaPreco'] == 1:
+                        doc['Operacao']['BaseCalculoTabelaPrecoEx'] = 'Custo'
+                else:
                     doc['Operacao']['BaseCalculoTabelaPrecoEx'] = 'Venda'
-                elif doc['Operacao']['BaseCalculoTabelaPreco'] == 1:
-                    doc['Operacao']['BaseCalculoTabelaPrecoEx'] = 'Custo'
                 retorno.append(doc)
         finally:
             uteis.fecha_conexao()

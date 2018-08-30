@@ -50,11 +50,13 @@ def impresso_prevenda(request, id):
 
 def impresso_dav_80(request, id):
     movimentacoes = Movimentacoes()
+    uteis = Uteis()
+
     movimentacoes.set_query_id(id)
     movimentacoes.set_query_t('DocumentoAuxiliarVenda')
     cursor = movimentacoes.execute_one()
-
-    return render(request, 'movimentacoes/impresso_dav_80mm.html', {'item': cursor})
+    cursor = uteis.total_venda(cursor)
+    return render(request, 'movimentacoes/impresso_dav_80mm.html', {'vendas':cursor})
 
 def gerar_financeiro(request, id):
     movimentacoes = Movimentacoes()
