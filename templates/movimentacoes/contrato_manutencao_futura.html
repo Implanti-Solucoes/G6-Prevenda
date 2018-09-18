@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>COMPROVANTE DE DEBITO</title>
+    <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
+    <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <style>
+        .page{
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 10mm auto;
+            border: 1px #D3D3D3 solid;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                page-break-after: always;
+            }
+            .volta{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="container-fluid page">
+        <div style="float: right; max-width: 50%">
+            {{ venda.Empresa.Nome }}<br />
+            CNPJ: {{ venda.Empresa.Documento }}
+            {{ venda.Empresa.EnderecoPrincipal.Municipio.Nome }}-
+            {{ venda.Empresa.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+            {{ venda.Empresa.EnderecoPrincipal.Logradouro }},
+            {{ venda.Empresa.EnderecoPrincipal.Numero }} -
+            {{ venda.Empresa.EnderecoPrincipal.Bairro }} -
+            {{ venda.Empresa.EnderecoPrincipal.Cep }}<br />
+            Fone:
+            {% if venda.Empresa.TelefonePrincipal %}
+                {{ venda.Empresa.TelefonePrincipal }}
+            {% endif %}
+            {% if venda.Empresa.Celulares %}
+                {% for celular in venda.Empresa.Celulares %}
+                    / {{ celular }}
+                {% endfor %}
+            {% endif %}
+        </div>
+        <br clear="both" style="clear: both;" />
+        <div class="border" style="width:40%;margin-left: 10%;padding:0;float:left;">
+            <h5>VEÍCULO: {{ venda.ItensBase.0.Objeto.Objeto.Modelo }}</h5>
+        </div>
+        <div class="border" style="width:40%;margin: 0%;padding:0;float:left;">
+            <h5>PLACA: {{ venda.ItensBase.0.Objeto.Objeto.Placa }}</h5>
+        </div>
+        <br clear="both" style="clear: both;" />
+        <div class="border-top border-bottom border-left" style="width:40%;margin-left: 10%;padding:0;float:left;">
+            <h4>RECIBO</h4>
+        </div>
+        <div class="border-top border-bottom border-right text-right" style="width:40%;margin:0;padding:0;float:left;">
+            <h4>R${{ venda.liquido|floatformat:2 }}</h4>
+        </div>
+        <br style="clear: both;">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 border" style="width:80%;margin-left:10%;padding:0;float:left;">
+            <p>Recebemos de {{ venda.Pessoa.Nome }} a quantia de {{ venda.liquido_extenso }} referente a {% for item in venda.ItensBase %}{% if item.t == 'ItemDocumentoAuxiliarSaidaServico' %}{{ item.ProdutoServico.Descricao }}{% if venda.Servico01 == 1 %},{% endif %}{% endif %}{% endfor %}.</p>
+            PROXIMA MANUTENÇÃO EM {{ datas.0 }}(12 MESES);<br />
+            PROXIMA MANUTENÇÃO EM {{ datas.1 }}(24 MESES);<br />
+            PROXIMA MANUTENÇÃO EM {{ datas.2 }}(36 MESES);</p>
+        </div>
+        <br style="clear: both;">
+        <br />
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <p class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-justify">O VX45 cria uma camada vitrificada com os poros menores que os da tinta automotiva, proporcionando uma considerável diminuição do acúmulo de sujeiras. E também, proporciona a diminuição do atrito do ar sobre veículos e aeronaves (coeficiente de arrasto: -0,02), e ainda permite que a superfície vitrificada pelo VX45, se torne repelente a água e extremamente agradável ao toque. </p>
+            <p class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-justify">A camada vitrificada formada pelo VX45 cria uma lente sobre o verniz, proporcionando uma ótica mais detalhada da pintura, com mais brilho e maior profundidade de cor, Em pinturas metálicas e especiais os flakes serão vistos com muito mais nitidez.</p>
+            <p class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-justify">A película criada pelo VX45 usa os poros existentes no verniz para se fixar, têm uma espessura que pode variar de 1 a 3 micrômetros, e sua resistência depende do tipo de pintura automotiva.</p>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow: hidden" align="center">
+            __________________/______de _______ de ________ ________________________________________________<br />
+            Local, Data e Assinatura do Socio Administrador
+        </div>
+    </div>
+</body>
+</html>

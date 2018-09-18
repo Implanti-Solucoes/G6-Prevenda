@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>PRE-VENDA - {{ Numero }}</title>
+    <title>{% if venda.tipo == 'NotaFiscalServico'%} ORÇAMENTO {% else %} PRE-VENDA {% endif %}- {{ Numero }}</title>
     <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
     <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
     <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
@@ -48,11 +48,15 @@
     <!-- Empresa emitente -->
     <div class="row" align="center">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            {% if venda.tipo == 'NotaFiscalServico'%}
+            <h1>ORÇAMENTO</h1><br />
+            {% else %}
             <b>
                 DOCUMENTO AUXILIAR DE VENDA - PRÉ-VENDA<br>
                 NÃO É DOCUMENTO FISCAL - NÃO É VÁLIDO COMO RECIBO E COMO GARANTIA DE<br>
                 MERCADORIA - NÃO COMPROVA PAGAMENTO
             </b>
+            {% endif %}
         </div>
     </div>
     <div class="row border" align="center">
@@ -105,7 +109,7 @@
         <div class="col-xl-6 border-right"></div>
     </div>
     <div class="row border">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"><b>NÚMERO PRÉ-VENDA: {{ Numero }}</b></div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"><b>NÚMERO {% if venda.tipo == 'NotaFiscalServico'%}ORÇAMENTO {% else %}PRE-VENDA {% endif %}: {{ Numero }}</b></div>
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
     </div>
     <div class="row clear"></div>
@@ -139,7 +143,7 @@
         </tbody>
     </table>
     <div class="row border">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right" style="background-color: #8a8f94;"></div>
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
             Total produtos: <b>R${{ venda.bruto|floatformat:2 }}</b><br />
             Total desconto: <b>R${{ venda.desconto|floatformat:2 }}</b><br />

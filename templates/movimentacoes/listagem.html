@@ -58,8 +58,10 @@
                         {% elif 'PagamentoRecebimento' in item %}
                             | <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.id %}">Comprovante de Débito</a>
                         {% endif %}
-                    {% elif item.dav == 1 %}
-                        <a href="{% url 'movimentacoes:impressao_dav' item.id %}">Imprimir</a>
+                    {% elif item.NotaFiscalServico == 1 %}
+                        <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
+                    {% elif item.DocumentoAuxiliarVendaOrdemServico == 1 %}
+                        <a href="{% url 'movimentacoes:contrato_manutencao_futura' item.id %}">Contrato Manutenção Futura</a>
                     {% endif %}
                 </td>
             </tr>

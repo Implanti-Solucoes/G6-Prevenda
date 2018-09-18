@@ -7,5 +7,5 @@ urlpatterns = [
     url(r'^$', views.listagem_prevenda, name='listagem_prevenda'),
     url(r'^(?P<id>[a-zA-Z0-9]+)/financeiro/$', views.gerar_financeiro, name='gerar_financeiro'),
     url(r'^prevenda/(?P<id>[a-zA-Z0-9]+)/$', views.impresso_prevenda, name='impressao_prevenda'),
-    url(r'^dav/(?P<id>[a-zA-Z0-9]+)/$', views.impresso_dav_80, name='impressao_dav'),
+    url(r'^contrato_manutencao_futura/(?P<id>[a-zA-Z0-9]+)/$', views.contrato_manutencao_futura, name='contrato_manutencao_futura'),
 ]

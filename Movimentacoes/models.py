@@ -176,6 +176,32 @@ class Movimentacoes():
     def execute_one(self):
         busca = self.uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)
         self.unset_all()
+        if busca['Pessoa']['_t'] == 'FisicaHistorico':
+            busca['Pessoa']['tipo'] = 'CPF'
+            busca['Pessoa']['Documento'] = '%s.%s.%s-%s' % (
+                busca['Pessoa']['Documento'][0:3],
+                busca['Pessoa']['Documento'][3:6],
+                busca['Pessoa']['Documento'][6:9],
+                busca['Pessoa']['Documento'][9:11]
+            )
+        elif busca['Pessoa']['_t'] == 'EmpresaHistorico':
+            busca['Pessoa']['tipo'] = 'CNPJ'
+            busca['Pessoa']['Documento'] = '%s.%s.%s/%s-%s' % (
+                busca['Pessoa']['Documento'][0:2],
+                busca['Pessoa']['Documento'][2:5],
+                busca['Pessoa']['Documento'][5:8],
+                busca['Pessoa']['Documento'][8:12],
+                busca['Pessoa']['Documento'][12:14]
+            )
+
+        busca['Empresa']['tipo'] = 'CNPJ'
+        busca['Empresa']['Documento'] = '%s.%s.%s/%s-%s' % (
+            busca['Empresa']['Documento'][0:2],
+            busca['Empresa']['Documento'][2:5],
+            busca['Empresa']['Documento'][5:8],
+            busca['Empresa']['Documento'][8:12],
+            busca['Empresa']['Documento'][12:14]
+        )
         return busca
 
     def get_vendedores(self):

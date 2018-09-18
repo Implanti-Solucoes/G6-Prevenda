@@ -4,16 +4,14 @@ from pymongo.cursor import Cursor
 
 class Uteis:
     def __init__(self):
-        pass
-
-    @property
-    def conexao(self):
-        self.client = MongoClient('192.168.25.59',
+        self.client = MongoClient('192.168.25.53',
                                   username='root',
                                   password='|cSFu@5rFv#h8*=',
                                   authSource='DigisatServer',
                                   port=12220)
 
+    @property
+    def conexao(self):
         database = self.client['DigisatServer']
         return database
 
@@ -40,7 +38,7 @@ class Uteis:
                         doc['t'] = str(doc['_t'])
                     busca.append(doc)
             finally:
-                self.fecha_conexao
+                self.fecha_conexao()
 
             return busca
         elif limit == 1:
@@ -53,9 +51,9 @@ class Uteis:
             else:
                 cursor = database[tabela].find_one(query, projection=projection, sort=sort)
 
-            if cursor != None:
+            if cursor is not None:
                 cursor['id'] = str(cursor['_id'])
-            self.fecha_conexao
+            self.fecha_conexao()
             return cursor
         else:
             busca = []
@@ -75,10 +73,9 @@ class Uteis:
                         doc['t'] = str(doc['_t'])
                     busca.append(doc)
             finally:
-                self.fecha_conexao
+                self.fecha_conexao()
 
             return busca
-
 
     @staticmethod
     def split_number_on_potency(stg):
@@ -334,3 +331,16 @@ class Uteis:
                 del item['bruto']
 
         return venda
+
+    def formatar_telefone(self, telefone):
+        import re
+        filtro = re.compile('([0-9]+)')
+        telefone = filtro.findall(telefone)
+        telefone = ''.join(telefone)
+        if len(telefone) == 8:
+            telefone = '%s-%s' % (telefone[0:3], telefone[4:7])
+        elif len(telefone) == 10:
+            telefone = '(%s) %s-%s' % (telefone[0:2], telefone[2:6], telefone[6:10])
+        elif len(telefone) == 11:
+            telefone = '(%s) %s %s-%s' % (telefone[0:2], telefone[2:3], telefone[3:7], telefone[7:11])
+        return telefone
