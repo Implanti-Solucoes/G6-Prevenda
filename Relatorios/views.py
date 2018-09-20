@@ -1,9 +1,8 @@
 import datetime
-
 from django.conf.urls import url
 from django.shortcuts import render, redirect
 from Movimentacoes.models import Movimentacoes
-from Financeiro.models import Financeiro
+from core.models import Uteis
 
 def index(request):
     movimentacoes = Movimentacoes()
@@ -67,7 +66,6 @@ def sintetico_produtos(request):
     else:
         return redirect('relatorios:index')
 
-
 def operacoes_por_pessoa(request):
     # Relatorio fiscal de movimentação por cliente
     if request.method == 'POST':
@@ -89,6 +87,8 @@ def operacoes_por_pessoa(request):
 
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_query_pessoa_id(cliente)
+        movimentacoes.set_query_situacao_codigo(12, 1)
+        movimentacoes.set_query_convertida('False')
         movimentacoes.set_sort_emissao('asc')
         dados = movimentacoes.execute_all()
 
@@ -123,12 +123,10 @@ def operacoes_por_pessoa(request):
 
 def prevendas_por_vendedor(request):
     if request.method == 'POST':
-        liquido = 0
-        desconto = 0
-        bruto = 0
-        comissao = 0
+        # Declarando variaveis Uteis
         vendas = {}
 
+        # Recebendo filtros
         inicial = request.POST['inical']
         year, month, day = map(int, inicial.split('-'))
         inicial = datetime.datetime(year, month, day, 00, 00, 00)
@@ -138,15 +136,23 @@ def prevendas_por_vendedor(request):
         final = datetime.datetime(year, month, day, 23, 59, 59)
 
         mostra_vendas = request.POST.getlist('vendas')
-        print(vendedor = request.POST['vendedor'])
+        vendedor = request.POST['vendedor']
 
         movimentacoes = Movimentacoes()
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
+        if vendedor != '':
+            movimentacoes.set_query_vendedor_id(vendedor)
+        movimentacoes.set_query_situacao_codigo(12, 1)
+        movimentacoes.set_query_convertida('False')
         movimentacoes.set_limit(0)
         cursor = movimentacoes.execute_all()
 
-        for venda in cursor:
+        # Gerando totais das vendas
+        uteis = Uteis()
+        cursor = uteis.totais(cursor)
+
+        for venda in cursor['vendas']:
             if 'Vendedor' in venda:
                 vendedor_id = str(venda['Vendedor']['PessoaReferencia'])
 
@@ -159,51 +165,31 @@ def prevendas_por_vendedor(request):
                     vendas[vendedor_id]['desconto'] = 0
                     vendas[vendedor_id]['vendas'] = []
 
-                # Gerando totais para calculos de comissão e exibição
-                total = 0
-                desconto = 0
-                for item in venda['ItensBase']:
-                    total = total + (item['PrecoUnitario'] * item['Quantidade'])
-                    desconto = item['DescontoDigitado'] + item['DescontoProporcional']
-
-                # Calculando comissão
-                if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
-                        venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
-                    comissao_venda = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
-
-                elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
-                        venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
-                    comissao_venda = (total - desconto) * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
-                else:
-                    comissao_venda = total * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
-
+                # Verificando se é pra exibir as vendas
                 if mostra_vendas != []:
+                    # Coletando vendas para exibição
                     vendas[vendedor_id]['vendas'].append(
                         {
-                            "numero": venda["Numero"],
-                            "data": venda["DataHoraEmissao"],
-                            "comissao": comissao_venda,
-                            "desconto": desconto,
-                            "bruto": total,
-                            "liquido": total - desconto
+                            'numero': venda['Numero'],
+                            'data': venda['DataHoraEmissao'],
+                            'comissao': venda['comissao'],
+                            'desconto': venda['desconto'],
+                            'bruto': venda['bruto'],
+                            'liquido': venda['liquido']
                         }
                     )
 
-                vendas[vendedor_id]['bruto'] = vendas[vendedor_id]['bruto'] + total
-                vendas[vendedor_id]['liquido'] = vendas[vendedor_id]['liquido'] + total - desconto
-                vendas[vendedor_id]['desconto'] = vendas[vendedor_id]['desconto'] + desconto
-                vendas[vendedor_id]['comissao'] = vendas[vendedor_id]['comissao'] + comissao_venda
-
-                liquido = liquido + total - desconto
-                total = total + desconto
-                bruto = bruto + total
-                comissao = comissao + comissao_venda
+                # Gerando totais de vendendor
+                vendas[vendedor_id]['bruto'] = vendas[vendedor_id]['bruto'] + venda['bruto']
+                vendas[vendedor_id]['liquido'] = vendas[vendedor_id]['liquido'] + venda['liquido']
+                vendas[vendedor_id]['desconto'] = vendas[vendedor_id]['desconto'] + venda['desconto']
+                vendas[vendedor_id]['comissao'] = vendas[vendedor_id]['comissao'] + venda['comissao']
 
         context = {
-            'comissao': comissao,
-            'liquido': liquido,
-            'desconto': desconto,
-            'bruto': bruto,
+            'comissao': cursor['comissao'],
+            'liquido': cursor['liquido'],
+            'desconto': cursor['desconto'],
+            'bruto': cursor['bruto'],
             'vendas': vendas,
             'inicial': inicial,
             'final': final
@@ -215,9 +201,6 @@ def prevendas_por_vendedor(request):
 def prevendas_por_usuario(request):
     if request.method == 'POST':
         # Declaração de variaveis uteis
-        liquido = 0
-        desconto = 0
-        bruto = 0
         vendas = {}
 
         # Recebendo dados post
@@ -235,11 +218,17 @@ def prevendas_por_usuario(request):
         movimentacoes = Movimentacoes()
         movimentacoes.set_query_t('PreVenda')
         movimentacoes.set_query_periodo(inicial, final)
+        movimentacoes.set_query_situacao_codigo(12, 1)
+        movimentacoes.set_query_convertida('False')
         movimentacoes.set_limit(0)
         cursor = movimentacoes.execute_all()
 
-        # Tratando dados para gerar totais e separação por usuarios
-        for venda in cursor:
+        # Gerando totais das vendas
+        uteis = Uteis()
+        cursor = uteis.totais(cursor)
+
+        # Tratando dados e separação por usuarios
+        for venda in cursor['vendas']:
             usuario = venda['Historicos'][0]['NomeUsuario']
 
             # Separando usuarios
@@ -250,36 +239,28 @@ def prevendas_por_usuario(request):
                 vendas[usuario]['liquido'] = 0
                 vendas[usuario]['vendas'] = []
 
-            # Gerando totais para exibição
-            total = 0
-            desconto = 0
-            for item in venda['ItensBase']:
-                total = total + (item['PrecoUnitario'] * item['Quantidade'])
-                desconto = item['DescontoDigitado'] + item['DescontoProporcional']
-
+            # Verificando se é pra exibir vendas
             if mostra_vendas != []:
+                # Coletando vendas para exibição
                 vendas[usuario]['vendas'].append(
                     {
                         "numero": venda["Numero"],
                         "data": venda["DataHoraEmissao"],
-                        "desconto": desconto,
-                        "bruto": total,
-                        "liquido": total - desconto
+                        "desconto": venda['desconto'],
+                        "bruto": venda['bruto'],
+                        "liquido": venda['liquido']
                     }
                 )
 
-            vendas[usuario]['bruto'] = vendas[usuario]['bruto'] + total
-            vendas[usuario]['liquido'] = vendas[usuario]['liquido'] + total - desconto
-            vendas[usuario]['desconto'] = vendas[usuario]['desconto'] + desconto
-
-            liquido = liquido + total - desconto
-            total = total + desconto
-            bruto = bruto + total
+            # Gerando totais de usuario
+            vendas[usuario]['bruto'] = vendas[usuario]['bruto'] + venda['bruto']
+            vendas[usuario]['liquido'] = vendas[usuario]['liquido'] + venda['liquido']
+            vendas[usuario]['desconto'] = vendas[usuario]['desconto'] + venda['desconto']
 
         context = {
-            'liquido': liquido,
-            'desconto': desconto,
-            'bruto': bruto,
+            'liquido': cursor['liquido'],
+            'desconto': cursor['desconto'],
+            'bruto': cursor['bruto'],
             'vendas': vendas,
             'inicial': inicial,
             'final': final

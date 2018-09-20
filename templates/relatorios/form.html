@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <title>Relatorios</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
+    <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
     <script>
         window.onload=function() {
             document.getElementById('relatorio').relatorioAction.onchange = function () {
@@ -35,7 +36,17 @@
                     mostradiv.style.display = "none";
                     fiscaldiv.style.display = "block";
 
-                }else if (newaction == "{% url 'relatorios:prevendas_por_vendedor' %}" || newaction == "{% url 'relatorios:prevendas_por_usuario' %}"){
+                }else if (newaction == "{% url 'relatorios:prevendas_por_vendedor' %}"){
+                    mostradiv.style.display = "block";
+
+                    clientediv.style.display = "none";
+                    cliente.required = false;
+
+                    vendedordiv.style.display = "block";
+                    vendedor.required = false;
+
+                    fiscaldiv.style.display = "none";
+                }else if(newaction == "{% url 'relatorios:prevendas_por_usuario' %}"){
                     mostradiv.style.display = "block";
 
                     clientediv.style.display = "none";
@@ -88,9 +99,9 @@
                     </select>
                 </div>
                 <div class="form-group" id="vendedordiv" style="display: none;">
-                    <label for="vendedor" class="col-sm-6 col-form-label">Selecione o cliente</label>
+                    <label for="vendedor" class="col-sm-6 col-form-label">Selecione o vendedor</label>
                     <select name="vendedor" id="vendedor" class="form-control">
-                        <option value="">Sem filtro de cliente</option>
+                        <option value="">Sem filtro de vendedor</option>
                         {% for vendedor in vendedores %}
                         <option value="{{ vendedor.id }}">{{ vendedor.Nome }}</option>
                         {% endfor %}

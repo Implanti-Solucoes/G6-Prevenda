@@ -4,13 +4,14 @@ from pymongo.cursor import Cursor
 
 class Uteis:
     def __init__(self):
-        pass
+        self.client = MongoClient('localhost',
+                                  username='root',
+                                  password='|cSFu@5rFv#h8*=',
+                                  authSource='DigisatServer',
+                                  port=12220)
 
     @property
     def conexao(self):
-        self.client = MongoClient('localhost', username='root', password='|cSFu@5rFv#h8*=', authSource='DigisatServer',
-                                   port=12220)
-
         database = self.client['DigisatServer']
         return database
 
@@ -33,9 +34,11 @@ class Uteis:
             try:
                 for doc in cursor:
                     doc['id'] = str(doc['_id'])
+                    if '_t' in doc:
+                        doc['t'] = str(doc['_t'])
                     busca.append(doc)
             finally:
-                self.fecha_conexao
+                self.fecha_conexao()
 
             return busca
         elif limit == 1:
@@ -48,9 +51,9 @@ class Uteis:
             else:
                 cursor = database[tabela].find_one(query, projection=projection, sort=sort)
 
-            if cursor != None:
+            if cursor is not None:
                 cursor['id'] = str(cursor['_id'])
-            self.fecha_conexao
+            self.fecha_conexao()
             return cursor
         else:
             busca = []
@@ -66,12 +69,13 @@ class Uteis:
             try:
                 for doc in cursor:
                     doc['id'] = str(doc['_id'])
+                    if '_t' in doc:
+                        doc['t'] = str(doc['_t'])
                     busca.append(doc)
             finally:
-                self.fecha_conexao
+                self.fecha_conexao()
 
             return busca
-
 
     @staticmethod
     def split_number_on_potency(stg):
@@ -252,3 +256,91 @@ class Uteis:
                 else:
                     stg = '%s reais%s' % (self.num_to_str(inteiro), stg)
         return stg
+
+    @staticmethod
+    def total_venda(venda):
+        # Setando variaveis de totalizadores globais das vendas
+        venda['bruto'] = 0
+        venda['desconto'] = 0
+        venda['liquido'] = 0
+        venda['comissao'] = 0
+
+        x = 0
+        for item in venda['ItensBase']:
+            if not item['Cancelado']:
+                # Variavel de calculo descartavel
+                bruto = item['PrecoUnitario'] * item['Quantidade']
+                desconto = item['DescontoDigitado'] + item['DescontoProporcional']
+                liquido = bruto - desconto
+
+                # Gerando totais nos totalizadores gerais
+                venda['bruto'] = bruto + venda['bruto']
+                venda['desconto'] = desconto + venda['desconto']
+                venda['liquido'] = liquido + venda['liquido']
+
+                # Gerando totais do item
+                venda['ItensBase'][x]['desconto_total'] = desconto
+                venda['ItensBase'][x]['bruto'] = bruto
+
+                # Verificando se existe vendedor para criar comissão
+                if 'Vendedor' in venda:
+                    # Calculando comissão
+                    if venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                            venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 0:
+                        comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+
+                    elif venda['Vendedor']['Vendedor']['Comissao']['_t'] == 'TotalVenda' and \
+                            venda['Vendedor']['Vendedor']['BaseCalculoComissao'] == 1:
+                        comissao_venda = liquido * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+                    else:
+                        comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
+
+                    venda['comissao'] = venda['comissao'] + comissao_venda
+            x = x+1
+        return venda
+
+    def totais(self, vendas):
+        totais_vendas = {}
+        totais_vendas['bruto'] = 0
+        totais_vendas['desconto'] = 0
+        totais_vendas['liquido'] = 0
+        totais_vendas['comissao'] = 0
+        totais_vendas['vendas'] = []
+
+        for venda in vendas:
+            venda = self.total_venda(venda)
+            totais_vendas['vendas'].append(venda)
+            totais_vendas['bruto'] = totais_vendas['bruto'] + venda['bruto']
+            totais_vendas['desconto'] = totais_vendas['desconto'] + venda['desconto']
+            totais_vendas['liquido'] = totais_vendas['liquido'] + venda['liquido']
+            totais_vendas['comissao'] = totais_vendas['comissao'] + venda['comissao']
+
+        return totais_vendas
+
+    def remover_totais(self, venda):
+        del venda['bruto']
+        del venda['liquido']
+        del venda['desconto']
+        del venda['comissao']
+
+        for item in venda['ItensBase']:
+            if 'desconto_total' in item:
+                del item['desconto_total']
+
+            if 'bruto' in item:
+                del item['bruto']
+
+        return venda
+
+    def formatar_telefone(self, telefone):
+        import re
+        filtro = re.compile('([0-9]+)')
+        telefone = filtro.findall(telefone)
+        telefone = ''.join(telefone)
+        if len(telefone) == 8:
+            telefone = '%s-%s' % (telefone[0:3], telefone[4:7])
+        elif len(telefone) == 10:
+            telefone = '(%s) %s-%s' % (telefone[0:2], telefone[2:6], telefone[6:10])
+        elif len(telefone) == 11:
+            telefone = '(%s) %s %s-%s' % (telefone[0:2], telefone[2:3], telefone[3:7], telefone[7:11])
+        return telefone

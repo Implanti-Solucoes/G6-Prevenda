@@ -1,96 +1,92 @@
 import datetime
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import Movimentacoes
 from Financeiro.models import Financeiro
+from core.models import Uteis
 
 
 def listagem_prevenda(request):
     movimentacoes = Movimentacoes()
-    movimentacoes.set_query_t('PreVenda')
-    movimentacoes.set_projection_numero()
-    movimentacoes.set_projection_emissao()
-    movimentacoes.set_projection_pessoa_nome()
-    movimentacoes.set_projection_situacao()
+    movimentacoes.set_query_t('PreVenda', 'or')
+    movimentacoes.set_query_t('NotaFiscalServico', 'or')
+    movimentacoes.set_query_t('DocumentoAuxiliarVendaOrdemServico', 'or')
+    movimentacoes.set_query_convertida('False')
     movimentacoes.set_sort_emissao()
     item = movimentacoes.execute_all()
-    context = {'items': item}
-    return render(request, 'pre_venda/listagem.html', context)
+    items = []
+
+    for x in item:
+        if 'PreVenda' in x['t']:
+            x['prevenda'] = 1
+        elif 'NotaFiscalServico' in x['t']:
+            x['NotaFiscalServico'] = 1
+        elif 'DocumentoAuxiliarVendaOrdemServico' in x['t']:
+            x['DocumentoAuxiliarVendaOrdemServico'] = 1
+        items.append(x)
+
+    context = {'items': items}
+    return render(request, 'movimentacoes/listagem.html', context)
 
 
 def impresso_prevenda(request, id):
-    telefone = ''
-    tipo = ''
-    documento = ''
-    items = []
-
     movimentacoes = Movimentacoes()
+    uteis = Uteis
 
     movimentacoes.set_query_id(id)
-    movimentacoes.set_query_t('PreVenda')
-    movimentacoes.set_projection_numero()
-    movimentacoes.set_projection_pessoa()
-    movimentacoes.set_projection_itens()
-    movimentacoes.set_projection_empresa()
+    movimentacoes.set_query_t('PreVenda', 'or')
+    movimentacoes.set_query_t('NotaFiscalServico', 'or')
     cursor = movimentacoes.execute_one()
 
-    if 'TelefonePrincipal' in cursor['Pessoa']:
-        telefone = cursor['Pessoa']['TelefonePrincipal']
+    if 'NotaFiscalServico' in cursor['_t']:
+        cursor['tipo'] = 'NotaFiscalServico'
+    elif 'PreVenda' in cursor['_t']:
+        cursor['tipo'] = 'PreVenda'
 
-    if cursor['Pessoa']['_t'] == 'FisicaHistorico':
-        tipo = 'CPF: '
-        documento = cursor['Pessoa']['Documento']
-    elif cursor['Pessoa']['_t'] == 'EmpresaHistorico':
-        tipo = 'CNPJ: '
-        documento = cursor['Pessoa']['Documento']
+    cursor = uteis.total_venda(cursor)
 
-    cliente = {'Nome': cursor['Pessoa']['Nome'],
-               'Logradouro': cursor['Pessoa']['EnderecoPrincipal']['Logradouro'],
-               'Numero': cursor['Pessoa']['EnderecoPrincipal']['Numero'],
-               'Bairro': cursor['Pessoa']['EnderecoPrincipal']['Bairro'],
-               'Cep': cursor['Pessoa']['EnderecoPrincipal']['Cep'],
-               'Municipio': cursor['Pessoa']['EnderecoPrincipal']['Municipio']['Nome'],
-               'Uf': cursor['Pessoa']['EnderecoPrincipal']['Municipio']['Uf']['Sigla'],
-               'Telefone': telefone,
-               'Tipo': tipo,
-               'Documento': documento
-               }
-    Empresa = {'Nome': cursor['Empresa']['Nome'],
-               'Logradouro': cursor['Empresa']['EnderecoPrincipal']['Logradouro'],
-               'Numero': cursor['Empresa']['EnderecoPrincipal']['Numero'],
-               'Bairro': cursor['Empresa']['EnderecoPrincipal']['Bairro'],
-               'Cep': cursor['Empresa']['EnderecoPrincipal']['Cep'],
-               'Municipio': cursor['Empresa']['EnderecoPrincipal']['Municipio']['Nome'],
-               'Uf': cursor['Empresa']['EnderecoPrincipal']['Municipio']['Uf']['Sigla'],
-               'Telefone': cursor['Empresa']['TelefonePrincipal'],
-               'Tipo': 'CNPJ: ',
-               'Documento': cursor['Empresa']['Documento']
-               }
+    context = {'Numero': str(cursor['Numero']), 'venda': cursor}
+    return render(request, 'movimentacoes/impresso.html', context)
 
-    Total_Produtos = 0
-    Total_Desconto = 0
 
+def contrato_manutencao_futura(request, id):
+    movimentacoes = Movimentacoes()
+    uteis = Uteis()
+
+    movimentacoes.set_query_id(id)
+    movimentacoes.set_query_t('DocumentoAuxiliarVendaOrdemServico')
+    cursor = movimentacoes.execute_one()
+
+    if 'DocumentoAuxiliarVendaOrdemServico' in cursor['_t']:
+        cursor['tipo'] = 'DocumentoAuxiliarVendaOrdemServico'
+
+    cursor = uteis.total_venda(cursor)
+    cursor['Empresa']['TelefonePrincipal'] = uteis.formatar_telefone(telefone=cursor['Empresa']['TelefonePrincipal'])
+    if cursor['Empresa']['Celulares']:
+        x = 0
+        for celular in cursor['Empresa']['Celulares']:
+            cursor['Empresa']['Celulares'][x] = uteis.formatar_telefone(telefone=celular)
+            x = x + 1
+
+    datas = [cursor['DataHoraEmissao'] + datetime.timedelta(+12),
+             cursor['DataHoraEmissao'] + datetime.timedelta(+24),
+             cursor['DataHoraEmissao'] + datetime.timedelta(+36)]
+
+    x = 0
+    y = 0
     for item in cursor['ItensBase']:
-        items.extend([{'Codigo': item['ProdutoServico']['CodigoInterno'],
-                       'Descricao': item['ProdutoServico']['Descricao'],
-                       'Unidade': item['ProdutoServico']['UnidadeMedida']['Sigla'],
-                       'Qtd': item['Quantidade'],
-                       'Desconto': item['DescontoDigitado'] + item['DescontoProporcional'],
-                       'Preco': item['PrecoUnitario'],
-                       'Total': item['Quantidade'] * item['PrecoUnitario']}])
-        Total_Produtos = Total_Produtos + (item['Quantidade'] * item['PrecoUnitario'])
-        Total_Desconto = Total_Desconto + item['DescontoDigitado'] + item['DescontoProporcional']
-    Total = Total_Produtos - Total_Desconto
+        cursor['ItensBase'][x]['t'] = cursor['ItensBase'][x]['_t']
+        if cursor['ItensBase'][x]['t'] == 'ItemDocumentoAuxiliarSaidaServico':
+            y = y + 1
+        x = x+1
 
-    context = {'Numero': str(cursor['Numero']),
-               'Items': items,
-               'Cliente': cliente,
-               'Empresa': Empresa,
-               'Total_Produtos': Total_Produtos,
-               'Total_Desconto': Total_Desconto,
-               'Total': Total
-               }
-    return render(request, 'pre_venda/impresso.html', context)
+    if y > 1:
+        cursor['Servico01'] = 1
+
+    cursor['liquido_extenso'] = uteis.num_to_currency(('%.2f' % cursor['liquido']).replace('.', ''))
+    context = {'Numero': str(cursor['Numero']), 'venda': cursor, 'datas': datas}
+    return render(request, 'movimentacoes/contrato_manutencao_futura.html', context)
+
 
 def gerar_financeiro(request, id):
     movimentacoes = Movimentacoes()
@@ -104,10 +100,10 @@ def gerar_financeiro(request, id):
     centros_custos = financeiro.get_centros_custos
     planos_conta = financeiro.get_planos_conta
 
-
     cursor['Total'] = 0
     for item in cursor['ItensBase']:
-        cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item['DescontoDigitado'] - item['DescontoProporcional']
+        cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item['DescontoDigitado'] - \
+                          item['DescontoProporcional']
 
     context = {'items': cursor, 'contas': contas, 'centros_custos': centros_custos, 'planos_conta': planos_conta}
 
@@ -116,4 +112,4 @@ def gerar_financeiro(request, id):
             'Nome': cursor['Vendedor']['Nome']
         }
 
-    return render(request, 'pre_venda/gerar_financeiro.html', context)
+    return render(request, 'movimentacoes/gerar_financeiro.html', context)

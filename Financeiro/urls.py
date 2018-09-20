@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^pendentes/$', views.pendentes, name='pendentes'),
     url(r'^recibo/$', views.recibo, name='recibo'),
     url(r'^prevenda/$', views.gerar_financeiro, name='gerar_financeiro'),
+    url(r'^comprovante_de_debito/(?P<id>[a-zA-Z0-9]+)/$', views.comprovante_de_debito_por_movimentacao, name='comprovante_de_debito_por_movimentacao'),
 ]

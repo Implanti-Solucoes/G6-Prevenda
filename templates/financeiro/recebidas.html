@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <title>PRE-VENDA</title>
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
     <script type="text/javascript" charset="utf-8">
        $(document).ready(function() {
             $('#pre_vendas').DataTable({
@@ -48,7 +49,8 @@
 							<th>Valor</th>
 							<th>Pagamento</th>
 							<th>Valor Pago</th>
-							<th>#</th>
+							<th>Ações</th>
+                            <th>#</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -60,7 +62,12 @@
 							<td>{{ item.Historico.0.Valor|floatformat:2 }}</td>
 							<td>{{ item.DataQuitacao|date:"d/m/Y" }}</td>
 							<td>{{ item.valor_pago|floatformat:2 }}</td>
-							<td><input type="checkbox" name="parcela" value={{ item.id }}></td>
+                            <td>
+                                {% if item.MovimentacaoID != 0 %}
+                                <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.MovimentacaoID %}">Comprovante de Débito</a>
+                                {% endif %}
+                            </td>
+                            <td><input type="checkbox" name="parcela" value={{ item.id }}></td>
 						</tr>
 						{% endfor %}
 					</tbody>

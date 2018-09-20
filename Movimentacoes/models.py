@@ -1,6 +1,5 @@
 from bson import ObjectId
 from bson.regex import Regex
-from bson.tz_util import FixedOffset
 from core.models import Uteis
 
 class Movimentacoes():
@@ -12,81 +11,149 @@ class Movimentacoes():
         self.uteis = Uteis()
 
     def set_query_id(self, con):
-        if len(con) == 24:
-            self.query["_id"] = ObjectId(con)
+        if type(con) == str and len(con) == 24:
+            self.query['_id'] = ObjectId(con)
         elif type(con) == ObjectId:
-            self.query["_id"] = con
+            self.query['_id'] = con
 
-    def set_query_situacao_codigo(self, con):
-        self.query["Situacao.Codigo"] = con
+    def set_query_situacao_codigo(self, con, ne = 0):
+        self.query['Situacao.Codigo'] = con
+        if ne != 0:
+            self.query['Situacao.Codigo'] = {
+                u"$ne": con
+            }
 
-    def set_query_t(self, con):
-        self.query["_t"] = Regex(u".*"+con+".*", "i")
+    def set_query_t(self, con, and_or = ''):
+        if and_or == 'and':
+            if '$and' not in self.query:
+                self.query['$and'] = {}
+
+            self.query['$and'].append({'_t': Regex(u'.*'+con+'.*', 'i')})
+
+        elif and_or == 'or':
+            if '$or' not in self.query:
+                self.query['$or'] = []
+
+            self.query['$or'].append({'_t': Regex(u'.*' + con + '.*', 'i')})
+
+        elif '$and' in self.query or '$or' in self.query:
+            print('É necessario definir modo de operação and ou or')
+            return False
+
+        else:
+            self.query['_t'] = Regex(u'.*' + con + '.*', 'i')
 
     def set_query_periodo(self, inicial, final):
         self.query['DataHoraEmissao'] = {
-            u"$gte": inicial,
-            u"$lt": final
+            u'$gte': inicial,
+            u'$lt': final
         }
 
     def set_query_convertida(self, con = False):
         if con == True:
-            self.query["Convertida"] = True
+            self.query['Convertida'] = True
         else:
-            self.query["Convertida"] = False
+            self.query['Convertida'] = False
 
     def set_query_fiscal(self, con):
-        self.query["ItensBase.0.OperacaoFiscal"] = {
-            u"$exists": True
-        }
+        if '_t' not in self.query:
+            self.query['_t'] = Regex(u'.*DocumentoFiscalEletronico.*', 'i')
+        elif '$and' not in self.query:
+            self.query['$and'] = [{'_t': Regex(u'.*DocumentoFiscalEletronico.*', 'i')}]
+        else:
+            self.query['$and'].append({'_t': Regex(u'.*DocumentoFiscalEletronico.*', 'i')})
+
         if con == 'Saida':
-            self.query["_t"] = {
-                u"$not": Regex(u".*NotaFiscalCompra.*", "i")
-            }
+            if '$and' not in self.query:
+                self.query['$and'] = [
+                    {
+                        u'_t': {
+                            u'$not': Regex(u'.*NotaFiscalEletronicaEntrada.*', 'i')
+                        }
+                    },
+                    {
+                        u'_t': {
+                            u'$not': Regex(u'.*NotaFiscalCompra.*', 'i')
+                        }
+                    }
+                ]
+            else:
+                self.query['$and'].append(
+                    {
+                        u'_t': {
+                            u'$not': Regex(u'.*NotaFiscalEletronicaEntrada.*', 'i')
+                        }
+                    },
+                    {
+                        u'_t': {
+                            u'$not': Regex(u'.*NotaFiscalCompra.*', 'i')
+                        }
+                    }
+                )
+
 
     def set_query_pessoa_id(self, con):
         if len(con) == 24:
-            self.query["Pessoa.PessoaReferencia"] = ObjectId(con)
+            self.query['Pessoa.PessoaReferencia'] = ObjectId(con)
         elif type(con) == ObjectId:
-            self.query["Pessoa.PessoaReferencia"] = con
+            self.query['Pessoa.PessoaReferencia'] = con
 
     def set_query_vendedor_id(self, con):
         if len(con) == 24:
-            self.query["Vendedor.PessoaReferencia"] = ObjectId(con)
+            self.query['Vendedor.PessoaReferencia'] = ObjectId(con)
         elif type(con) == ObjectId:
-            self.query["Vendedor.PessoaReferencia"] = con
+            self.query['Vendedor.PessoaReferencia'] = con
+
+    def set_query_movimentacao_por_recebimento(self, con):
+        if type(con) == str and len(con) == 24:
+            self.query["PagamentoRecebimento.Parcelas"] = {
+                u"$elemMatch": {
+                    u"_id": ObjectId(con)
+                }
+            }
+        elif type(con) == ObjectId:
+            self.query["PagamentoRecebimento.Parcelas"] = {
+                u"$elemMatch": {
+                    u"_id": con
+                }
+            }
+    def set_projection_id(self):
+        self.projection['_id'] = 1.0
 
     def set_projection_numero(self):
-        self.projection["Numero"] = 1.0
+        self.projection['Numero'] = 1.0
+
+    def set_projection_t(self):
+        self.projection['_t'] = 1.0
 
     def set_projection_pessoa(self):
-        self.projection["Pessoa"] = 1.0
+        self.projection['Pessoa'] = 1.0
 
     def set_projection_pessoa_nome(self):
-        if "Pessoa" not in self.projection:
-            self.projection["Pessoa.Nome"] = 1.0
+        if 'Pessoa' not in self.projection:
+            self.projection['Pessoa.Nome'] = 1.0
 
     def set_projection_endereco(self):
-        if "Pessoa" not in self.projection:
-            self.projection["Pessoa.EnderecoPrincipal"] = 1.0
+        if 'Pessoa' not in self.projection:
+            self.projection['Pessoa.EnderecoPrincipal'] = 1.0
 
     def set_projection_empresa(self):
-        self.projection["Empresa"] = 1.0
+        self.projection['Empresa'] = 1.0
 
     def set_projection_itens(self):
-        self.projection["ItensBase"] = 1.0
+        self.projection['ItensBase'] = 1.0
 
     def set_projection_emissao(self):
-        self.projection["DataHoraEmissao"] = 1.0
+        self.projection['DataHoraEmissao'] = 1.0
 
     def set_projection_situacao(self):
-        self.projection["Situacao"] = 1.0
+        self.projection['Situacao'] = 1.0
 
     def set_sort_emissao(self, type='desc'):
         if type == 'asc':
-            self.sort.append((u"DataHoraEmissao", 1))
+            self.sort.append((u'DataHoraEmissao', 1))
         else:
-            self.sort.append((u"DataHoraEmissao", -1))
+            self.sort.append((u'DataHoraEmissao', -1))
 
     def set_limit(self, limit):
         self.limit = limit
@@ -109,14 +176,40 @@ class Movimentacoes():
     def execute_one(self):
         busca = self.uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)
         self.unset_all()
+        if busca['Pessoa']['_t'] == 'FisicaHistorico':
+            busca['Pessoa']['tipo'] = 'CPF'
+            busca['Pessoa']['Documento'] = '%s.%s.%s-%s' % (
+                busca['Pessoa']['Documento'][0:3],
+                busca['Pessoa']['Documento'][3:6],
+                busca['Pessoa']['Documento'][6:9],
+                busca['Pessoa']['Documento'][9:11]
+            )
+        elif busca['Pessoa']['_t'] == 'EmpresaHistorico':
+            busca['Pessoa']['tipo'] = 'CNPJ'
+            busca['Pessoa']['Documento'] = '%s.%s.%s/%s-%s' % (
+                busca['Pessoa']['Documento'][0:2],
+                busca['Pessoa']['Documento'][2:5],
+                busca['Pessoa']['Documento'][5:8],
+                busca['Pessoa']['Documento'][8:12],
+                busca['Pessoa']['Documento'][12:14]
+            )
+
+        busca['Empresa']['tipo'] = 'CNPJ'
+        busca['Empresa']['Documento'] = '%s.%s.%s/%s-%s' % (
+            busca['Empresa']['Documento'][0:2],
+            busca['Empresa']['Documento'][2:5],
+            busca['Empresa']['Documento'][5:8],
+            busca['Empresa']['Documento'][8:12],
+            busca['Empresa']['Documento'][12:14]
+        )
         return busca
 
     def get_vendedores(self):
         database = self.uteis.conexao
 
         vendedores = []
-        query = {"Vendedor": {u"$exists": True}}
-        projection = {"_id": 1.0, "Nome": 1.0}
+        query = {'Vendedor': {u'$exists': True}}
+        projection = {'_id': 1.0, 'Nome': 1.0}
         cursor = database['Pessoas'].find(query, projection=projection)
 
         try:
@@ -132,8 +225,8 @@ class Movimentacoes():
         database = self.uteis.conexao
 
         clientes = []
-        query = {"Cliente": {u"$exists": True}}
-        projection = {"_id": 1.0, "Nome": 1.0}
+        query = {'Cliente': {u'$exists': True}}
+        projection = {'_id': 1.0, 'Nome': 1.0}
         cursor = database['Pessoas'].find(query, projection=projection, sort=[('Nome', 1)])
         try:
             for cliente in cursor:
@@ -146,17 +239,17 @@ class Movimentacoes():
     def edit_status_aprovado(self, id):
         database = self.uteis.conexao
         Aprovado = {
-            "_t": [
-                "SituacaoMovimentacao",
-                "Aprovado"
+            '_t': [
+                'SituacaoMovimentacao',
+                'Aprovado'
             ],
-            "Codigo": 8,
-            "Descricao": "Aprovado",
-            "Cor": "#006400",
-            "DescricaoComando": "Tornar pendente"
+            'Codigo': 8,
+            'Descricao': 'Aprovado',
+            'Cor': '#006400',
+            'DescricaoComando': 'Tornar pendente'
         }
         try:
-            database['Movimentacoes'].find_one_and_update({"_id": ObjectId(id)},
-                                                          {"$set": {"Situacao": Aprovado}})
+            database['Movimentacoes'].find_one_and_update({'_id': ObjectId(id)},
+                                                          {'$set': {'Situacao': Aprovado}})
         finally:
             self.uteis.fecha_conexao()

@@ -25,7 +25,7 @@ SECRET_KEY = '^l-_7kb9l_o73x0g5a23$7uh6pi@%a7un9wxlsf^q_k2+s&i_5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['191.190.205.46', '192.168.0.4', '192.168.25.52']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Movimentacoes.apps.PrevendaConfig',
     'Financeiro.apps.ReciboConfig',
+    'Relatorios.apps.RelatoriosConfig',
+    'Estoque.apps.EstoqueConfig'
 ]
 
 MIDDLEWARE = [
@@ -56,8 +58,7 @@ ROOT_URLCONF = 'G6.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,4 +121,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'http://static.implanti.com.br/static/'
+STATIC_ROOT = 'D:\\desenvolvimentos\\Tabela Preco\\static\\'

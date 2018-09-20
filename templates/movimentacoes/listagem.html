@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <title>PRE-VENDA</title>
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
     <script type="text/javascript" charset="utf-8">
        $(document).ready(function() {
             $('#pre_vendas').DataTable({
@@ -50,9 +51,17 @@
                 <td>{{ item.Pessoa.Nome }}</td>
                 <td>{{ item.DataHoraEmissao|date:"d/m/Y" }}</td>
                 <td>
-                    <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
-                    {% if item.Situacao.Codigo == 1 %}
-                     | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
+                    {% if item.prevenda == 1 %}
+                        <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
+                        {% if item.Situacao.Codigo == 1 %}
+                            | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
+                        {% elif 'PagamentoRecebimento' in item %}
+                            | <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.id %}">Comprovante de Débito</a>
+                        {% endif %}
+                    {% elif item.NotaFiscalServico == 1 %}
+                        <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
+                    {% elif item.DocumentoAuxiliarVendaOrdemServico == 1 %}
+                        <a href="{% url 'movimentacoes:contrato_manutencao_futura' item.id %}">Contrato Manutenção Futura</a>
                     {% endif %}
                 </td>
             </tr>
