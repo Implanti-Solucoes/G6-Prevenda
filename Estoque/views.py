@@ -2,7 +2,8 @@ from bson import ObjectId
 from django.shortcuts import render, redirect
 from .models import Products
 from .models import Tabela_Preco
-from Financeiro.models import Pessoas
+from Pessoas.models import PessoasMongo
+
 
 def tabela_list(request):
     # Estanciando classes necessarias
@@ -12,8 +13,10 @@ def tabela_list(request):
     tabelas = tabelas_class.list()
     return render(request, 'TabelaPreco/index.html', {'tabelas': tabelas})
 
+
 def tabela_create(request):
     return render(request, 'TabelaPreco/create.html', {})
+
 
 def tabela_create_post(request):
     # Estanciando classes necessarias
@@ -39,6 +42,7 @@ def tabela_create_post(request):
         return redirect('estoque:tabelas')
     else:
         return render(request, 'TabelaPreco/create.html', {})
+
 
 def tabela_edit(request, id):
     # Estanciando classes necessarias
@@ -118,12 +122,12 @@ def tabela_edit(request, id):
     }
     return render(request, 'TabelaPreco/edit.html', contex)
 
+
 def tabela_edit_post(request):
     from core.models import Uteis
 
     # Estanciando classes necessarias
     produtos_class = Products()
-    pessoas_class = Pessoas()
     tabelas_class = Tabela_Preco()
     uteis = Uteis()
 
@@ -133,7 +137,7 @@ def tabela_edit_post(request):
     price = request.POST.getlist('price[]')
 
     # Chamando metodos necessarios
-    emitente = pessoas_class.get_emitente()
+    emitente = PessoasMongo().get_emitente()
     tabelas = tabelas_class.get(id)
     database = uteis.conexao
 
@@ -145,7 +149,7 @@ def tabela_edit_post(request):
     # Percorrendo produtos para verificar se estão corretos
     for id in id_prod:
         if price[x] != '' and type(id_prod[x]) == str and len(id_prod[x]) == 24:
-            preco = produtos_class.get_precos(id)
+            preco = produtos_class.get_preco(id)
             tabelas['Itens'].append({
                 'PrecoReferencia': ObjectId(id_prod[x]),
                 'Preco': float(price[x].replace(',', '.')),

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'Movimentacoes.apps.PrevendaConfig',
     'Financeiro.apps.ReciboConfig',
     'Relatorios.apps.RelatoriosConfig',
-    'Estoque.apps.EstoqueConfig'
+    'Estoque.apps.EstoqueConfig',
+    'Orcamento.apps.OrcamentoConfig'
 ]
 
 MIDDLEWARE = [

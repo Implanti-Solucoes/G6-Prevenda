@@ -5,7 +5,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.listagem_prevenda, name='listagem_prevenda'),
-    url(r'^(?P<id>[a-zA-Z0-9]+)/financeiro/$', views.gerar_financeiro, name='gerar_financeiro'),
-    url(r'^prevenda/(?P<id>[a-zA-Z0-9]+)/$', views.impresso_prevenda, name='impressao_prevenda'),
-    url(r'^contrato_manutencao_futura/(?P<id>[a-zA-Z0-9]+)/$', views.contrato_manutencao_futura, name='contrato_manutencao_futura'),
+    url(r'^gerar_financeiro/(?P<id>[a-zA-Z0-9]+)$', views.gerar_financeiro, name='gerar_financeiro'),
+    url(r'^impresso/(?P<id>[a-zA-Z0-9]+)/$', views.impresso_prevenda, name='impressao_prevenda'),
 ]

@@ -21,20 +21,23 @@
                 campo.value = "1";
             };
 
+            valores = [
+                parseFloat({{ valores.1|stringformat:"f" }}).toFixed(2),
+                parseFloat({{ valores.2|stringformat:"f" }}).toFixed(2),
+                parseFloat({{ valores.3|stringformat:"f" }}).toFixed(2),
+                parseFloat({{ valores.4|stringformat:"f" }}).toFixed(2)
+            ];
             data = Date.now();
-            console.log(data);
-
-            total = parseFloat({{ items.Total|stringformat:"f" }}).toFixed(2);
+            total = document.getElementById('total');;
             parcelas = parseFloat(document.getElementById('parcelas').value);
             entrada = parseFloat(document.getElementById('entrada').value);
             vencimentos = document.getElementById('vencimentos');
-
+            valor_parcela = document.getElementById('valor');
             if(campo.id === "parcelas" && campo.value < 1 || campo.id === "parcelas" && Number.isInteger(campo.value)) {
                 campo.value = "1";
             }
 
             if (parcelas >= 1 && campo.id == 'parcelas') {
-                document.getElementById('valor').value = ((total - parseFloat(entrada)) / campo.value).toFixed(2).replace('.', ',');
                 vencimento = '';
                 for (i = 0; i < campo.value; i++) {
                     date = moment().add((i+1), 'months').format('YYYY-MM-DD');
@@ -45,25 +48,24 @@
                 }
                 vencimentos.innerHTML = vencimento
             }
-            if(parcelas >= 1 && campo.id == 'entrada') {
-                document.getElementById('valor').value = ((total - parseFloat(campo.value)) / parcelas).toFixed(2).replace('.', ',');
-            }
+
+            valor_parcela.value = ((valores[parseInt(total.value)-1] - entrada) / parcelas).toFixed(2).replace('.', ',');
+
         }
     </script>
 </head>
 <body>
 {% include "menu.html" %}
 <div class="container page">
-    <form action="{% url 'financeiro:gerar_financeiro' %}" method="post">
-        <input type="hidden" name="id" value="{{ items.id }}" required="required">
+    <form action="{% url 'financeiro:renegociacao_lancamento' %}" method="post">
+        {% for parcela in parcelas %}
+            <input type="hidden" name="parcela" value="{{ parcela }}">
+        {% endfor %}
+        <input type="hidden" name="id_cliente" value="{{ cliente.id }}">
         <div class="form-row">
-            <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <label for="cliente">Cliente</label>
-                <input type="text" id="cliente" class="form-control" value="{{ items.Pessoa.Nome }}" readonly>
-            </div>
-            <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <label for="vendedor">Vendedor</label>
-                <input type="text" id="vendedor" class="form-control" value="{{ items.Vendedor.Nome }}" readonly>
+                <input type="text" id="cliente" class="form-control" value="{{ cliente.Nome }}" readonly>
             </div>
         </div>
         <div class="form-row">
@@ -95,8 +97,14 @@
         <div class="form-row">
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="total">Total</label>
-                <input type="text" id="total" class="form-control" value="{{ items.Total|floatformat:2 }}" readonly>
+                <select id="total" name="total" class="form-control" required="required" onchange="somenteNumeros(this)">
+                    <option value="1">{{ valores.1|floatformat:2 }} (Valor total)</option>
+                    <option value="2">{{ valores.2|floatformat:2 }} (Valor total + Juros)</option>
+                    <option value="3">{{ valores.3|floatformat:2 }} (Valor total + Multa)</option>
+                    <option value="4" selected="selected">{{ valores.4|floatformat:2 }} (Valor total + Juros + Multa)</option>
+                </select>
             </div>
+
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="valor">Valor Parcela</label>
                 <input type="text" class="form-control" id="valor" value="0" readonly>

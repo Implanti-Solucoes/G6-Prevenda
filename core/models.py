@@ -4,7 +4,7 @@ from pymongo.cursor import Cursor
 
 class Uteis:
     def __init__(self):
-        self.client = MongoClient('localhost',
+        self.client = MongoClient('192.168.25.53',
                                   username='root',
                                   password='|cSFu@5rFv#h8*=',
                                   authSource='DigisatServer',
@@ -17,6 +17,7 @@ class Uteis:
 
     def fecha_conexao(self):
         self.client.close()
+        return True
 
     def execute(self, tabela, query, projection, sort, limit=500):
         database = self.conexao
@@ -317,7 +318,8 @@ class Uteis:
 
         return totais_vendas
 
-    def remover_totais(self, venda):
+    @staticmethod
+    def remover_totais(venda):
         del venda['bruto']
         del venda['liquido']
         del venda['desconto']
@@ -332,7 +334,8 @@ class Uteis:
 
         return venda
 
-    def formatar_telefone(self, telefone):
+    @staticmethod
+    def formatar_telefone(telefone):
         import re
         filtro = re.compile('([0-9]+)')
         telefone = filtro.findall(telefone)
@@ -344,3 +347,31 @@ class Uteis:
         elif len(telefone) == 11:
             telefone = '(%s) %s %s-%s' % (telefone[0:2], telefone[2:3], telefone[3:7], telefone[7:11])
         return telefone
+
+
+class Configuracoes:
+    @staticmethod
+    def configuracoes():
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['Configuracoes']
+
+        query = {}
+        retorno = collection.find_one(query)
+        Uteis().fecha_conexao()
+        return retorno
+
+    @staticmethod
+    def ultimo_numero():
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['SequenciasMovimentacoes']
+
+        query = {'_t.1': 'SequenciaDav', '_t.0': 'SequenciaMovimentacao', 'Ativo': True}
+        retorno = collection.find_one(query)
+        Uteis().fecha_conexao()
+        return retorno

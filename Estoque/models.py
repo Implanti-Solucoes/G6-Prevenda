@@ -15,8 +15,7 @@ class Tabela_Preco:
     @staticmethod
     def create(situacao, name, t, percen, base):
         # Importe Uteis para criar conexao com mongo
-        uteis = Uteis()
-        database = uteis.conexao
+        database = Uteis().conexao
 
         # Declarando lista para validação de bases
         bases = [0, 1]
@@ -67,17 +66,16 @@ class Tabela_Preco:
         try:
             insert = database['TabelasPreco'].insert(model)
         finally:
-            uteis.fecha_conexao()
+            Uteis().fecha_conexao()
             return True
 
     @staticmethod
     def list():
         # Importe Uteis para criar conexao com mongo
-        uteis = Uteis()
-        database = uteis.conexao
+        database = Uteis().conexao
 
         # Declarando collection que deve ser consultado
-        collection = database["TabelasPreco"]
+        collection = database['TabelasPreco']
 
         # Declarando vetor para retorno de dados
         retorno: List[Any] = []
@@ -103,17 +101,19 @@ class Tabela_Preco:
                     doc['Operacao']['BaseCalculoTabelaPrecoEx'] = 'Venda'
                 retorno.append(doc)
         finally:
-            uteis.fecha_conexao()
+            Uteis().fecha_conexao()
             return retorno
 
     @staticmethod
     def get(id):
         # Importe Uteis para criar conexao com mongo
-        uteis = Uteis()
-        database = uteis.conexao
+        database = Uteis().conexao
 
         # Declarando collection que deve ser consultado
         collection = database["TabelasPreco"]
+
+        # Variavel de retorno vazio caso necessario
+        retorno = []
 
         # Fazendo busca e retornando dados
         try:
@@ -126,20 +126,20 @@ class Tabela_Preco:
                 retorno['id'] = str(retorno['_id'])
         except Exception as e:
             # Se der qualquer erro, feche a conexao e retorne o erro
-            uteis.fecha_conexao()
+            Uteis().fecha_conexao()
             return e
 
         finally:
             # Caso der tudo certo, feche a conexao e retorne os dados
-            uteis.fecha_conexao()
+            Uteis().fecha_conexao()
             return retorno
 
 
 class Products:
-    def list(self):
+    @staticmethod
+    def list():
         # Importe Uteis para criar conexao com mongo
-        uteis = Uteis()
-        database = uteis.conexao
+        database = Uteis().conexao
 
         # Declarando collection que deve ser consultado
         collection = database['ProdutosServicosEmpresa']
@@ -150,19 +150,27 @@ class Products:
         # Pipeline para dar aggregate
         pipeline = [
             {
-                u'$lookup': {
-                    u'from': u'ProdutosServicos',
-                    u'localField': u'ProdutoServicoReferencia',
-                    u'foreignField': u'_id',
-                    u'as': u'ProdutoServico'
+                u"$lookup": {
+                    u"from": u"Precos",
+                    u"localField": u"PrecoReferencia",
+                    u"foreignField": u"_id",
+                    u"as": u"Precos"
                 }
             },
             {
-                u'$lookup': {
-                    u'from': u'Precos',
-                    u'localField': u'PrecoReferencia',
-                    u'foreignField': u'_id',
-                    u'as': u'Precos'
+                u"$lookup": {
+                    u"from": u"ProdutosServicos",
+                    u"localField": u"ProdutoServicoReferencia",
+                    u"foreignField": u"_id",
+                    u"as": u"ProdutoServico"
+                }
+            },
+            {
+                u"$lookup": {
+                    u"from": u"Estoques",
+                    u"localField": u"EstoqueReferencia",
+                    u"foreignField": u"_id",
+                    u"as": u"Estoques"
                 }
             }
         ]
@@ -176,19 +184,35 @@ class Products:
             for doc in cursor:
                 doc['id'] = str(doc['_id'])
                 doc['Precos'][0]['id'] = str(doc['Precos'][0]['_id'])
-                del doc['_id']
+                doc['Estoques'][0]['id'] = str(doc['Estoques'][0]['_id'])
+                doc['ProdutoServico'][0]['id'] = str(doc['ProdutoServico'][0]['_id'])
                 retorno.append(doc)
         finally:
-            uteis.fecha_conexao()
+            Uteis().fecha_conexao()
             return retorno
 
-    def get_precos(self, id):
+    def get_full_product(self, id):
+        if type(id) == str and len(id) == 24:
+            pass
+        elif type(id) == ObjectId:
+            pass
+        else:
+            return []
+
+        retorno = {'empresa': self.get_produto_empresa(id)}
+        retorno['preco'] = self.get_preco(retorno['empresa'][0]['PrecoReferencia'])
+        retorno['estoque'] = self.get_estoque(retorno['empresa'][0]['EstoqueReferencia'])
+        retorno['produto'] = self.get_produto_servico(retorno['empresa'][0]['ProdutoServicoReferencia'])
+
+        return retorno
+
+    @staticmethod
+    def get_preco(id):
         # Importe Uteis para criar conexao com mongo
-        uteis = Uteis()
-        database = uteis.conexao
+        database = Uteis().conexao
 
         # Setando coletion que vai ser consultado
-        collection = database["Precos"]
+        collection = database['Precos']
 
         # Declarando variavel de filtros
         query = {}
@@ -203,7 +227,124 @@ class Products:
             cursor = collection.find(query)
 
             for doc in cursor:
+                doc['id'] = str(doc['_id'])
                 retorno.append(doc)
         finally:
-            uteis.fecha_conexao()
+            Uteis().fecha_conexao()
+            return retorno
+
+    @staticmethod
+    def get_servicos():
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['ProdutosServicos']
+
+        # Declarando variavel de filtros
+        query = {'TipoItem.Codigo': 9}
+        retorno = []
+
+        try:
+            for x in collection.find(query):
+                retorno.append(x)
+        finally:
+            Uteis().fecha_conexao()
+            return retorno
+
+    @staticmethod
+    def get_produtos():
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['ProdutosServicos']
+
+        # Declarando variavel de filtros
+        query = {'TipoItem.Codigo': 0}
+        retorno = []
+
+        try:
+            for x in collection.find(query):
+                retorno.append(x)
+        finally:
+            Uteis().fecha_conexao()
+            return retorno
+
+    @staticmethod
+    def get_estoque(id):
+        if type(id) == str and len(id) == 24:
+            query = {'_id': ObjectId(id)}
+        elif type(id) == ObjectId:
+            query = {'_id': id}
+        else:
+            return []
+
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['Estoques']
+
+        # Declarando variavel de retorno
+        retorno = []
+
+        try:
+            ok = collection.find_one(query)
+            ok['id'] = str(ok['_id'])
+            retorno.append(ok)
+        finally:
+            Uteis().fecha_conexao()
+            return retorno
+
+    @staticmethod
+    def get_produto_servico(id):
+        if type(id) == str and len(id) == 24:
+            query = {'_id': ObjectId(id)}
+        elif type(id) == ObjectId:
+            query = {'_id': id}
+        else:
+            return []
+
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['ProdutosServicos']
+
+        # Declarando variavel de retorno
+        retorno = []
+
+        try:
+            ok = collection.find_one(query)
+            ok['id'] = str(ok['_id'])
+            retorno.append(ok)
+        finally:
+            Uteis().fecha_conexao()
+            return retorno
+
+    @staticmethod
+    def get_produto_empresa(id):
+        if type(id) == str and len(id) == 24:
+            query = {'_id': ObjectId(id)}
+        elif type(id) == ObjectId:
+            query = {'_id': id}
+        else:
+            return []
+
+        # Importe Uteis para criar conexao com mongo
+        database = Uteis().conexao
+
+        # Setando coletion que vai ser consultado
+        collection = database['ProdutosServicosEmpresa']
+
+        # Declarando variavel de retorno
+        retorno = []
+
+        try:
+            for x in collection.find(query):
+                x['id'] = str(x['_id'])
+                retorno.append(x)
+        finally:
+            Uteis().fecha_conexao()
             return retorno

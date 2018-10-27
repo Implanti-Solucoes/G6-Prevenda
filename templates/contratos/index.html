@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tabela de Preço</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8">
+       $(document).ready(function() {
+            $('#cliente').DataTable({
+                "language": {
+                        "lengthMenu": "Quantidade de clientes por pagina _MENU_",
+                        "zeroRecords": "Nem um cliente encontrado",
+                        "info": "Cliente _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nem um cliente encontrado",
+                        "infoFiltered": "(Filtrado de _MAX_ total de clientes)",
+                        "search":         "Pesquisar:",
+                        "paginate": {
+                            "first":      "Primeira",
+                            "last":       "Ultima",
+                            "next":       "Proxima",
+                            "previous":   "Voltar"
+                        },
+                },
+            });
+       });
+    </script>
+</head>
+<body>
+    {% include "menu.html" %}
+    {% if cancelado == '1' and contratos_ativos.count > 0 or cancelado == '0' and contratos_ativos.count > 0 %}
+    <div class="container">
+        <h3>CONTRATOS ATIVOS</h3>
+        <table class="table" id="cliente">
+            <thead>
+                <tr>
+                    <th>CONTRATO</th>
+                    <th>PARCELAS</th>
+                    <th>STATUS</th>
+                    <th>TIPO</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contrato in contratos_ativos %}
+                <tr>
+                    <td>{{ contrato.id }}</td>
+                    <td>{{ contrato.parcelas.count }}</td>
+                    <td>Ativo</td>
+                    <td>{% if contrato.tipo == 1 %}Normal{% else %}Renegociação{% endif %}</td>
+                    <td>{% if contrato.id > 0 and contrato.tipo == 1 %}<a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' contrato.id_g6 %}">Comprovante de Débito</a>{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif contratos_ativos.count == 0 and contratos_excluidos.count == 0%}
+        <div class="container">
+        <table class="table" id="cliente">
+            <thead>
+                <tr>
+                    <th>CONTRATO</th>
+                    <th>PARCELAS</th>
+                    <th>STATUS</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% if cancelado == '2' or cancelado == '0' and contratos_excluidos.count > 0 %}
+    <div class="container">
+        <h3>CONTRATOS CANCELADOS</h3>
+        <table class="table" id="cliente">
+            <thead>
+                <tr>
+                    <th>CONTRATO</th>
+                    <th>PARCELAS</th>
+                    <th>MOTIVO</th>
+                    <th>STATUS</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contrato in contratos_excluidos %}
+                <tr>
+                    <td>{{ contrato.id }}</td>
+                    <td>{{ contrato.parcelas.count }}</td>
+                    <td>{{ contrato.motivo }}</td>
+                    <td>Cancelado</td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</body>
+</html>

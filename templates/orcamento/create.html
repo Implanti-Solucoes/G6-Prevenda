@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento</title>
+
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#ProductsTable').DataTable({
+                "language": {
+                        "lengthMenu": "Quantidade de produtos por pagina _MENU_",
+                        "zeroRecords": "Nem um produto encontrado",
+                        "info": "Pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nem um produto encontrado",
+                        "infoFiltered": "(Filtrado de _MAX_ total de produtos)",
+                        "search":         "Pesquisar:",
+                        "paginate": {
+                            "first":      "Primeira",
+                            "last":       "Ultima",
+                            "next":       "Proxima",
+                            "previous":   "Voltar"
+                        },
+                },
+                "columnDefs": [ {
+                    "targets": 5,
+                    "orderable": false
+                }],
+                "columns": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    { "searchable": false}
+                ]
+            });
+        });
+    </script>
+    <script type="text/javascript" charset="utf-8">
+        var produtos = Array();
+        const con_produto_cod = 0;
+        const con_produto_qtd = 1;
+        const con_produto_desconto = 2;
+        const con_produto_unitario = 3;
+        const con_produto_total = 4;
+
+        function loadDoc(id) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    addProduct(this);
+                }
+            };
+            xhttp.open("GET", "{% url 'orcamento:consulta' %}?id="+id, true);
+            xhttp.send();
+        }
+
+        function addProduct(xml) {
+            var xmlDoc = xml.responseXML;
+            var produto = xmlDoc.getElementsByTagName("produto")[0];
+            var produto_id = produto.getElementsByTagName("id")[0].childNodes[0].nodeValue;
+            var produto_cod = produto.getElementsByTagName("codigo")[0].childNodes[0].nodeValue;
+            var produto_nome = produto.getElementsByTagName("nome")[0].childNodes[0].nodeValue;
+            var produto_price = parseFloat(produto.getElementsByTagName("venda")[0].childNodes[0].nodeValue);
+
+            if (produtos[produto_id] !== undefined) {
+                return false;
+            }
+            produtos[produto_id] = [produto_cod, 1, 0, produto_price, produto_price];
+            const table = document.getElementById("TableOrcamentoProducts");
+            var row = table.insertRow();
+            var cell1 = row.insertCell(0);
+
+            var input_id = document.createElement("input");
+            input_id.type = "hidden";
+            input_id.name = "id[]";
+            input_id.value = produto_id;
+            cell1.innerHTML = produto_cod;
+            cell1.appendChild(input_id);
+
+            var cell2 = row.insertCell(1);
+            var input_descricao = document.createElement("input");
+            input_descricao.type = "text";
+            input_descricao.name = "descricao";
+            input_descricao.value = produto_nome;
+            input_descricao.disabled = true;
+            input_descricao.className = 'form-control';
+            cell2.appendChild(input_descricao);
+
+            var cell3 = row.insertCell(2);
+            var input_quantidade = document.createElement("input");
+            input_quantidade.type = "numeric";
+            input_quantidade.name = "qtd[]";
+            input_quantidade.value = 1;
+            input_quantidade.className = 'form-control';
+            input_quantidade.onkeyup = function () {return somenteNumeros(this);};
+            input_quantidade.onblur = function () {return quantidade(this);};
+            cell3.appendChild(input_quantidade);
+
+            var cell4 = row.insertCell(3);
+            var input_desconto = document.createElement("input");
+            input_desconto.type = "numeric";
+            input_desconto.name = "desconto[]";
+            input_desconto.value = 0;
+            input_desconto.className = 'form-control';
+            input_desconto.onblur = function () {return desconto(this);};
+            cell4.appendChild(input_desconto);
+
+            var cell5 = row.insertCell(4);
+            var input_preco_unitario = document.createElement("input");
+            input_preco_unitario.type = "numeric";
+            input_preco_unitario.name = "preco_unitario[]";
+            input_preco_unitario.value = produto_price;
+            input_preco_unitario.className = 'form-control';
+            input_preco_unitario.onkeyup = function () {return somenteNumeros(this);};
+            input_preco_unitario.onblur = function () {return preco_unitario(this);};
+            cell5.appendChild(input_preco_unitario);
+
+            var cell6 = row.insertCell(5);
+            var input_preco_total = document.createElement("input");
+            input_preco_total.type = "numeric";
+            input_preco_total.name = "preco_total";
+            input_preco_total.value = produto_price;
+            input_preco_total.disabled = true;
+            input_preco_total.className = 'form-control';
+            cell6.appendChild(input_preco_total);
+
+            var cell7 = row.insertCell(6);
+            var button_remover = document.createElement("button");
+            button_remover.onclick = function () {return remover(this);};
+            button_remover.innerText = "Apagar";
+            button_remover.className = "btn btn-light";
+            cell7.appendChild(button_remover);
+        }
+
+        function somenteNumeros(num) {
+            var er = /[^0-9.]/;
+
+            er.lastIndex = 0;
+            var campo = num;
+
+            if(er.test(campo.value)){
+                campo.value = "1";
+            }
+        }
+        function desconto(input) {
+            var id = input.parentNode.parentNode.cells[0].getElementsByTagName("input")[0];
+            var total = input.parentNode.parentNode.cells[5].getElementsByTagName("input")[0];
+            var er = /[^0-9.]/;
+
+            er.lastIndex = 0;
+            var campo = input;
+            if(er.test(campo.value) || campo.value < 0){
+                campo.value = produtos[id.value][con_produto_desconto];
+            }else {
+                if ((produtos[id.value][con_produto_unitario] * produtos[id.value][con_produto_qtd]) - campo.value > 0) {
+                    produtos[id.value][con_produto_desconto] = campo.value;
+                    total.value = produtos[id.value][con_produto_total] - campo.value;
+                }else{
+                    alert("O desconto não pode ser maior que o total");
+                    campo.value = produtos[id.value][con_produto_desconto];
+                }
+            }
+        }
+
+        function quantidade(input) {
+            var id = input.parentNode.parentNode.cells[0].getElementsByTagName("input")[0];
+            var total = input.parentNode.parentNode.cells[5].getElementsByTagName("input")[0];
+
+            <!-- Verificando se o valor total menos desconto é maior que zero -->
+            if ((produtos[id.value][con_produto_unitario] * input.value) - produtos[id.value][con_produto_desconto] > 0) {
+                produtos[id.value][con_produto_qtd] = input.value;
+                produtos[id.value][con_produto_total] = produtos[id.value][con_produto_qtd] * produtos[id.value][con_produto_unitario];
+                total.value = produtos[id.value][con_produto_total] - produtos[id.value][con_produto_desconto];
+            }else{
+                input.value = produtos[id.value][con_produto_qtd];
+                alert("Valor invalido")
+            }
+        }
+
+        function preco_unitario(input){
+            var id = input.parentNode.parentNode.cells[0].getElementsByTagName("input")[0];
+            var total = input.parentNode.parentNode.cells[5].getElementsByTagName("input")[0];
+
+            <!-- Verificando se o valor total menos desconto é maior que zero -->
+            if ((produtos[id.value][con_produto_qtd] * input.value)- produtos[id.value][con_produto_desconto] > 0){
+                produtos[id.value][con_produto_unitario] = input.value;
+                produtos[id.value][con_produto_total] = produtos[id.value][con_produto_qtd] * produtos[id.value][con_produto_unitario];
+                total.value = produtos[id.value][con_produto_total] - produtos[id.value][con_produto_desconto];
+            }else{
+                input.value = produtos[id.value][con_produto_unitario];
+                alert("Valor invalido")
+            }
+        }
+        function remover(button){
+            var id = button.parentNode.parentNode.cells[0].getElementsByTagName("input")[0];
+            button.parentNode.parentNode.remove();
+            delete produtos[id.value]
+        }
+    </script>
+</head>
+
+<body>
+    {% include "menu.html" %}
+    <div class="container-fluid clearfix">
+        <form method="post" action="{% url 'orcamento:create' %}">
+            <div class="form-group row">
+                <div class="col-lg-4 border" align="left">
+                    <button class="btn btn-primary" type="submit">Finalizar Orçamentos</button>
+                </div>
+                <div class="col-lg-4 border" align="center">
+                    <h3>NOVO ORÇAMENTO</h3>
+                </div>
+                <div class="col-lg-4 border" align="right">
+                    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#Products">Mostrar Produtos</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-12">
+                    <label for="cliente">Cliente</label>
+                    <select id='cliente' name="cliente" class="form-control">
+                        {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}">{{ cliente.Nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-6">
+                    <label for="veiculo">Veiculo</label>
+                    <input type="text" class="form-control" name="veiculo" placeholder="Digite o modelo do veiculo">
+                </div>
+                <div class="col-lg-6">
+                    <label for="placa">Placa</label>
+                    <input type="text" class="form-control" name="placa" placeholder="Digite a placa do veiculo">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-6">
+                    <label for="garantia">Garantia</label>
+                    <textarea class="form-control" id="garantia" name="garantia" rows="2"></textarea>
+                </div>
+                <div class="col-lg-6">
+                    <label for="pagamento">Condições de Pagamento</label>
+                    <textarea class="form-control" id="pagamento" name="pagamento" rows="2"></textarea>
+                </div>
+            </div>
+            <br /><hr />
+            <div class="table-responsive">
+                <table class="table table-striped" id="TableOrcamento">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>CÓDIGO</th>
+                            <th>PRODUTO</th>
+                            <th>QUANTIDADE</th>
+                            <th>DESCONTO</th>
+                            <th>PREÇO UNITARIO</th>
+                            <th>PREÇO TOTAL</th>
+                            <th>#</th>
+                        </tr>
+                    </thead>
+                    <tbody id="TableOrcamentoProducts">
+                    </tbody>
+                </table>
+                <br /><hr />
+            </div>
+            <div class="collapse" id="Products">
+                <table id="ProductsTable" class="display responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>CODIGO</th>
+                            <th>Serviço / Produto</th>
+                            <th>QUANTIDADE</th>
+                            <th>DESCRIÇÃO</th>
+                            <th>PREÇO DE VENDA</th>
+                            <th>#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for x in produtos %}
+                            <tr>
+                                <td>{{ x.ProdutoServico.0.CodigoInterno }}</td>
+                                <td>{% if x.ProdutoServico.0.TipoItem.Codigo == 9 %}Serviço{% else %}Produto{% endif %}</td>
+                                <td>{% if x.Estoques.0.Quantidades.0.Quantidade %}{{ x.Estoques.0.Quantidades.0.Quantidade }}{% else %} 0 {% endif %}</td>
+                                <td>{{ x.ProdutoServico.0.Descricao }}</td>
+                                <td>{{ x.Precos.0.Venda.Valor }}</td>
+                                <td>
+                                    <button class="btn btn-light" type="button" onclick="loadDoc('{{ x.id }}')">Adicionar</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% csrf_token %}
+
+            <div class="form-group row">
+                <div class="col-lg-6 border" align="left">
+                    <button class="btn btn-primary" type="submit">Finalizar Orçamentos</button>
+                </div>
+                <div class="col-lg-6 border" align="right">
+                    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#Products">Mostrar Produtos</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

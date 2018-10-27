@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tabela de Preço</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8">
+       $(document).ready(function() {
+            $('#cliente').DataTable({
+                "language": {
+                        "lengthMenu": "Quantidade de clientes por pagina _MENU_",
+                        "zeroRecords": "Nem um cliente encontrado",
+                        "info": "Cliente _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nem um cliente encontrado",
+                        "infoFiltered": "(Filtrado de _MAX_ total de clientes)",
+                        "search":         "Pesquisar:",
+                        "paginate": {
+                            "first":      "Primeira",
+                            "last":       "Ultima",
+                            "next":       "Proxima",
+                            "previous":   "Voltar"
+                        },
+                },
+                "order": [[ 3, "desc" ]]
+            });
+       });
+    </script>
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="container">
+        <form action="{% url 'financeiro:renegociacao' %}" method="post">
+            {% csrf_token %}
+            <button class="btn">Renegociar</button>
+            <table class="table" id="cliente">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Documento / Parcela</th>
+                        <th>Descrição</th>
+                        <th>Vencimento</th>
+                        <th>Valor</th>
+                        <th>Juros</th>
+                        <th>Multa</th>
+                        <th>Valor atualizado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for parcela in parcelas %}
+                    <tr>
+                        <td><input type="checkbox" name="parcela" value={{ parcela.parcela_mongo.id }}></td>
+                        <td>{{ parcela.parcela_mongo.Documento }} / {{ parcela.parcela_mongo.Ordem }}</td>
+                        <td>{{ parcela.parcela_mongo.Descricao }}</td>
+                        <td>{{ parcela.parcela_mongo.Vencimento }}</td>
+                        <td>{{ parcela.parcela_mongo.Historico.0.Valor|floatformat:2 }}</td>
+                        <td>{{ parcela.parcela_mongo.Juro.Valor|floatformat:2 }}</td>
+                        <td>{{ parcela.parcela_mongo.Juro.Valor|floatformat:2 }}</td>
+                        <td>{{ parcela.parcela_mongo.Juro.Valor|floatformat:2 }}</td>
+                        <td>{% if parcela.contrato.tipo == 1 %}<a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' parcela.contrato.id_g6 %}">Comprovante de Débito</a>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

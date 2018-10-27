@@ -1,8 +1,11 @@
 from bson import ObjectId
 from bson.regex import Regex
+
+from Pessoas.models import PessoasMongo
 from core.models import Uteis
 
-class Movimentacoes():
+
+class Movimentacoes:
     def __init__(self):
         self.query = {}
         self.projection = {}
@@ -16,19 +19,19 @@ class Movimentacoes():
         elif type(con) == ObjectId:
             self.query['_id'] = con
 
-    def set_query_situacao_codigo(self, con, ne = 0):
+    def set_query_situacao_codigo(self, con, ne=0):
         self.query['Situacao.Codigo'] = con
         if ne != 0:
             self.query['Situacao.Codigo'] = {
                 u"$ne": con
             }
 
-    def set_query_t(self, con, and_or = ''):
+    def set_query_t(self, con, and_or=''):
         if and_or == 'and':
             if '$and' not in self.query:
                 self.query['$and'] = {}
 
-            self.query['$and'].append({'_t': Regex(u'.*'+con+'.*', 'i')})
+            self.query['$and'].append({'_t': Regex(u'.*' + con + '.*', 'i')})
 
         elif and_or == 'or':
             if '$or' not in self.query:
@@ -49,8 +52,8 @@ class Movimentacoes():
             u'$lt': final
         }
 
-    def set_query_convertida(self, con = False):
-        if con == True:
+    def set_query_convertida(self, con=False):
+        if con:
             self.query['Convertida'] = True
         else:
             self.query['Convertida'] = False
@@ -91,7 +94,6 @@ class Movimentacoes():
                     }
                 )
 
-
     def set_query_pessoa_id(self, con):
         if len(con) == 24:
             self.query['Pessoa.PessoaReferencia'] = ObjectId(con)
@@ -104,19 +106,6 @@ class Movimentacoes():
         elif type(con) == ObjectId:
             self.query['Vendedor.PessoaReferencia'] = con
 
-    def set_query_movimentacao_por_recebimento(self, con):
-        if type(con) == str and len(con) == 24:
-            self.query["PagamentoRecebimento.Parcelas"] = {
-                u"$elemMatch": {
-                    u"_id": ObjectId(con)
-                }
-            }
-        elif type(con) == ObjectId:
-            self.query["PagamentoRecebimento.Parcelas"] = {
-                u"$elemMatch": {
-                    u"_id": con
-                }
-            }
     def set_projection_id(self):
         self.projection['_id'] = 1.0
 
@@ -165,43 +154,48 @@ class Movimentacoes():
         self.limit = 500
 
     def execute_all(self):
-        busca = self.uteis.execute('Movimentacoes',
-                              self.query,
-                              projection=self.projection,
-                              sort=self.sort,
-                              limit=self.limit)
+        busca = self.uteis.execute(
+            'Movimentacoes',
+            self.query,
+            projection=self.projection,
+            sort=self.sort,
+            limit=self.limit
+        )
         self.unset_all()
         return busca
 
     def execute_one(self):
         busca = self.uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)
         self.unset_all()
-        if busca['Pessoa']['_t'] == 'FisicaHistorico':
-            busca['Pessoa']['tipo'] = 'CPF'
-            busca['Pessoa']['Documento'] = '%s.%s.%s-%s' % (
-                busca['Pessoa']['Documento'][0:3],
-                busca['Pessoa']['Documento'][3:6],
-                busca['Pessoa']['Documento'][6:9],
-                busca['Pessoa']['Documento'][9:11]
-            )
-        elif busca['Pessoa']['_t'] == 'EmpresaHistorico':
-            busca['Pessoa']['tipo'] = 'CNPJ'
-            busca['Pessoa']['Documento'] = '%s.%s.%s/%s-%s' % (
-                busca['Pessoa']['Documento'][0:2],
-                busca['Pessoa']['Documento'][2:5],
-                busca['Pessoa']['Documento'][5:8],
-                busca['Pessoa']['Documento'][8:12],
-                busca['Pessoa']['Documento'][12:14]
-            )
+        if busca is not None:
+            if 'Pessoa' in busca:
+                if busca['Pessoa']['_t'] == 'FisicaHistorico':
+                    busca['Pessoa']['tipo'] = 'CPF'
+                    busca['Pessoa']['Documento'] = '%s.%s.%s-%s' % (
+                        busca['Pessoa']['Documento'][0:3],
+                        busca['Pessoa']['Documento'][3:6],
+                        busca['Pessoa']['Documento'][6:9],
+                        busca['Pessoa']['Documento'][9:11]
+                    )
+                elif busca['Pessoa']['_t'] == 'EmpresaHistorico':
+                    busca['Pessoa']['tipo'] = 'CNPJ'
+                    busca['Pessoa']['Documento'] = '%s.%s.%s/%s-%s' % (
+                        busca['Pessoa']['Documento'][0:2],
+                        busca['Pessoa']['Documento'][2:5],
+                        busca['Pessoa']['Documento'][5:8],
+                        busca['Pessoa']['Documento'][8:12],
+                        busca['Pessoa']['Documento'][12:14]
+                    )
 
-        busca['Empresa']['tipo'] = 'CNPJ'
-        busca['Empresa']['Documento'] = '%s.%s.%s/%s-%s' % (
-            busca['Empresa']['Documento'][0:2],
-            busca['Empresa']['Documento'][2:5],
-            busca['Empresa']['Documento'][5:8],
-            busca['Empresa']['Documento'][8:12],
-            busca['Empresa']['Documento'][12:14]
-        )
+            if 'Empresa' in busca:
+                busca['Empresa']['tipo'] = 'CNPJ'
+                busca['Empresa']['Documento'] = '%s.%s.%s/%s-%s' % (
+                    busca['Empresa']['Documento'][0:2],
+                    busca['Empresa']['Documento'][2:5],
+                    busca['Empresa']['Documento'][5:8],
+                    busca['Empresa']['Documento'][8:12],
+                    busca['Empresa']['Documento'][12:14]
+                )
         return busca
 
     def get_vendedores(self):
@@ -253,3 +247,90 @@ class Movimentacoes():
                                                           {'$set': {'Situacao': Aprovado}})
         finally:
             self.uteis.fecha_conexao()
+
+    @staticmethod
+    def pessoas_movimentacao(id_cliente):
+        id = id_cliente
+        cliente = PessoasMongo().get_pessoa(id)
+
+        pessoa_dict = {}
+
+        if 'Fisica' in cliente['_t']:
+            pessoa_dict['_t'] = 'FisicaHistorico'
+            if 'Cpf' in cliente:
+                pessoa_dict['Documento'] = cliente['Cpf']
+            else:
+                print("Você precisa coloca CPF no cliente")
+
+            if 'Rg' in cliente:
+                pessoa_dict['Rg'] = cliente['Rg']
+                if 'Uf' in pessoa_dict['Rg']:
+                    pessoa_dict['Rg']['Uf']['_t'] = cliente['Rg']
+                else:
+                    pessoa_dict['Rg']['Uf'] = None
+
+                if 'OrgaoEmissor' not in pessoa_dict['Rg']:
+                    pessoa_dict['Rg']['OrgaoEmissor'] = None
+
+            if 'Numero' in cliente['Carteira']['Ie']:
+                pessoa_dict['Ie'] = cliente['Carteira']['Ie']['Numero']
+
+            pessoa_dict['Cliente'] = {'LimiteCredito': cliente['LimiteCredito']}
+
+        elif 'Emitente' in cliente['_t']:
+            pessoa_dict['_t'] = 'EmpresaHistorico'
+            if 'Cnpj' in cliente:
+                pessoa_dict['Documento'] = cliente['Cnpj']
+            else:
+                print("Você precisa coloca CNPJ no cliente")
+
+            pessoa_dict['Ie'] = cliente['Carteira']['Ie']['Numero']
+
+        elif 'Juridica' in cliente['_t']:
+            pessoa_dict['_t'] = 'JuridicaHistorico'
+            if 'Cnpj' in cliente:
+                pessoa_dict['Documento'] = cliente['Cnpj']
+            else:
+                print("Você precisa coloca CNPJ no cliente")
+
+            if 'Numero' in cliente['Carteira']['Ie']:
+                pessoa_dict['Ie'] = cliente['Carteira']['Ie']['Numero']
+
+        elif len(cliente['_t']) and cliente['_t'][0] == 'Pessoa' and cliente['_t'][1] == 'Consumidor':
+            pessoa_dict['_t'] = 'ConsumidorHistorico'
+            pessoa_dict['Cliente'] = {'LimiteCredito': 0.0}
+
+        pessoa_dict['PessoaReferencia'] = cliente['_id']
+        pessoa_dict['Nome'] = cliente['Nome']
+        pessoa_dict['Classificacao'] = cliente['Classificacao']
+
+        if 'TelefonePrincipal' in cliente:
+            pessoa_dict['TelefonePrincipal'] = cliente['TelefonePrincipal']['Numero']
+
+        # Configurando o endereço do cliente
+        pessoa_dict['EnderecoPrincipal'] = cliente['Carteira']['EnderecoPrincipal']
+        del pessoa_dict['EnderecoPrincipal']['_t']
+        del pessoa_dict['EnderecoPrincipal']['InformacoesPesquisa']
+
+        if pessoa_dict['Classificacao']['_t'] == 'NaoContribuinte':
+            pessoa_dict['IndicadorOperacaoConsumidorFinal'] = {
+                '_t': 'ConsumidorFinal',
+                'Codigo': 1,
+                'Descricao': 'Consumidor final'
+            }
+            pessoa_dict['IndicadorIeDestinatario'] = {
+                '_t': 'NaoContribuinte'
+            }
+
+        else:
+            pessoa_dict['IndicadorOperacaoConsumidorFinal'] = {
+                '_t': 'Normal',
+                'Codigo': 0,
+                'Descricao': 'Normal'
+            }
+            pessoa_dict['IndicadorIeDestinatario'] = {
+                '_t': 'ContribuinteIcms'
+            }
+
+        pessoa_dict['InformacoesPesquisa'] = cliente['InformacoesPesquisa']
+        return pessoa_dict

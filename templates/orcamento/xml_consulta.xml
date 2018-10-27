@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8" ?><produto><id>{{ ok.empresa.0.id }}</id><codigo>{{ ok.produto.0.CodigoInterno }}</codigo><nome>{{ ok.produto.0.Descricao }}</nome><venda>{{ ok.preco.0.Venda.Valor }}</venda><qtd>{% if ok.Estoques.0.Quantidades.0.Quantidade %}{{ ok.Estoques.0.Quantidades.0.Quantidade }}{% else %}0{% endif %}</qtd></produto>

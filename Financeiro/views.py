@@ -1,18 +1,22 @@
 from datetime import datetime
 from bson import ObjectId
 from django.shortcuts import render, redirect
-from core.models import Uteis
+from core.models import Uteis, Configuracoes
 from Movimentacoes.models import Movimentacoes
-from .models import Pessoas, Financeiro
+from .models import Financeiro, Contratos, Parcelas
+from Pessoas.models import PessoasMongo
+
+
+def remove_repetidos(lista):
+    l = []
+    for i in lista:
+        if i not in l:
+            l.append(i)
+    l.sort()
+    return l
 
 
 def gerar_financeiro(request):
-    # Estanciando classes
-    movimentacoes = Movimentacoes()
-    pessoas = Pessoas()
-    uteis = Uteis()
-    financeiro = Financeiro()
-
     # Recebendo valores e tratando
     id = request.POST['id']
     conta = request.POST['conta']
@@ -21,8 +25,7 @@ def gerar_financeiro(request):
 
     # Recebendo valores de entrada e tratando
     entrada = request.POST['entrada']
-    entrada = entrada.replace(',', '.')
-    entrada = float(entrada)
+    entrada = float(entrada.replace(',', '.'))
 
     # Recebendo valores e tratando
     parcelas = int(request.POST['parcelas'])
@@ -31,18 +34,97 @@ def gerar_financeiro(request):
     vencimentos = request.POST.getlist('vencimentos[]')
 
     # Fazendo busca das prevendas
-    movimentacoes.set_query_id(id)
-    movimentacoes.set_query_t('PreVenda')
-    movimentacoes.set_query_convertida('False')
-    cursor = movimentacoes.execute_one()
+    movimentacao = Movimentacoes()
+    movimentacao.set_query_id(id)
+    movimentacao.set_query_t('PreVenda')
+    movimentacao.set_query_convertida(False)
+    cursor = movimentacao.execute_one()
 
-    if 'InformacoesPesquisa' in cursor and cursor['Situacao']['Codigo'] == 1:
-        data = datetime.now()
-        database = uteis.conexao
-        emitente = pessoas.get_emitente()
+    # Verificando a venda e os dados informados
+    if cursor is None:
+        print("Não achei a pre venda")
+        return redirect('movimentacoes:listagem_prevenda')
 
-        # Modificando Pre-Venda para criar atrelar parcelas financeiras
-        cursor['PagamentoRecebimento'] = {'_t': 'Recebimento', 'Parcelas': []}
+    if 'InformacoesPesquisa' not in cursor:
+        print("Achei mais não ta valida")
+        return redirect('movimentacoes:listagem_prevenda')
+
+    if cursor['Situacao']['Codigo'] != 1:
+        print("Achei ta valida, mas a situação não ta boa")
+        return redirect('movimentacoes:listagem_prevenda')
+
+    if len(vencimentos) != parcelas:
+        print("Tudo certo, mas os vencimentos não")
+        return redirect('movimentacoes:listagem_prevenda')
+
+    # Pegando total da nota com descontos
+    cursor = Uteis().total_venda(cursor)
+    cursor['liquido'] = cursor['liquido'] - entrada
+
+    # Criado contrato
+    contrato = Contratos.objects.create(
+        tipo=1,
+        id_g6=cursor['id'],
+        id_g6_cliente=str(cursor['Pessoa']['PessoaReferencia']),
+        excluido=False
+    )
+
+    # Tratando valores da parcela
+    valor_parcela = cursor['liquido'] / parcelas
+    valor_parcela = float('%.2f' % valor_parcela)
+
+    # gerando parcela de entrada
+    if entrada > 0:
+        y = 1
+        id = gerar_parcela(
+            titulo='Pre Venda',
+            informacoes_pesquisa=cursor['InformacoesPesquisa'],
+            pessoa=cursor['Pessoa']['PessoaReferencia'],
+            emitente=cursor['Empresa']['PessoaReferencia'],
+            documento=cursor['Numero'],
+            num=y,
+            conta=conta,
+            centro_custo=centro_custo,
+            planos_contas=planos_contas,
+            valor_parcela=entrada,
+            vencimento=datetime.now(),
+            entrada=True
+        )
+        if id is not None:
+            contrato.parcelas.create(id_g6=id)
+    else:
+        y = 0
+
+    for x in vencimentos:
+        id = gerar_parcela(
+            titulo='Pre Venda',
+            informacoes_pesquisa=cursor['InformacoesPesquisa'],
+            pessoa=cursor['Pessoa']['PessoaReferencia'],
+            emitente=cursor['Empresa']['PessoaReferencia'],
+            documento=cursor['Numero'],
+            num=y + 1,
+            conta=conta,
+            centro_custo=centro_custo,
+            planos_contas=planos_contas,
+            valor_parcela=valor_parcela,
+            vencimento=x,
+            entrada=False
+        )
+        if id is not None:
+            contrato.parcelas.create(id_g6=id)
+        y += 1
+
+    # Vamos configurar as movimentações
+    try:
+        cursor['InformacoesPesquisa'] = remove_repetidos(cursor['InformacoesPesquisa'])
+        # Configurando CFOP para não gerar financeiro
+        z = 0
+        for _ in cursor['ItensBase']:
+            cursor['ItensBase'][z]['OperacaoFiscal']['Tipo'] = 5
+            z = z + 1
+
+        # Removendo totais para pode atualizar no banco
+        cursor = Uteis().remover_totais(cursor)
 
         # Modificar para status aprovado
         cursor['Situacao'] = {
@@ -56,233 +138,42 @@ def gerar_financeiro(request):
             'DescricaoComando': 'Tornar pendente'
         }
 
-        # Pegando total da nota com descontos
-        cursor = uteis.total_venda(cursor)
-        cursor['liquido'] = cursor['liquido'] - entrada
+        # Removendo ID tratado para pode inserir no banco
+        del cursor['id']
 
-        # Configurando informações de pesquisa
-        informacoes_pesquisa = []
-        informacoes_pesquisa.extend(cursor['InformacoesPesquisa'])
-        informacoes_pesquisa.append('pre-venda ' + str(cursor['Numero']))
+        # Atualizando movimentação
+        database = Uteis().conexao
+        database['Movimentacoes'].update({'_id': cursor['_id']}, cursor)
+        Uteis().fecha_conexao()
 
-        # Tratando valores da parcela
-        valor_parcela = cursor['liquido'] / parcelas
-        valor_parcela = float('%.2f' % valor_parcela)
-
-        # Reconfigurando contador pra reutilizar
-        x = 0
-
-        # Verificando se tem entradas
-        if entrada > 0:
-            parcelas = parcelas + 1
-            x = x + 1
-
-            cursor['PagamentoRecebimento']['Parcelas'].append({
-                '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
-                'InformacoesPesquisa': informacoes_pesquisa,
-                'Versao': '736794.19:26:22.9976483',
-                'Ativo': True,
-                'Ordem': x,
-                'Descricao': 'PRE-VENDA ' + str(cursor['Numero']) + ' - ' + str(x),
-                'Documento': str(cursor['Numero']),
-                'PessoaReferencia': cursor['Pessoa']['PessoaReferencia'],
-                'Vencimento': data,
-                'Historico': [
-                    {
-                        '_t': 'HistoricoAguardando',
-                        'Valor': entrada,
-                        'EspeciePagamento': {
-                            '_t': 'EspeciePagamentoECF',
-                            'Codigo': 1,
-                            'Descricao': 'Dinheiro',
-                            'EspecieRecebimento': {
-                                '_t': 'Dinheiro'
-                            }
-                        },
-                        'PlanoContaCodigoUnico': planos_contas,
-                        'CentroCustoCodigoUnico': centro_custo,
-                        'ContaReferencia': ObjectId(conta),
-                        'EmpresaReferencia': emitente['_id'],
-                        'Data': data,
-                        'ChequeReferencia': ObjectId('000000000000000000000000')
-                    },
-                    {
-                        '_t': 'HistoricoPendente',
-                        'Valor': entrada,
-                        'EspeciePagamento': {
-                            '_t': 'EspeciePagamentoECF',
-                            'Codigo': 1,
-                            'Descricao': 'Dinheiro',
-                            'EspecieRecebimento': {
-                                '_t': 'Dinheiro'
-                            }
-                        },
-                        'PlanoContaCodigoUnico': planos_contas,
-                        'CentroCustoCodigoUnico': centro_custo,
-                        'ContaReferencia': ObjectId(conta),
-                        'EmpresaReferencia': emitente['_id'],
-                        'NomeUsuario': 'Usuário Administrador',
-                        'Data': data,
-                        'ChequeReferencia': ObjectId('000000000000000000000000')
-                    },
-                    {
-                        '_t': 'HistoricoQuitado',
-                        'Valor': entrada,
-                        'EspeciePagamento': {
-                            '_t': 'EspeciePagamentoECF',
-                            'Codigo': 1,
-                            'Descricao': 'Dinheiro',
-                            'EspecieRecebimento': {
-                                '_t': 'Dinheiro'
-                            }
-                        },
-                        'PlanoContaCodigoUnico': planos_contas,
-                        'CentroCustoCodigoUnico': centro_custo,
-                        'ContaReferencia': ObjectId(conta),
-                        'EmpresaReferencia': emitente['_id'],
-                        'NomeUsuario': 'Usuário Administrador',
-                        'Data': data,
-                        'ChequeReferencia': ObjectId('000000000000000000000000'),
-                        'Desconto': 0.0,
-                        'Acrescimo': 0.0,
-                        'DataQuitacao': data
-                    }
-                ],
-                'Situacao': {
-                    '_t': 'Quitada',
-                    'Codigo': 3
-                },
-                'ContaReferencia': ObjectId(conta),
-                'EmpresaReferencia': emitente['_id'],
-                'NomeUsuario': 'Usuário Administrador',
-                'DataQuitacao': data,
-                'AcrescimoInformado': 0.0,
-                'DescontoInformado': 0.0,
-            })
-
-        if valor_parcela > 0:
-            y = 0
-            while x < parcelas:
-                cursor['PagamentoRecebimento']['Parcelas'].append({
-                    '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
-                    'InformacoesPesquisa': informacoes_pesquisa,
-                    'Versao': '736794.19:26:22.9976483',
-                    'Ativo': True,
-                    'Ordem': x + 1,
-                    'Descricao': 'PRE-VENDA ' + str(cursor['Numero']) + ' - ' + str(x + 1),
-                    'Documento': str(cursor['Numero']),
-                    'PessoaReferencia': cursor['Pessoa']['PessoaReferencia'],
-                    'Vencimento': datetime.strptime(vencimentos[y], '%Y-%m-%d'),
-                    'Historico': [
-                        {
-                            '_t': 'HistoricoAguardando',
-                            'Valor': valor_parcela,
-                            'EspeciePagamento': {
-                                '_t': 'EspeciePagamentoECF',
-                                'Codigo': 1,
-                                'Descricao': 'Dinheiro',
-                                'EspecieRecebimento': {
-                                    '_t': 'Dinheiro'
-                                }
-                            },
-                            'PlanoContaCodigoUnico': planos_contas,
-                            'CentroCustoCodigoUnico': centro_custo,
-                            'ContaReferencia': ObjectId(conta),
-                            'EmpresaReferencia': emitente['_id'],
-                            'Data': data,
-                            'ChequeReferencia': ObjectId('000000000000000000000000')
-                        },
-                        {
-                            '_t': 'HistoricoPendente',
-                            'Valor': valor_parcela,
-                            'EspeciePagamento': {
-                                '_t': 'EspeciePagamentoECF',
-                                'Codigo': 1,
-                                'Descricao': 'Dinheiro',
-                                'EspecieRecebimento': {
-                                    '_t': 'Dinheiro'
-                                }
-                            },
-                            'PlanoContaCodigoUnico': planos_contas,
-                            'CentroCustoCodigoUnico': centro_custo,
-                            'ContaReferencia': ObjectId(conta),
-                            'EmpresaReferencia': emitente['_id'],
-                            'NomeUsuario': 'Usuário Administrador',
-                            'Data': data,
-                            'ChequeReferencia': ObjectId('000000000000000000000000')
-                        }
-                    ],
-                    'Situacao': {
-                        '_t': 'Pendente',
-                        'Codigo': 1
-                    },
-                    'ContaReferencia': ObjectId(conta),
-                    'EmpresaReferencia': emitente['_id'],
-                    'NomeUsuario': 'Usuário Administrador',
-                    'DataQuitacao': '0001-01-01T00:00:00.000+0000',
-                    'AcrescimoInformado': 0.0,
-                    'DescontoInformado': 0.0,
-                })
-                x = x + 1
-                y = y + 1
-
-        try:
-            z = 0
-            # Começando procedimento de insert no banco
-            for x in cursor['PagamentoRecebimento']['Parcelas']:
-                # Inserindo parcelas no banco
-                id_parcela = database['Recebimentos'].insert(x)
-
-                # Consultando ID para atualizar na tabela de movimentações
-                financeiro.set_query_id(id_parcela)
-
-                # Atualizando na tabela de
-                cursor['PagamentoRecebimento']['Parcelas'][z] = financeiro.execute_one()
-                z = z + 1
-
-            # Configurando CFOP para não gerar financeiro
-            z = 0
-            for _ in cursor['ItensBase']:
-                cursor['ItensBase'][z]['OperacaoFiscal']['Tipo'] = 5
-                z = z + 1
-
-            # Removendo totais para pode atualizar no banco
-            cursor = uteis.remover_totais(cursor)
-
-            # Removendo ID tratado para pode inserir no banco
-            del cursor['id']
-
-            # Atualizando movimentação com parcela financeira para identificação no sistema
-            database['Movimentacoes'].update({'_id': cursor['_id']}, cursor)
-
-            # Redirecionando para o Comprovante de debito
-            return redirect('financeiro:comprovante_de_debito_por_movimentacao', id)
-        except Exception as e:
-            print(e)
+        # Redirecionando para o Comprovante de debito
+        return redirect('financeiro:comprovante_de_debito_por_movimentacao', str(cursor['_id']))
+    except Exception as e:
+        print(e)
 
 
 def comprovante_de_debito_por_movimentacao(request, id):
     template_name = 'movimentacoes/comprovante_de_debito.html'
 
     # Estanciando classes
-    movimentacoes = Movimentacoes()
-    pessoas = Pessoas()
     financeiro = Financeiro()
     uteis = Uteis()
 
     # Fazendo busca das prevendas
-    movimentacoes.set_query_id(id)
-    cursor = movimentacoes.execute_one()
+    Movimentacoes().set_query_id(id)
+    cursor = Movimentacoes().execute_one()
 
     # Inserindo informações de totais parar exibição posterior no impresso
     cursor = uteis.total_venda(cursor)
 
-    parcelamento = []
-    for x in cursor['PagamentoRecebimento']['Parcelas']:
+    # Carregando contrato
+    contrato = Contratos.objects.all().filter(id_g6=id)
 
+    parcelamento = []
+    for x in contrato[0].parcelas.all():
         # Realizando busca no banco pelas parcelas atualizadas no sistema
         pago = 0
-        financeiro.set_query_id(x['_id'])
+        financeiro.set_query_id(x.id_g6)
         result = financeiro.execute_one()
 
         # Verificando quais parcelas foram quitadas
@@ -297,147 +188,427 @@ def comprovante_de_debito_por_movimentacao(request, id):
 
     # Reordenando para exibição
     parcelamento.sort(key=lambda t: t['Vencimento'])
-    emitente = pessoas.get_emitente()
 
     # Criando a variavel context para passa dados para template
-    context = {'Emitente': emitente, 'Prevenda': cursor, 'Data': datetime.now(), 'Parcelamento': parcelamento}
-
+    context = {'Prevenda': cursor, 'Data': datetime.now(), 'Parcelamento': parcelamento}
     return render(request, template_name, context)
 
 
-def recibo(request):
-    if request.method == 'POST':
-        ids = request.POST.getlist('parcela')
-        uteis = Uteis()
-        pessoas = Pessoas()
+def gerar_parcela(titulo, informacoes_pesquisa, pessoa,
+                  emitente, documento, num, conta, centro_custo,
+                  planos_contas, valor_parcela, vencimento, entrada=False):
 
-        cnpj = pessoas.get_cnpj_emitente()
-        nome_emitente = pessoas.get_nome_emitente()
+    # Cliente
+    if type(pessoa) == str and len(pessoa) == 24:
+        pessoa = ObjectId(pessoa)
+    elif type(pessoa) == ObjectId:
+        pass
+    else:
+        return False
 
-        cnpj = '%s.%s.%s/%s-%s' % (cnpj[0:2], cnpj[2:5], cnpj[5:8], cnpj[8:12], cnpj[12:14])
-        emitente = {'Cnpj': cnpj, 'Nome': nome_emitente}
-        recibos = {}
+    valor_parcela = round(valor_parcela, 2)
+    if valor_parcela <= 0:
+        return False
 
-        for id in ids:
-            financeiro = Financeiro()
-            financeiro.set_query_situacao(u'Quitada')
-            financeiro.set_query_id(id)
-            cursor = financeiro.execute_one()
-            clienteid = str(cursor['PessoaReferencia'])
+    pessoa = PessoasMongo().get_pessoa(pessoa)
+    # Emitente
+    if type(emitente) == str and len(emitente) == 24:
+        emitente = ObjectId(pessoa)
+    elif type(emitente) == ObjectId:
+        pass
+    else:
+        return False
 
-            if clienteid in recibos:
-                for item in cursor['Historico']:
-                    if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
-                        valor_pago = item['Valor']
-                        recibos[clienteid]['Total'] = recibos[clienteid]['Total'] + valor_pago
+    # Configurando informações de pesquisa com base no movimento
+    pesquisa = []
+    pesquisa.extend(informacoes_pesquisa)
+    pesquisa.extend(pessoa['InformacoesPesquisa'])
+    pesquisa.append(str(num))
+    pesquisa.append(str(documento))
+    pesquisa.append(str(titulo))
+    pesquisa = remove_repetidos(pesquisa)
 
-                        recibos[clienteid]['financeiro'].append({'Valor_Pago': valor_pago,
-                                                                 'Documento': cursor['Documento'],
-                                                                 'Parcela': cursor['Ordem'],
-                                                                 'Data_Quitacao': cursor['DataQuitacao']})
+    z = []
+    for x in pesquisa:
+        z.append(str(x))
+    pesquisa = z
+    del z
 
-            else:
-                cliente = pessoas.get_nome(cursor['PessoaReferencia'])
-                saldo_devedor = pessoas.get_saldo_devedor(cursor['PessoaReferencia'])
+    # Configurando modelo
+    modelo = {
+        '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
+        'InformacoesPesquisa': pesquisa,
+        'Versao': '736794.19:26:22.9976483',
+        'Ativo': True,
+        'Ordem': num,
+        'Descricao': titulo + " " + str(documento) + " " + str(num),
+        'Documento': str(documento),
+        'PessoaReferencia': pessoa['_id'],
+        'Vencimento': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+        'Historico': [
+            {
+                '_t': 'HistoricoAguardando',
+                'Valor': valor_parcela,
+                'EspeciePagamento': {
+                    '_t': 'EspeciePagamentoECF',
+                    'Codigo': 1,
+                    'Descricao': 'Dinheiro',
+                    'EspecieRecebimento': {
+                        '_t': 'Dinheiro'
+                    }
+                },
+                'PlanoContaCodigoUnico': planos_contas,
+                'CentroCustoCodigoUnico': centro_custo,
+                'ContaReferencia': ObjectId(conta),
+                'EmpresaReferencia': emitente,
+                'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+                'ChequeReferencia': ObjectId('000000000000000000000000')
+            },
+            {
+                '_t': 'HistoricoPendente',
+                'Valor': valor_parcela,
+                'EspeciePagamento': {
+                    '_t': 'EspeciePagamentoECF',
+                    'Codigo': 1,
+                    'Descricao': 'Dinheiro',
+                    'EspecieRecebimento': {
+                        '_t': 'Dinheiro'
+                    }
+                },
+                'PlanoContaCodigoUnico': planos_contas,
+                'CentroCustoCodigoUnico': centro_custo,
+                'ContaReferencia': ObjectId(conta),
+                'EmpresaReferencia': emitente,
+                'NomeUsuario': 'Usuário Administrador',
+                'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+                'ChequeReferencia': ObjectId('000000000000000000000000')
+            }
+        ],
+        'Situacao': {},
+        'ContaReferencia': ObjectId(conta),
+        'EmpresaReferencia': emitente,
+        'NomeUsuario': 'Usuário Administrador',
+        'DataQuitacao': '0001-01-01T00:00:00.000+0000',
+        'AcrescimoInformado': 0.0,
+        'DescontoInformado': 0.0,
+    }
 
-                recibos[clienteid] = {}
-                recibos[clienteid]['financeiro'] = []
-                recibos[clienteid]['Total'] = 0
-                recibos[clienteid]['Total_extenso'] = ''
-                recibos[clienteid]['Cliente'] = {'Nome': cliente, 'Total_devedor': saldo_devedor}
+    # Verificando configurações para aplicar juros e multa
+    config = Configuracoes().configuracoes()
+    if 'Financeiro' in config:
+        # Carregando das configurações as variaveis
+        tipo = config['Financeiro']['TipoCalculoJuro']['Valor']
+        carencia = config['Financeiro']['DiasCarenciaJuroMulta']['Valor']
+        perce_ju = config['Financeiro']['PercentualJuro']['Valor']
+        perce_mu = config['Financeiro']['PercentualMulta']['Valor']
 
-                for item in cursor['Historico']:
-                    if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
-                        valor_pago = item['Valor']
-                        recibos[clienteid]['Total'] = recibos[clienteid]['Total'] + valor_pago
+        # Inserindo na parcela os juros
+        modelo['Juro'] = {
+            "_t": 'JuroSimples' if tipo == 1 else 'JuroComposto',
+            "Codigo": 1,
+            "Descricao": 'Simples' if tipo == 1 else 'Composto',
+            "Percentual": perce_ju,
+            "DiasCarencia": carencia
+        }
 
-                        recibos[clienteid]['financeiro'].append({'Valor_Pago': valor_pago,
-                                                                 'Documento': cursor['Documento'],
-                                                                 'Parcela': cursor['Ordem'],
-                                                                 'Data_Quitacao': cursor['DataQuitacao']})
+        # Inserindo na parcela a multa
+        modelo['Multa'] = {
+            'Percentual': perce_mu,
+            'DiasCarencia': carencia
+        }
 
-        for recibo in recibos:
-            recibos[recibo]['Total_extenso'] = uteis.num_to_currency(
-                ('%.2f' % recibos[recibo]['Total']).replace('.', ''))
+    # Verificando se é entrada ou não
+    if entrada:
+        modelo['Situacao'] = {
+            '_t': 'Quitada',
+            'Codigo': 3
+        }
+        modelo['Historico'].append({
+            '_t': 'HistoricoQuitado',
+            'Valor': valor_parcela,
+            'EspeciePagamento': {
+                '_t': 'EspeciePagamentoECF',
+                'Codigo': 1,
+                'Descricao': 'Dinheiro',
+                'EspecieRecebimento': {
+                    '_t': 'Dinheiro'
+                }
+            },
+            'PlanoContaCodigoUnico': planos_contas,
+            'CentroCustoCodigoUnico': centro_custo,
+            'ContaReferencia': ObjectId(conta),
+            'EmpresaReferencia': emitente,
+            'NomeUsuario': 'Usuário Administrador',
+            'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+            'ChequeReferencia': ObjectId('000000000000000000000000'),
+            'Desconto': 0.0,
+            'Acrescimo': 0.0,
+            'DataQuitacao': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento,
+                                                                                              '%Y-%m-%d')
+        })
 
-        context = {'Data': datetime.now(), 'emitente': emitente, 'Recibos': recibos}
-        return render(request, 'financeiro/recibo.html', context)
+        # Criando Conexão
+        try:
+            database = Uteis().conexao
+            id = None
+            while id is None:
+                id = database['Recebimentos'].insert(modelo)
+            Uteis().fecha_conexao()
+            return id
+        except Exception as e:
+            print(e)
+    else:
+        modelo['Situacao'] = {
+            '_t': 'Pendente',
+            'Codigo': 1
+        }
+
+        # Criando Conexão
+        try:
+            database = Uteis().conexao
+            id = None
+
+            while id is None:
+                id = database['Recebimentos'].insert(modelo)
+            Uteis().fecha_conexao()
+            return id
+        except Exception as e:
+            print(e)
 
 
-def recebidas(request):
-    template_name = 'financeiro/recebidas.html'
+def listagem_contratos(request, id, cancelado):
+    template_name = 'contratos/index.html'
+    contratos_ativos = Contratos.objects.all().filter(id_g6_cliente=id, excluido=0)
+    contratos_excluidos = Contratos.objects.all().filter(id_g6_cliente=id, excluido=1)
 
-    # Estanciando classes necessarias
-    pessoas = Pessoas()
+    context = {
+        'contratos_ativos': contratos_ativos,
+        'contratos_excluidos': contratos_excluidos,
+        'cancelado': cancelado
+    }
+    return render(request, template_name, context)
+
+
+def listagem_parcelas_cliente(request, id):
+    template_name = 'financeiro/index.html'
     financeiro = Financeiro()
-    movimentacao = Movimentacoes()
+    financeiro.set_query_pessoa_referencia(id)
+    financeiro.set_query_situacao_codigo(1)
+    financeiro.set_query_ativo(True)
+    parcelas_mongo = financeiro.execute_all()
 
-    # Buscando parcelas na situação quitadas
-    financeiro.set_query_situacao(u'Quitada')
-    financeiro.set_sort_data_quitacao()
-    financeiro.set_sort_vencimento()
-    cursor = financeiro.execute_all()
-
-    # Declarando variavel de listagem
-    recebimentos = []
-
-    for recebimento in cursor:
-        # Localizando o nome do cliente
-        recebimento['PessoaNome'] = pessoas.get_nome(recebimento['PessoaReferencia'])
-
-        # Verificando valor pago
-        for item in recebimento['Historico']:
-            if 'HistoricoQuitado' in item['_t'] or 'HistoricoQuitadoParcial' in item['_t']:
-                recebimento['valor_pago'] = item['Valor']
-
-        # Partindo procurar movimentacoes que envolva essa parcela
-        movimentacao.set_query_movimentacao_por_recebimento(recebimento['_id'])
-        movimentacao.set_projection_id()
-        result = movimentacao.execute_one()
-
-        # Verificando se a parcela tem movimentacao criada
-        if result is None:
-            recebimento['MovimentacaoID'] = 0
+    par = []
+    for parcela_mongo in parcelas_mongo:
+        if 'Juro' in parcela_mongo:
+            parcela_mongo['Juro']['Valor'] = calcular_juros_multa(
+                valor=parcela_mongo['Historico'][0]['Valor'],
+                vencimento=parcela_mongo['Vencimento'],
+                tipo=parcela_mongo['Juro']['Codigo'],
+                percentual=parcela_mongo['Juro']['Percentual']
+            )
         else:
-            recebimento['MovimentacaoID'] = result['_id']
-        recebimentos.append(recebimento)
+            parcela_mongo['Juro'] = {}
+            parcela_mongo['Juro']['Valor'] = 0
 
-    context = {'Recebimentos': recebimentos}
-    return render(request, template_name, context)
+        parcela = Parcelas.objects.all().filter(id_g6=parcela_mongo['_id'])
+        if len(parcela) > 1:
+            par.append(
+                {
+                    'parcela_mongo': parcela_mongo,
+                    'contrato': parcela[0].orcamento,
+                }
+            )
+        else:
+            par.append(
+                {
+                    'parcela_mongo': parcela_mongo
+                }
+            )
+
+    return render(request, template_name, {'parcelas': par})
 
 
-def pendentes(request):
-    template_name = 'financeiro/pendentes.html'
-
-    # Estanciando classes necessarias
-    pessoas = Pessoas()
+def renegociacao(request):
+    template_name = 'financeiro/renegociar.html'
+    parcelas = request.POST.getlist('parcela')
     financeiro = Financeiro()
-    movimentacao = Movimentacoes()
+    contas = Financeiro().get_contas
+    centros_custos = Financeiro().get_centros_custos
+    planos_conta = Financeiro().get_planos_conta
+    cliente = None
+    total = 0
+    juro = 0
+    multa = 0
+    for parcela in parcelas:
+        financeiro.set_query_id(parcela)
+        financeiro.set_query_ativo(True)
+        financeiro.set_query_situacao_codigo(1)
+        x = financeiro.execute_one()
+        if cliente is None:
+            cliente = PessoasMongo().get_pessoa(x['PessoaReferencia'])
+            cliente['id'] = str(cliente['_id'])
 
-    # Buscando parcelas na situação pendente
-    financeiro.set_query_situacao(u'Pendente')
-    financeiro.set_sort_vencimento()
-    cursor = financeiro.execute_all()
+        if cliente['_id'] == x['PessoaReferencia']:
+            total += x['Historico'][0]['Valor']
+            if 'Juro' in x:
+                juro += calcular_juros_multa(
+                    valor=x['Historico'][0]['Valor'],
+                    vencimento=x['Vencimento'],
+                    tipo=x['Juro']['Codigo'],
+                    percentual=x['Juro']['Percentual']
+                )
+        financeiro.unset_all()
 
-    # Declarando variavel de listagem
-    recebimentos = []
-
-    for recebimento in cursor:
-        # Localizando o nome do cliente
-        recebimento['PessoaNome'] = pessoas.get_nome(recebimento['PessoaReferencia'])
-
-        # Partindo procurar movimentacoes que envolva essa parcela
-        movimentacao.set_query_movimentacao_por_recebimento(recebimento['_id'])
-        movimentacao.set_projection_id()
-        result = movimentacao.execute_one()
-
-        # Verificando se a parcela tem movimentacao criada
-        if result is None:
-            recebimento['MovimentacaoID'] = 0
-        else:
-            recebimento['MovimentacaoID'] = result['_id']
-
-        recebimentos.append(recebimento)
-
-    context = {'recebimentos': recebimentos}
+    valores = {
+        1: total,
+        2: (total+juro),
+        3: (total+multa),
+        4: (total+multa+juro),
+    }
+    context = {
+        'cliente': cliente,
+        'contas': contas,
+        'centros_custos': centros_custos,
+        'planos_conta': planos_conta,
+        'valores': valores,
+        'parcelas': parcelas
+    }
     return render(request, template_name, context)
+
+
+def renegociacao_lancamento(request):
+    # Separação de dados
+    conta = request.POST['conta']
+    centro_custo = request.POST['centro_custo']
+    planos_contas = request.POST['planos_contas']
+
+    # Recebendo valores de entrada e tratando
+    entrada = request.POST['entrada']
+    entrada = float(entrada.replace(',', '.'))
+
+    # Recebendo valores e tratando
+    parcelas = request.POST.getlist('parcela')
+    qant_parcelas = int(request.POST['parcelas'])
+
+    # Dados extras
+    id_cliente = request.POST['id_cliente']
+    id_total = int(request.POST['total'])
+    emitente = PessoasMongo().get_emitente()
+
+    # Recebendo datas de vecimento
+    vencimentos = request.POST.getlist('vencimentos[]')
+
+    if qant_parcelas != len(vencimentos):
+        print("Parcelas e vencimentos invalidos")
+        return redirect('movimentacoes:listagem_prevenda')
+
+    total = 0
+    juro = 0
+    multa = 0
+
+    for parcela in parcelas:
+        financeiro = Financeiro()
+        financeiro.set_query_id(parcela)
+        financeiro.set_query_ativo(True)
+        financeiro.set_query_situacao_codigo(1)
+        x = financeiro.execute_one()
+        financeiro.unset_all()
+
+        if id_cliente == str(x['PessoaReferencia']):
+            # Atualizando a parcela
+            database = Uteis().conexao
+            database['Recebimentos'].update(
+                {'_id': ObjectId(parcela)},
+                {'$set': {'Ativo': False}}
+            )
+            Uteis().fecha_conexao()
+
+            total += x['Historico'][0]['Valor']
+            if 'Juro' in x:
+                juro += calcular_juros_multa(
+                    valor=x['Historico'][0]['Valor'],
+                    vencimento=x['Vencimento'],
+                    tipo=x['Juro']['Codigo'],
+                    percentual=x['Juro']['Percentual']
+                )
+        else:
+            print("Parcela " + parcela + " não é do mesmo cliente")
+
+    if id_total == 1:
+        pass
+    elif id_total == 2:
+        total = total + juro - entrada
+    elif id_total == 3:
+        total = total + multa - entrada
+    elif id_total == 4:
+        total = total + multa + juro - entrada
+    else:
+        print("Total ID é invalido")
+        return redirect('movimentacoes:listagem_prevenda')
+
+    if total <= 0:
+        print("Total menor que 0 e é invalido")
+        return redirect('movimentacoes:listagem_prevenda')
+
+    # Criado contrato
+    contrato = Contratos.objects.create(
+        tipo=2,
+        id_g6='',
+        id_g6_cliente=id_cliente,
+        excluido=False
+    )
+
+    y = 0
+    if entrada > 0:
+        y = 1
+        id = gerar_parcela(
+            titulo='Renegociação',
+            informacoes_pesquisa=[],
+            pessoa=id_cliente,
+            emitente=emitente['_id'],
+            documento='1',
+            num=y,
+            conta=conta,
+            centro_custo=centro_custo,
+            planos_contas=planos_contas,
+            valor_parcela=entrada,
+            vencimento=datetime.now(),
+            entrada=True
+        )
+        if id is not None:
+            contrato.parcelas.create(id_g6=id)
+    valor_parcela = total / qant_parcelas
+    for x in vencimentos:
+        id = gerar_parcela(
+            titulo='Renegociação',
+            informacoes_pesquisa=[],
+            pessoa=id_cliente,
+            emitente=emitente['_id'],
+            documento='1',
+            num=y+1,
+            conta=conta,
+            centro_custo=centro_custo,
+            planos_contas=planos_contas,
+            valor_parcela=valor_parcela,
+            vencimento=x,
+            entrada=False
+        )
+        if id is not None:
+            contrato.parcelas.create(id_g6=id)
+        y += 1
+    return redirect('movimentacoes:listagem_prevenda')
+
+
+def calcular_juros_multa(valor, vencimento, tipo, percentual):
+    # Verificando configurações para aplicar juros e multa
+    config = Configuracoes().configuracoes()
+    if 'Financeiro' in config:
+        dias = int((datetime.now() - vencimento).days)-1
+        juros = 0
+
+        if dias > 0:
+            if tipo == 1:
+                juros = valor * (percentual/30) * dias
+            elif tipo == 2:
+                juros = ((((1+(percentual/100))**(1/30))**dias)-1)*valor
+        return juros

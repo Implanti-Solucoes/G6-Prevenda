@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Orcamento</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+    <style>
+        .page{
+            width: 210mm;
+            min-height: 297mm;
+            padding-top: 10mm;
+            padding-left: 5mm;
+            padding-right: 5mm;
+            margin: 10mm auto;
+            border: 1px #D3D3D3 solid;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                page-break-after: always;
+            }
+            .volta{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="container page">
+        <div class="row">
+            <div class="border col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
+                ORCAMENTO
+            </div>
+        </div>
+        <div class="row">
+            <div class="border col-xs-6 col-sm-6 col-md-6 col-lg-6" style="font-size: smaller">
+                Emitente: {{ emitente.Nome }}
+            </div>
+            <div class="border col-xs-3 col-sm-3 col-md-3 col-lg-3" style="font-size: smaller">
+                Telefone: {{ emitente.Carteira.TelefonePrincipal.Numero }}
+            </div>
+            <div class="border col-xs-3 col-sm-3 col-md-3 col-lg-3" style="font-size: smaller">
+                CNPJ: {{ emitente.Cnpj }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="border col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                LOGO<br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br><br>
+                <br>
+                <br>
+                <br><br>
+            </div>
+            <div class="border col-xs-6 col-sm-6 col-md-6 col-lg-6" style="padding: 0 !important; margin: 0 !important;">
+                <div class="row" style="padding: 0 !important; margin: 0 !important; font-size: smaller;">
+                    <div class="border col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        Numero Orcamento: 0001
+                    </div>
+                </div>
+                <div class="row" style="padding: 0 !important; margin: 0 !important;">
+                    <div class="border col-6 col-xs-6 col-sm-6 col-md-6 col-lg-6" style="margin: 0 !important; font-size: smaller;">
+                        Emissão: 18/09/2018 08:21
+                    </div>
+                    <div class="border col-6 col-xs-6 col-sm-6 col-md-6 col-lg-6" style="margin: 0 !important; font-size: smaller;">
+                        Previsão:
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="border col-6 col-xs-6 col-sm-6 col-md-6 col-lg-6" style="font-size: smaller;">
+            </div>
+            <div class="border col-6 col-xs-6 col-sm-6 col-md-6 col-lg-6" style="font-size: smaller;">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

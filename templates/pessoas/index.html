@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tabela de Preço</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8">
+       $(document).ready(function() {
+            $('#cliente').DataTable({
+                "language": {
+                        "lengthMenu": "Quantidade de clientes por pagina _MENU_",
+                        "zeroRecords": "Nem um cliente encontrado",
+                        "info": "Cliente _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nem um cliente encontrado",
+                        "infoFiltered": "(Filtrado de _MAX_ total de clientes)",
+                        "search":         "Pesquisar:",
+                        "paginate": {
+                            "first":      "Primeira",
+                            "last":       "Ultima",
+                            "next":       "Proxima",
+                            "previous":   "Voltar"
+                        },
+                },
+            });
+       });
+    </script>
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="container">
+        <table class="table" id="cliente">
+            <thead>
+                <tr>
+                    <th>CLIENTE</th>
+                    <th>DOCUMENTO</th>
+                    <th>CONTRATOS</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td>{{ cliente.Nome }}</td>
+                    <td>{% if cliente.Cpf and cliente.Cnpj %}CPF: {{ cliente.Cpf }} / CNPJ: {{ cliente.Cnpj }}{% else %}{% if cliente.Cpf %}CPF {{ cliente.Cpf }}{% endif %}{% if cliente.Cnpj %}CNPJ {{ cliente.Cnpj }}{% endif %}{% endif %}</td>
+                    <td>
+                        <a href="{% url 'financeiro:listagem_contratos' cliente.id 0 %}">Todos</a> |
+                        {% if cliente.cont_ati > 0 %}
+                            <a href="{% url 'financeiro:listagem_contratos' cliente.id 1 %}">Ativos {{ cliente.cont_ati }}</a>
+                        {% else %}
+                            Ativos {{ cliente.cont_ati }}
+                        {% endif %}
+                         |
+                        {% if cliente.cont_can > 0 %}
+                            <a href="{% url 'financeiro:listagem_contratos' cliente.id 2 %}">Cancelados {{ cliente.cont_can }}</a>
+                        {% else %}
+                        Cancelados {{ cliente.cont_can }}
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'financeiro:listagem_parcelas_cliente' cliente.id %}">Parcelas</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
