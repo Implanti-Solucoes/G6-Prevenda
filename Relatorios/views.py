@@ -69,6 +69,8 @@ def sintetico_produtos(request):
 def operacoes_por_pessoa(request):
     # Relatorio fiscal de movimentação por cliente
     if request.method == 'POST':
+        context = {}
+
         movimentacoes = Movimentacoes()
         cliente = request.POST['cliente']
         fiscal = request.POST.getlist('fiscal')
@@ -88,35 +90,35 @@ def operacoes_por_pessoa(request):
         movimentacoes.set_query_periodo(inicial, final)
         movimentacoes.set_query_pessoa_id(cliente)
         movimentacoes.set_query_situacao_codigo(12, 1)
-        movimentacoes.set_query_convertida('False')
+        movimentacoes.set_query_convertida(False)
         movimentacoes.set_sort_emissao('asc')
         dados = movimentacoes.execute_all()
 
-        vendas = []
-        total_geral = 0
+        if len(dados) >0:
+            vendas = []
+            total_geral = 0
 
-        for venda in dados:
-            total = 0.0
-            x = 0
+            for venda in dados:
+                total = 0.0
+                x = 0
 
-            for item in venda['ItensBase']:
-                total_item = item['PrecoUnitario'] * item['Quantidade']
-                venda['ItensBase'][x]['Total'] = total_item
-                total = total + (item['PrecoUnitario'] * item['Quantidade'])
-                x = x + 1
+                for item in venda['ItensBase']:
+                    total_item = item['PrecoUnitario'] * item['Quantidade']
+                    venda['ItensBase'][x]['Total'] = total_item
+                    total = total + (item['PrecoUnitario'] * item['Quantidade'])
+                    x = x + 1
 
-            total_geral = total_geral + total
-            total = ('%.2f' % total).replace('.', ',')
-            venda['Total'] = total
-            vendas.append(venda)
+                total_geral = total_geral + total
+                total = ('%.2f' % total).replace('.', ',')
+                venda['Total'] = total
+                vendas.append(venda)
 
-        cliente = vendas[0]['Pessoa']['Nome']
-        context = {}
-        context['dados'] = vendas
-        context['inicial'] = inicial
-        context['final'] = final
-        context['cliente'] = cliente
-        context['total_geral'] = total_geral
+            cliente = vendas[0]['Pessoa']['Nome']
+            context['dados'] = vendas
+            context['inicial'] = inicial
+            context['final'] = final
+            context['cliente'] = cliente
+            context['total_geral'] = total_geral
         return render(request, 'relatorios/operacoes_por_pessoa.html', context)
     else:
         return redirect('relatorios:index')

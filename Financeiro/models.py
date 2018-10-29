@@ -153,5 +153,5 @@ class Contratos(models.Model):
 
 class Parcelas(models.Model):
 
-    orcamento = models.ForeignKey(Contratos, on_delete=models.CASCADE, related_name='parcelas')
+    contrato = models.ForeignKey(Contratos, on_delete=models.CASCADE, related_name='parcelas')
     id_g6 = models.CharField('id da parcela', max_length=24)

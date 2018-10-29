@@ -58,26 +58,41 @@ class PessoasMongo:
 
     @staticmethod
     def get_saldo_devedor(id):
-        if type(id) == ObjectId:
-            database = Uteis().conexao
-            total_devedor = 0
+        if type(id) == str and len(id) == 24:
+            id = ObjectId(id)
+        elif type(id) == ObjectId:
+            pass
+        else:
+            return False
+        database = Uteis().conexao
+        total_devedor = 0
 
-            query = {'Situacao._t': {u"$ne": u"Quitada"}, 'PessoaReferencia': id}
-            projection = {"Historico": 1.0}
+        query = {
+            'Situacao._t':
+                {u'$ne': u'Quitada'},
+            'PessoaReferencia': id,
+            'Ativo': True
+        }
+        projection = {'Historico': 1.0}
 
-            cursor = database["Recebimentos"].find(query, projection=projection)
-            try:
-                for doc in cursor:
-                    total_devedor = total_devedor + doc['Historico'][0]['Valor']
-            finally:
-                Uteis().fecha_conexao()
-            return total_devedor
+        cursor = database['Recebimentos'].find(query, projection=projection)
+        try:
+            for doc in cursor:
+                total_devedor = total_devedor + doc['Historico'][0]['Valor']
+        finally:
+            Uteis().fecha_conexao()
+        return total_devedor
 
     def get_saldo_devedor_extenso(self, id):
-        if len(id) == 24:
-            saldo_devedor = self.get_saldo_devedor(id)
-            extenso = Uteis().num_to_currency(saldo_devedor)
-            return extenso
+        if type(id) == str and len(id) == 24:
+            id = ObjectId(id)
+        elif type(id) == ObjectId:
+            pass
+        else:
+            return False
+        saldo_devedor = self.get_saldo_devedor(id)
+        extenso = Uteis().num_to_currency(saldo_devedor)
+        return extenso
 
     @staticmethod
     def formatar_telefone(telefone):
@@ -96,7 +111,11 @@ class PessoasMongo:
     @staticmethod
     def formatar_documento(documento):
         if len(documento) == 11:
-            documento = '%s.%s.%s-%s' % (documento[0:2], documento[3:5], documento[6:9], documento[10:11])
+            documento = '%s.%s.%s-%s' % (documento[0:3], documento[3:6], documento[6:9], documento[9:11])
         elif len(documento) == 14:
-            documento = '%s.%s.%s/%s-%s' % (documento[0:1], documento[2:5], documento[6:8], documento[9:12], documento[13:14])
+            documento = '%s.%s.%s/%s-%s' % (documento[0:2],
+                                            documento[2:5],
+                                            documento[5:8],
+                                            documento[8:12],
+                                            documento[12:14])
         return documento

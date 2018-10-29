@@ -92,10 +92,8 @@
                 CLIENTE.: {{ Cliente.Nome }}
             </div>
             <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                {% if Prevenda.Pessoa.Cpf %}
-                    CPF.: {{ Cliente.Cpf }}
-                {% elif Cliente.Cnpj %}
-                    CNPJ.: {{ Cliente.Cnpj }}
+                {% if Cliente.Documento != '' %}
+                    {{ Cliente.Documento }}
                 {% else %}
                     Sem documento
                 {% endif %}
@@ -133,14 +131,14 @@
             </div>
         </div>
         {% endfor %}
-    {% endif %}
+
 
     <br />
     <br />
     <hr />
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            TOTAL A PAGAR.: {{ Prevenda.Total_Bruto|floatformat:2 }}
+            TOTAL A PAGAR.: R$ {{ Mov.bruto|floatformat:2 }}
         </div>
     </div>
     <hr />
@@ -153,6 +151,7 @@
     </div>
     <br />
     <br />
+    {% endif %}
     <div class="row">
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             {{ Emitente.Nome }}
@@ -199,10 +198,8 @@
             CLIENTE.: {{ Cliente.Nome }}
         </div>
         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {% if Prevenda.Pessoa.Cpf %}
-                CPF.: {{ Cliente.Cpf }}
-            {% elif Cliente.Cnpj %}
-                CNPJ.: {{ Cliente.Cnpj }}
+            {% if Cliente.Documento != '' %}
+                {{ Cliente.Documento }}
             {% else %}
                 Sem documento
             {% endif %}
@@ -210,34 +207,40 @@
     </div>
     <hr />
     <div class="row">
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
             VENCIMENTO
         </div>
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
             VALOR A PAGAR
         </div>
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
             VALOR PAGO
+        </div>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            ATIVA
         </div>
     </div>
     <hr />
     {% for parcela in Parcelamento %}
     <div class="row">
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
             {{ parcela.Vencimento|date:"d/m/Y" }}
         </div>
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
             {{ parcela.Valor|floatformat:2 }}
         </div>
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
             {{ parcela.Pago|floatformat:2 }}
+        </div>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            {{ parcela.Ativo }}
         </div>
     </div>
     {% endfor %}
     <br />
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Saldo devedor.: {{ Prevenda.bruto|floatformat:2 }}
+            Saldo devedor.: R$ {{ Cliente.SaldoDevedor|floatformat:2 }}
         </div>
     </div>
     <br />
@@ -246,10 +249,8 @@
             CLIENTE.: {{ Cliente.Nome }}
         </div>
         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {% if Cliente.Cpf > 0 %}
-                CPF.: {{ Cliente.Cpf }}
-            {% elif Cliente.Cnpj > 0 %}
-                CNPJ.: {{ Cliente.Cnpj }}
+            {% if Cliente.Documento != '' %}
+                {{ Cliente.Documento }}
             {% else %}
                 Sem documento
             {% endif %}

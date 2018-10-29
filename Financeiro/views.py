@@ -147,7 +147,7 @@ def gerar_financeiro(request):
         Uteis().fecha_conexao()
 
         # Redirecionando para o Comprovante de debito
-        return redirect('financeiro:comprovante_de_debito_por_movimentacao', str(cursor['_id']))
+        return redirect('financeiro:comprovante_de_debito_por_movimentacao', contrato.id)
     except Exception as e:
         print(e)
 
@@ -165,7 +165,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
     # Cliente e Emitente
     emitente = []
     cliente = []
-
+    mov = {}
     if contrato[0].id_g6 != '':
         movimentacao = Movimentacoes()
         movimentacao.set_query_id(contrato[0].id_g6)
@@ -180,7 +180,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
         result = financeiro.execute_one()
         if not cliente:
             cliente = PessoasMongo().get_pessoa(result['PessoaReferencia'])
-
+            cliente['SaldoDevedor'] = PessoasMongo().get_saldo_devedor(cliente['_id'])
         # Verificando quais parcelas foram quitadas
         for hist in result['Historico']:
             if not emitente:
@@ -190,9 +190,14 @@ def comprovante_de_debito_por_movimentacao(request, id):
                 pago = hist['Valor']
 
         # Inserindo a informação de qual valor foi quitado
-        parcelamento.append({'Vencimento': result['Vencimento'],
-                             'Valor': result['Historico'][0]['Valor'],
-                             'Pago': pago})
+        parcelamento.append(
+            {
+                'Vencimento': result['Vencimento'],
+                'Valor': result['Historico'][0]['Valor'],
+                'Pago': pago,
+                'Ativo': 'Sim' if result['Ativo'] else 'Não'
+            }
+        )
 
     # Reordenando para exibição
     parcelamento.sort(key=lambda t: t['Vencimento'])
@@ -200,10 +205,11 @@ def comprovante_de_debito_por_movimentacao(request, id):
     # Formatando documentos, caso existir
     emitente['Cnpj'] = PessoasMongo().formatar_documento(emitente['Cnpj'])
     if 'Cnpj' in cliente:
-        cliente['Cpnj'] = PessoasMongo().formatar_documento(cliente['Cnpj'])
+        cliente['Documento'] = 'CNPJ: ' + PessoasMongo().formatar_documento(cliente['Cnpj'])
     elif 'Cpf' in cliente:
-        cliente['Cpf'] = PessoasMongo().formatar_documento(cliente['Cpf'])
-
+        cliente['Documento'] = 'CPF: ' + PessoasMongo().formatar_documento(cliente['Cpf'])
+    else:
+        cliente['Documento'] = ''
     # Criando a variavel context para passa dados para template
     context = {
         'Mov': mov,
@@ -432,12 +438,14 @@ def listagem_parcelas_cliente(request, id):
             parcela_mongo['Juro'] = {}
             parcela_mongo['Juro']['Valor'] = 0
 
-        parcela = Parcelas.objects.all().filter(id_g6=parcela_mongo['_id'])
-        if len(parcela) > 1:
+        parcela = Parcelas.objects.all().filter(id_g6=str(parcela_mongo['_id']))
+
+        if len(parcela) > 0:
+            print(parcela[0].contrato)
             par.append(
                 {
                     'parcela_mongo': parcela_mongo,
-                    'contrato': parcela[0].orcamento,
+                    'contrato': parcela[0].contrato,
                 }
             )
         else:

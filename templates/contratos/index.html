@@ -54,7 +54,7 @@
                     <td>{{ contrato.parcelas.count }}</td>
                     <td>Ativo</td>
                     <td>{% if contrato.tipo == 1 %}Normal{% else %}Renegociação{% endif %}</td>
-                    <td>{% if contrato.id > 0 and contrato.tipo == 1 %}<a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' contrato.id_g6 %}">Comprovante de Débito</a>{% endif %}</td>
+                    <td>{% if contrato.id > 0 %}<a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' contrato.id %}">Comprovante de Débito</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

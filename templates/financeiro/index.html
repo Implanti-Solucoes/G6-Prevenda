@@ -64,7 +64,7 @@
                         <td>{{ parcela.parcela_mongo.Juro.Valor|floatformat:2 }}</td>
                         <td>{{ parcela.parcela_mongo.Juro.Valor|floatformat:2 }}</td>
                         <td>{{ parcela.parcela_mongo.Juro.Valor|floatformat:2 }}</td>
-                        <td>{% if parcela.contrato.tipo == 1 %}<a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' parcela.contrato.id_g6 %}">Comprovante de Débito</a>{% endif %}</td>
+                        <td>{% if parcela.contrato.tipo == 1 %}<a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' parcela.contrato.id %}">Comprovante de Débito</a>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
