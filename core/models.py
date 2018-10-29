@@ -301,12 +301,13 @@ class Uteis:
         return venda
 
     def totais(self, vendas):
-        totais_vendas = {}
-        totais_vendas['bruto'] = 0
-        totais_vendas['desconto'] = 0
-        totais_vendas['liquido'] = 0
-        totais_vendas['comissao'] = 0
-        totais_vendas['vendas'] = []
+        totais_vendas = {
+            'bruto': 0,
+            'desconto': 0,
+            'liquido': 0,
+            'comissao': 0,
+            'vendas': []
+        }
 
         for venda in vendas:
             venda = self.total_venda(venda)
@@ -333,20 +334,6 @@ class Uteis:
                 del item['bruto']
 
         return venda
-
-    @staticmethod
-    def formatar_telefone(telefone):
-        import re
-        filtro = re.compile('([0-9]+)')
-        telefone = filtro.findall(telefone)
-        telefone = ''.join(telefone)
-        if len(telefone) == 8:
-            telefone = '%s-%s' % (telefone[0:3], telefone[4:7])
-        elif len(telefone) == 10:
-            telefone = '(%s) %s-%s' % (telefone[0:2], telefone[2:6], telefone[6:10])
-        elif len(telefone) == 11:
-            telefone = '(%s) %s %s-%s' % (telefone[0:2], telefone[2:3], telefone[3:7], telefone[7:11])
-        return telefone
 
 
 class Configuracoes:

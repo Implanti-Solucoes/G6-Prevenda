@@ -56,8 +56,8 @@
                         <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
                         {% if item.Situacao.Codigo == 1 %}
                             | <a href="{% url 'movimentacoes:gerar_financeiro' item.id %}">Gerar Financeiro</a>
-                        {% elif item.PagamentoRecebimento == 1 %}
-                            | <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.id %}">Comprovante de Débito</a>
+                        {% elif item.PagamentoRecebimento.0.id > 0 %}
+                            | <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.PagamentoRecebimento.0.id  %}">Comprovante de Débito</a>
                         {% endif %}
                     {% elif item.NotaFiscalServico == 1 %}
                         <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>

@@ -16,7 +16,7 @@ def listagem_prevenda(request):
     for x in item:
         contrato = Contratos.objects.all().filter(id_g6=x['id'])
         if len(contrato) == 1:
-            x['PagamentoRecebimento'] = 1
+            x['PagamentoRecebimento'] = contrato
         if 'PreVenda' in x['t']:
             x['prevenda'] = 1
         elif 'NotaFiscalServico' in x['t']:
@@ -25,7 +25,7 @@ def listagem_prevenda(request):
             x['DocumentoAuxiliarVendaOrdemServico'] = 1
         items.append(x)
 
-    context = {'items': items}
+    context = {'items': items, }
     return render(request, 'movimentacoes/listagem.html', context)
 
 

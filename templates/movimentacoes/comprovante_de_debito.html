@@ -45,93 +45,96 @@
 <body>
 {% include "menu.html" %}
 <div class="container-fluid page">
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            {{ Emitente.Nome }}
+    {% if Contrato.0.id_g6 != '' %}
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                {{ Emitente.Nome }}
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                DATA.: {{ Data }}
+            </div>
         </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            DATA.: {{ Data }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                CNPJ.: {{ Emitente.Cnpj }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            CNPJ.: {{ Prevenda.Empresa.Documento }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{ Emitente.Carteira.EnderecoPrincipal.Logradouro }},
+                {{ Emitente.Carteira.EnderecoPrincipal.Numero }},
+                {% if Emitente.Carteira.EnderecoPrincipal.Complemento %}
+                    {{ Emitente.Carteira.EnderecoPrincipal.Complemento }},
+                {% endif %}
+                {{ Emitente.Carteira.EnderecoPrincipal.Bairro }},
+                {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Nome }},
+                {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {{ Prevenda.Empresa.EnderecoPrincipal.Logradouro }},
-            {{ Prevenda.Empresa.EnderecoPrincipal.Numero }},
-            {% if Prevenda.Empresa.EnderecoPrincipal.Complemento %}
-                {{ Prevenda.Empresa.EnderecoPrincipal.Complemento }},
-            {% endif %}
-            {{ Prevenda.Empresa.EnderecoPrincipal.Bairro }},
-            {{ Prevenda.Empresa.EnderecoPrincipal.Municipio.Nome }},
-            {{ Prevenda.Empresa.EnderecoPrincipal.Municipio.Uf.Nome }}
+        <div class="row">
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                TELEFONE.: {{ Emitente.TelefonePrincipal }}
+            </div>
+            <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="right">
+                VENDEDOR.: {{ Prevenda.Vendedor.Nome }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-            TELEFONE.: {{ Prevenda.Empresa.TelefonePrincipal }}
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                DOCUMENTO.: {{ Contrato.0.id }}
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                RECIBO DE ENTREGA DE PRODUTOS
+            </div>
         </div>
-        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="right">
-            VENDEDOR.: {{ Prevenda.Vendedor.Nome }}
+        <div class="row">
+            <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                CLIENTE.: {{ Cliente.Nome }}
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                {% if Prevenda.Pessoa.Cpf %}
+                    CPF.: {{ Cliente.Cpf }}
+                {% elif Cliente.Cnpj %}
+                    CNPJ.: {{ Cliente.Cnpj }}
+                {% else %}
+                    Sem documento
+                {% endif %}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            DOCUMENTO.: {{ Prevenda.Numero }}
+        <hr />
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                P R O D U T O
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                QUANTIDADE
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                PRECO UNIT
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                TOTAL
+            </div>
         </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            RECIBO DE ENTREGA DE PRODUTOS
+        <hr />
+        {% for item in Mov.ItensBase %}
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                {{ item.ProdutoServico.Descricao }}
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{ item.Quantidade|floatformat:2 }}
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{ item.PrecoUnitario|floatformat:2 }}
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{ item.bruto|floatformat:2 }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-            CLIENTE.: {{ Prevenda.Pessoa.Nome }}
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {% if Prevenda.Pessoa.Cpf %}
-                CPF.: {{ Prevenda.Pessoa.Cpf }}
-            {% elif Prevenda.Pessoa.Cnpj %}
-                CNPJ.: {{ Prevenda.Pessoa.Cnpj }}
-            {% else %}
-                Sem documento
-            {% endif %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            P R O D U T O
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            QUANTIDADE
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            PRECO UNIT
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            TOTAL
-        </div>
-    </div>
-    <hr />
-    {% for item in Prevenda.ItensBase %}
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            {{ item.ProdutoServico.Descricao }}
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            {{ item.Quantidade|floatformat:2 }}
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            {{ item.PrecoUnitario|floatformat:2 }}
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            {{ item.bruto|floatformat:2 }}
-        </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
+
     <br />
     <br />
     <hr />
@@ -160,24 +163,24 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            CNPJ.: {{ Prevenda.Empresa.Documento }}
+            CNPJ.: {{ Emitente.Cnpj }}
         </div>
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {{ Prevenda.Empresa.EnderecoPrincipal.Logradouro }},
-            {{ Prevenda.Empresa.EnderecoPrincipal.Numero }},
-            {% if Prevenda.Empresa.EnderecoPrincipal.Complemento %}
-                {{ Prevenda.Empresa.EnderecoPrincipal.Complemento }},
+            {{ Emitente.Carteira.EnderecoPrincipal.Logradouro }},
+            {{ Emitente.Carteira.EnderecoPrincipal.Numero }},
+            {% if Emitente.Carteira.EnderecoPrincipal.Complemento %}
+                {{ Emitente.Carteira.EnderecoPrincipal.Complemento }},
             {% endif %}
-            {{ Prevenda.Empresa.EnderecoPrincipal.Bairro }},
-            {{ Prevenda.Empresa.EnderecoPrincipal.Municipio.Nome }},
-            {{ Prevenda.Empresa.EnderecoPrincipal.Municipio.Uf.Nome }}
+            {{ Emitente.Carteira.EnderecoPrincipal.Bairro }},
+            {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Nome }},
+            {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
         </div>
     </div>
     <div class="row">
         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-            TELEFONE.: {{ Prevenda.Empresa.TelefonePrincipal }}
+            TELEFONE.: {{ Emitente.TelefonePrincipal }}
         </div>
         <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="right">
             VENDEDOR.: {{ Prevenda.Vendedor.Nome }}
@@ -185,10 +188,24 @@
     </div>
     <div class="row">
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            DOCUMENTO.: {{ Prevenda.Numero }}
+            DOCUMENTO.: {{ Contrato.0.id }}
         </div>
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            COMPROVANTE DE DEBITO
+            COMPROVANTE DE DEBITOS
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+            CLIENTE.: {{ Cliente.Nome }}
+        </div>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            {% if Prevenda.Pessoa.Cpf %}
+                CPF.: {{ Cliente.Cpf }}
+            {% elif Cliente.Cnpj %}
+                CNPJ.: {{ Cliente.Cnpj }}
+            {% else %}
+                Sem documento
+            {% endif %}
         </div>
     </div>
     <hr />
@@ -226,13 +243,13 @@
     <br />
     <div class="row">
         <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-            CLIENTE.: {{ Prevenda.Pessoa.Nome }}
+            CLIENTE.: {{ Cliente.Nome }}
         </div>
         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {% if Prevenda.Pessoa.Cpf %}
-                CPF.: {{ Prevenda.Pessoa.Cpf }}
-            {% elif Prevenda.Pessoa.Cnpj %}
-                CNPJ.: {{ Prevenda.Pessoa.Cnpj }}
+            {% if Cliente.Cpf > 0 %}
+                CPF.: {{ Cliente.Cpf }}
+            {% elif Cliente.Cnpj > 0 %}
+                CNPJ.: {{ Cliente.Cnpj }}
             {% else %}
                 Sem documento
             {% endif %}
@@ -240,14 +257,14 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {{ Prevenda.Pessoa.EnderecoPrincipal.Logradouro }},
-            {{ Prevenda.Pessoa.EnderecoPrincipal.Numero }},
-            {% if Prevenda.Pessoa.EnderecoPrincipal.Complemento %}
-                {{ Prevenda.Pessoa.EnderecoPrincipal.Complemento }},
+            {{ Cliente.Carteira.EnderecoPrincipal.Logradouro }},
+            {{ Cliente.Carteira.EnderecoPrincipal.Numero }},
+            {% if Cliente.Carteira.EnderecoPrincipal.Complemento %}
+                {{ Cliente.Carteira.EnderecoPrincipal.Complemento }},
             {% endif %}
-            {{ Prevenda.Pessoa.EnderecoPrincipal.Bairro }},
-            {{ Prevenda.Pessoa.EnderecoPrincipal.Municipio.Nome }},
-            {{ Prevenda.Pessoa.EnderecoPrincipal.Municipio.Uf.Nome }}
+            {{ Cliente.Carteira.EnderecoPrincipal.Bairro }},
+            {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Nome }},
+            {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
         </div>
     </div>
     <div class="row">

@@ -159,15 +159,18 @@ def comprovante_de_debito_por_movimentacao(request, id):
     financeiro = Financeiro()
     uteis = Uteis()
 
-    # Fazendo busca das prevendas
-    Movimentacoes().set_query_id(id)
-    cursor = Movimentacoes().execute_one()
-
-    # Inserindo informações de totais parar exibição posterior no impresso
-    cursor = uteis.total_venda(cursor)
-
     # Carregando contrato
-    contrato = Contratos.objects.all().filter(id_g6=id)
+    contrato = Contratos.objects.all().filter(id=id)
+
+    # Cliente e Emitente
+    emitente = []
+    cliente = []
+
+    if contrato[0].id_g6 != '':
+        movimentacao = Movimentacoes()
+        movimentacao.set_query_id(contrato[0].id_g6)
+        mov = movimentacao.execute_one()
+        mov = Uteis().total_venda(mov)
 
     parcelamento = []
     for x in contrato[0].parcelas.all():
@@ -175,9 +178,14 @@ def comprovante_de_debito_por_movimentacao(request, id):
         pago = 0
         financeiro.set_query_id(x.id_g6)
         result = financeiro.execute_one()
+        if not cliente:
+            cliente = PessoasMongo().get_pessoa(result['PessoaReferencia'])
 
         # Verificando quais parcelas foram quitadas
         for hist in result['Historico']:
+            if not emitente:
+                emitente = PessoasMongo().get_pessoa(hist['EmpresaReferencia'])
+
             if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
                 pago = hist['Valor']
 
@@ -189,8 +197,22 @@ def comprovante_de_debito_por_movimentacao(request, id):
     # Reordenando para exibição
     parcelamento.sort(key=lambda t: t['Vencimento'])
 
+    # Formatando documentos, caso existir
+    emitente['Cnpj'] = PessoasMongo().formatar_documento(emitente['Cnpj'])
+    if 'Cnpj' in cliente:
+        cliente['Cpnj'] = PessoasMongo().formatar_documento(cliente['Cnpj'])
+    elif 'Cpf' in cliente:
+        cliente['Cpf'] = PessoasMongo().formatar_documento(cliente['Cpf'])
+
     # Criando a variavel context para passa dados para template
-    context = {'Prevenda': cursor, 'Data': datetime.now(), 'Parcelamento': parcelamento}
+    context = {
+        'Mov': mov,
+        'Contrato': contrato,
+        'Data': datetime.now(),
+        'Parcelamento': parcelamento,
+        'Emitente': emitente,
+        'Cliente': cliente,
+    }
     return render(request, template_name, context)
 
 

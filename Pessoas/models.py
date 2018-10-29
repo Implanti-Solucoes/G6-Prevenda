@@ -78,3 +78,25 @@ class PessoasMongo:
             saldo_devedor = self.get_saldo_devedor(id)
             extenso = Uteis().num_to_currency(saldo_devedor)
             return extenso
+
+    @staticmethod
+    def formatar_telefone(telefone):
+        import re
+        filtro = re.compile('([0-9]+)')
+        telefone = filtro.findall(telefone)
+        telefone = ''.join(telefone)
+        if len(telefone) == 8:
+            telefone = '%s-%s' % (telefone[0:3], telefone[4:7])
+        elif len(telefone) == 10:
+            telefone = '(%s) %s-%s' % (telefone[0:2], telefone[2:6], telefone[6:10])
+        elif len(telefone) == 11:
+            telefone = '(%s) %s %s-%s' % (telefone[0:2], telefone[2:3], telefone[3:7], telefone[7:11])
+        return telefone
+
+    @staticmethod
+    def formatar_documento(documento):
+        if len(documento) == 11:
+            documento = '%s.%s.%s-%s' % (documento[0:2], documento[3:5], documento[6:9], documento[10:11])
+        elif len(documento) == 14:
+            documento = '%s.%s.%s/%s-%s' % (documento[0:1], documento[2:5], documento[6:8], documento[9:12], documento[13:14])
+        return documento
