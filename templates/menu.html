@@ -6,9 +6,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navcol-1">
             <ul class="nav navbar-nav main-nav">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link text-white" href="{% url 'pessoas:listagem' %}">Clientes</a>
+                <li class="nav-item dropdown" role="presentation">
+                    <a class="nav-link text-white" href="#" data-toggle="dropdown">Pessoas</a>
+                    <div class="dropdown">
+                        <ul class="dropdown-menu">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link text-dark" href="{% url 'pessoas:listagem' %}">Clientes</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link text-dark" href="{% url 'financeiro:cartas_gerador' %}">Cartas</a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
+
+
                 <li class="nav-item dropdown" role="presentation">
                     <a class="nav-link text-white" href="#" data-toggle="dropdown">Movimentações</a>
                     <div class="dropdown">

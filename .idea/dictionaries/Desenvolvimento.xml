@@ -4,6 +4,7 @@
       <w>achei</w>
       <w>acrescimo</w>
       <w>administrador</w>
+      <w>alterar</w>
       <w>aplicando</w>
       <w>aplicar</w>
       <w>aprovado</w>
@@ -23,6 +24,7 @@
       <w>cancelamento</w>
       <w>carencia</w>
       <w>carregando</w>
+      <w>cartas</w>
       <w>carteira</w>
       <w>caso</w>
       <w>centro</w>
@@ -38,6 +40,7 @@
       <w>codigo</w>
       <w>coletion</w>
       <w>comando</w>
+      <w>competencia</w>
       <w>composto</w>
       <w>comprovante</w>
       <w>conexao</w>
@@ -58,11 +61,13 @@
       <w>contratos</w>
       <w>contribuinte</w>
       <w>corretos</w>
+      <w>credito</w>
       <w>criada</w>
       <w>criado</w>
       <w>criando</w>
       <w>criar</w>
       <w>criação</w>
+      <w>crédito</w>
       <w>custo</w>
       <w>custos</w>
       <w>dados</w>
@@ -79,6 +84,7 @@
       <w>dinheiro</w>
       <w>documento</w>
       <w>débito</w>
+      <w>editavel</w>
       <w>emissao</w>
       <w>emissor</w>
       <w>empresa</w>
@@ -102,6 +108,7 @@
       <w>fisica</w>
       <w>foram</w>
       <w>garantia</w>
+      <w>gerador</w>
       <w>gerando</w>
       <w>gerar</w>
       <w>historico</w>
@@ -143,6 +150,7 @@
       <w>movimentação</w>
       <w>movimentações</w>
       <w>movimento</w>
+      <w>movimentos</w>
       <w>multa</w>
       <w>necessarias</w>
       <w>necessarios</w>
@@ -223,6 +231,7 @@
       <w>repetidos</w>
       <w>retorno</w>
       <w>saldo</w>
+      <w>saldos</w>
       <w>segurança</w>
       <w>separação</w>
       <w>sequencia</w>

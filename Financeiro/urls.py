@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^parcelas/(?P<id>[a-zA-Z0-9]+)/$', views.listagem_parcelas_cliente, name='listagem_parcelas_cliente'),
     url(r'^renegociao/$', views.renegociacao, name='renegociacao'),
     url(r'^renegociacao_lancamento/$', views.renegociacao_lancamento, name='renegociacao_lancamento'),
+    url(r'^cartas_gerador/$', views.cartas_gerador, name='cartas_gerador'),
 ]

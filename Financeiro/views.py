@@ -7,15 +7,6 @@ from .models import Financeiro, Contratos, Parcelas
 from Pessoas.models import PessoasMongo
 
 
-def remove_repetidos(lista):
-    l = []
-    for i in lista:
-        if i not in l:
-            l.append(i)
-    l.sort()
-    return l
-
-
 def gerar_financeiro(request):
     # Recebendo valores e tratando
     id = request.POST['id']
@@ -70,13 +61,15 @@ def gerar_financeiro(request):
     )
 
     # Tratando valores da parcela
-    valor_parcela = cursor['liquido'] / parcelas
-    valor_parcela = float('%.2f' % valor_parcela)
+    valor_parcela = 0
+    if cursor['liquido'] > 0:
+        valor_parcela = cursor['liquido'] / parcelas
+        valor_parcela = float('%.2f' % valor_parcela)
 
     # gerando parcela de entrada
     if entrada > 0:
         y = 1
-        id = gerar_parcela(
+        id = Financeiro().gerar_parcela(
             titulo='Pre Venda',
             informacoes_pesquisa=cursor['InformacoesPesquisa'],
             pessoa=cursor['Pessoa']['PessoaReferencia'],
@@ -95,28 +88,30 @@ def gerar_financeiro(request):
     else:
         y = 0
 
-    for x in vencimentos:
-        id = gerar_parcela(
-            titulo='Pre Venda',
-            informacoes_pesquisa=cursor['InformacoesPesquisa'],
-            pessoa=cursor['Pessoa']['PessoaReferencia'],
-            emitente=cursor['Empresa']['PessoaReferencia'],
-            documento=cursor['Numero'],
-            num=y + 1,
-            conta=conta,
-            centro_custo=centro_custo,
-            planos_contas=planos_contas,
-            valor_parcela=valor_parcela,
-            vencimento=x,
-            entrada=False
-        )
-        if id is not None:
-            contrato.parcelas.create(id_g6=id)
-        y += 1
+    # Verificando se o total - entra / parcelas, gerou algum valor
+    if valor_parcela > 0:
+        for x in vencimentos:
+            id = Financeiro().gerar_parcela(
+                titulo='Pre Venda',
+                informacoes_pesquisa=cursor['InformacoesPesquisa'],
+                pessoa=cursor['Pessoa']['PessoaReferencia'],
+                emitente=cursor['Empresa']['PessoaReferencia'],
+                documento=cursor['Numero'],
+                num=y + 1,
+                conta=conta,
+                centro_custo=centro_custo,
+                planos_contas=planos_contas,
+                valor_parcela=valor_parcela,
+                vencimento=x,
+                entrada=False
+            )
+            if id is not None:
+                contrato.parcelas.create(id_g6=id)
+            y += 1
 
     # Vamos configurar as movimentações
     try:
-        cursor['InformacoesPesquisa'] = remove_repetidos(cursor['InformacoesPesquisa'])
+        cursor['InformacoesPesquisa'] = Financeiro().remove_repetidos(cursor['InformacoesPesquisa'])
         # Configurando CFOP para não gerar financeiro
         z = 0
         for _ in cursor['ItensBase']:
@@ -163,7 +158,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
     contrato = Contratos.objects.all().filter(id=id)
 
     # Cliente e Emitente
-    emitente = []
+    emitente = None
     cliente = []
     mov = {}
     if contrato[0].id_g6 != '':
@@ -184,6 +179,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
         # Verificando quais parcelas foram quitadas
         for hist in result['Historico']:
             if not emitente:
+                print(hist)
                 emitente = PessoasMongo().get_pessoa(hist['EmpresaReferencia'])
 
             if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
@@ -203,6 +199,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
     parcelamento.sort(key=lambda t: t['Vencimento'])
 
     # Formatando documentos, caso existir
+    print(emitente)
     emitente['Cnpj'] = PessoasMongo().formatar_documento(emitente['Cnpj'])
     if 'Cnpj' in cliente:
         cliente['Documento'] = 'CNPJ: ' + PessoasMongo().formatar_documento(cliente['Cnpj'])
@@ -220,188 +217,6 @@ def comprovante_de_debito_por_movimentacao(request, id):
         'Cliente': cliente,
     }
     return render(request, template_name, context)
-
-
-def gerar_parcela(titulo, informacoes_pesquisa, pessoa,
-                  emitente, documento, num, conta, centro_custo,
-                  planos_contas, valor_parcela, vencimento, entrada=False):
-
-    # Cliente
-    if type(pessoa) == str and len(pessoa) == 24:
-        pessoa = ObjectId(pessoa)
-    elif type(pessoa) == ObjectId:
-        pass
-    else:
-        return False
-
-    valor_parcela = round(valor_parcela, 2)
-    if valor_parcela <= 0:
-        return False
-
-    pessoa = PessoasMongo().get_pessoa(pessoa)
-    # Emitente
-    if type(emitente) == str and len(emitente) == 24:
-        emitente = ObjectId(pessoa)
-    elif type(emitente) == ObjectId:
-        pass
-    else:
-        return False
-
-    # Configurando informações de pesquisa com base no movimento
-    pesquisa = []
-    pesquisa.extend(informacoes_pesquisa)
-    pesquisa.extend(pessoa['InformacoesPesquisa'])
-    pesquisa.append(str(num))
-    pesquisa.append(str(documento))
-    pesquisa.append(str(titulo))
-    pesquisa = remove_repetidos(pesquisa)
-
-    z = []
-    for x in pesquisa:
-        z.append(str(x))
-    pesquisa = z
-    del z
-
-    # Configurando modelo
-    modelo = {
-        '_t': ['ParcelaRecebimento', 'ParcelaRecebimentoManual'],
-        'InformacoesPesquisa': pesquisa,
-        'Versao': '736794.19:26:22.9976483',
-        'Ativo': True,
-        'Ordem': num,
-        'Descricao': titulo + " " + str(documento) + " " + str(num),
-        'Documento': str(documento),
-        'PessoaReferencia': pessoa['_id'],
-        'Vencimento': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
-        'Historico': [
-            {
-                '_t': 'HistoricoAguardando',
-                'Valor': valor_parcela,
-                'EspeciePagamento': {
-                    '_t': 'EspeciePagamentoECF',
-                    'Codigo': 1,
-                    'Descricao': 'Dinheiro',
-                    'EspecieRecebimento': {
-                        '_t': 'Dinheiro'
-                    }
-                },
-                'PlanoContaCodigoUnico': planos_contas,
-                'CentroCustoCodigoUnico': centro_custo,
-                'ContaReferencia': ObjectId(conta),
-                'EmpresaReferencia': emitente,
-                'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
-                'ChequeReferencia': ObjectId('000000000000000000000000')
-            },
-            {
-                '_t': 'HistoricoPendente',
-                'Valor': valor_parcela,
-                'EspeciePagamento': {
-                    '_t': 'EspeciePagamentoECF',
-                    'Codigo': 1,
-                    'Descricao': 'Dinheiro',
-                    'EspecieRecebimento': {
-                        '_t': 'Dinheiro'
-                    }
-                },
-                'PlanoContaCodigoUnico': planos_contas,
-                'CentroCustoCodigoUnico': centro_custo,
-                'ContaReferencia': ObjectId(conta),
-                'EmpresaReferencia': emitente,
-                'NomeUsuario': 'Usuário Administrador',
-                'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
-                'ChequeReferencia': ObjectId('000000000000000000000000')
-            }
-        ],
-        'Situacao': {},
-        'ContaReferencia': ObjectId(conta),
-        'EmpresaReferencia': emitente,
-        'NomeUsuario': 'Usuário Administrador',
-        'DataQuitacao': '0001-01-01T00:00:00.000+0000',
-        'AcrescimoInformado': 0.0,
-        'DescontoInformado': 0.0,
-    }
-
-    # Verificando configurações para aplicar juros e multa
-    config = Configuracoes().configuracoes()
-    if 'Financeiro' in config:
-        # Carregando das configurações as variaveis
-        tipo = config['Financeiro']['TipoCalculoJuro']['Valor']
-        carencia = config['Financeiro']['DiasCarenciaJuroMulta']['Valor']
-        perce_ju = config['Financeiro']['PercentualJuro']['Valor']
-        perce_mu = config['Financeiro']['PercentualMulta']['Valor']
-
-        # Inserindo na parcela os juros
-        modelo['Juro'] = {
-            "_t": 'JuroSimples' if tipo == 1 else 'JuroComposto',
-            "Codigo": 1,
-            "Descricao": 'Simples' if tipo == 1 else 'Composto',
-            "Percentual": perce_ju,
-            "DiasCarencia": carencia
-        }
-
-        # Inserindo na parcela a multa
-        modelo['Multa'] = {
-            'Percentual': perce_mu,
-            'DiasCarencia': carencia
-        }
-
-    # Verificando se é entrada ou não
-    if entrada:
-        modelo['Situacao'] = {
-            '_t': 'Quitada',
-            'Codigo': 3
-        }
-        modelo['Historico'].append({
-            '_t': 'HistoricoQuitado',
-            'Valor': valor_parcela,
-            'EspeciePagamento': {
-                '_t': 'EspeciePagamentoECF',
-                'Codigo': 1,
-                'Descricao': 'Dinheiro',
-                'EspecieRecebimento': {
-                    '_t': 'Dinheiro'
-                }
-            },
-            'PlanoContaCodigoUnico': planos_contas,
-            'CentroCustoCodigoUnico': centro_custo,
-            'ContaReferencia': ObjectId(conta),
-            'EmpresaReferencia': emitente,
-            'NomeUsuario': 'Usuário Administrador',
-            'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
-            'ChequeReferencia': ObjectId('000000000000000000000000'),
-            'Desconto': 0.0,
-            'Acrescimo': 0.0,
-            'DataQuitacao': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento,
-                                                                                              '%Y-%m-%d')
-        })
-
-        # Criando Conexão
-        try:
-            database = Uteis().conexao
-            id = None
-            while id is None:
-                id = database['Recebimentos'].insert(modelo)
-            Uteis().fecha_conexao()
-            return id
-        except Exception as e:
-            print(e)
-    else:
-        modelo['Situacao'] = {
-            '_t': 'Pendente',
-            'Codigo': 1
-        }
-
-        # Criando Conexão
-        try:
-            database = Uteis().conexao
-            id = None
-
-            while id is None:
-                id = database['Recebimentos'].insert(modelo)
-            Uteis().fecha_conexao()
-            return id
-        except Exception as e:
-            print(e)
 
 
 def listagem_contratos(request, id, cancelado):
@@ -642,3 +457,12 @@ def calcular_juros_multa(valor, vencimento, tipo, percentual):
             elif tipo == 2:
                 juros = ((((1+(percentual/100))**(1/30))**dias)-1)*valor
         return juros
+
+
+def cartas_gerador(request):
+    if request.method == 'GET':
+        return render(request, 'financeiro/cartas_gerador.html', {})
+    elif request.method == 'POST':
+        pass
+    else:
+        return redirect('movimentacoes:listagem_prevenda')

@@ -4,7 +4,7 @@ from pymongo.cursor import Cursor
 
 class Uteis:
     def __init__(self):
-        self.client = MongoClient('192.168.25.53',
+        self.client = MongoClient('127.0.0.1',
                                   username='root',
                                   password='|cSFu@5rFv#h8*=',
                                   authSource='DigisatServer',

@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from Movimentacoes.models import Movimentacoes
 from core.models import Uteis
 
+
 def index(request):
     movimentacoes = Movimentacoes()
     if request.method != 'POST':
@@ -14,6 +15,7 @@ def index(request):
             'vendedores': vendedores,
         }
         return render(request, 'relatorios/form.html', context)
+
 
 def sintetico_produtos(request):
     if request.method == 'POST':
@@ -57,14 +59,16 @@ def sintetico_produtos(request):
 
             total_geral = total_geral + produtos[produto]['Total']
 
-        context = {}
-        context['total_geral'] = total_geral
-        context['produtos'] = produtos
-        context['inicial'] = inicial
-        context['final'] = final
+        context = {
+            'total_geral': total_geral,
+            'produtos': produtos,
+            'inicial': inicial,
+            'final': final
+        }
         return render(request, 'relatorios/sintetico_produtos.html', context)
     else:
         return redirect('relatorios:index')
+
 
 def operacoes_por_pessoa(request):
     # Relatorio fiscal de movimentação por cliente
@@ -94,7 +98,7 @@ def operacoes_por_pessoa(request):
         movimentacoes.set_sort_emissao('asc')
         dados = movimentacoes.execute_all()
 
-        if len(dados) >0:
+        if len(dados) > 0:
             vendas = []
             total_geral = 0
 
@@ -122,6 +126,7 @@ def operacoes_por_pessoa(request):
         return render(request, 'relatorios/operacoes_por_pessoa.html', context)
     else:
         return redirect('relatorios:index')
+
 
 def prevendas_por_vendedor(request):
     if request.method == 'POST':
@@ -199,6 +204,7 @@ def prevendas_por_vendedor(request):
         return render(request, 'relatorios/prevendas_por_vendedor.html', context)
     else:
         return redirect('relatorios:index')
+
 
 def prevendas_por_usuario(request):
     if request.method == 'POST':
