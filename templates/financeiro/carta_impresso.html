@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Orcamento</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+
+    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
+    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+    <style>
+        .page{
+            width: 210mm;
+            min-height: 297mm;
+            padding-top: 10mm;
+            padding-left: 5mm;
+            padding-right: 5mm;
+            margin: 10mm auto;
+            border: 1px #D3D3D3 solid;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                page-break-after: always;
+            }
+            .volta{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "menu.html" %}
+    {% for key,p in parcelas.items %}
+    <div class="container page">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
+                {{ emitente.Nome }}<br />
+                Logradouro.: {{ emitente.Carteira.EnderecoPrincipal.Logradouro }}
+                Numero.: {{ emitente.Carteira.EnderecoPrincipal.Numero }}
+                Complemento.: {{ emitente.Carteira.EnderecoPrincipal.Complemento }}<br />
+                Fone.: {{ emitente.Carteira.TelefonePrincipal.Numero }}<br />
+                {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+            </div>
+        </div>
+        <br /><br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-right" style="text-align: right;">
+                {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}({{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}), {{ data_atual }}
+            </div>
+        </div>
+        <br /><br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                A(O)
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{ p.cliente.Nome }}
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Logradouro.: {{ p.cliente.Carteira.EnderecoPrincipal.Logradouro }}
+                Nº {{ emitente.Carteira.EnderecoPrincipal.Numero }} -
+                {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Valor até esta data: R${{ p.valor|floatformat:2 }}
+            </div>
+        </div>
+        <br /><br /><br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Constatamos que se encontra em atraso débitos contraídos por V. Sr(a) nesse estabelecimento.
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Solicitamos por obsequio a sua presença nesta loja com a máxima urgência a fim de providenciarmos a
+                imediata regularização de sua conta.
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Gratos pela compreensão.
+            </div>
+        </div>
+        <br /><br /><br /><br /><br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
+                Atenciosamente, a direção.
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>

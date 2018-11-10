@@ -44,6 +44,12 @@ class Financeiro:
         self.query['DataQuitacao'] = con
 
     def set_query_vencimento_periodo(self, inicial, final):
+        self.query['Vencimento'] = {
+            u"$gte": inicial.replace(tzinfo=FixedOffset(-180, "-0300")),
+            u"$lt": final.replace(tzinfo=FixedOffset(-180, "-0300"))
+        }
+
+    def set_query_emissao_periodo(self, inicial, final):
         self.query['DataHoraEmissao'] = {
             u"$gte": inicial.replace(tzinfo=FixedOffset(-180, "-0300")),
             u"$lt": final.replace(tzinfo=FixedOffset(-180, "-0300"))
@@ -155,6 +161,7 @@ class Financeiro:
     def gerar_parcela(self, titulo, informacoes_pesquisa, pessoa,
                       emitente, documento, num, conta, centro_custo,
                       planos_contas, valor_parcela, vencimento, entrada=False):
+
         # Cliente
         if type(pessoa) == str and len(pessoa) == 24:
             pessoa = ObjectId(pessoa)
@@ -319,7 +326,7 @@ class Financeiro:
                 'DataQuitacao': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento,
                                                                                                   '%Y-%m-%d')
             })
-            lancamento_movimento_conta = self.lancamento_movimento_conta(
+            lancamento_movimento = self.lancamento_movimento_conta(
                 doc=documento,
                 parc=num,
                 centro_custo=centro_custo,
@@ -329,15 +336,16 @@ class Financeiro:
                 plano_contas=planos_contas,
                 valor=valor_parcela
             )
-            if not lancamento_movimento_conta:
+            if not lancamento_movimento:
                 print("Lancamento da movimentação da conta falhou")
                 return False
-            alterar_saldo_conta = self.alterar_saldo_conta(
+
+            alterar_saldo = self.alterar_saldo_conta(
                 conta=conta,
                 operacao='+',
                 valor=valor_parcela
             )
-            if not alterar_saldo_conta:
+            if not alterar_saldo:
                 print("Alterar Saldo Falhou")
                 return False
 
@@ -446,7 +454,7 @@ class Financeiro:
 
         # Criando Conexão
         try:
-            modelo['InformacoesPesquisa'] = self.remove_repetidos['InformacoesPesquisa']
+            modelo['InformacoesPesquisa'] = self.remove_repetidos(modelo['InformacoesPesquisa'])
             database = Uteis().conexao
             id = None
             while id is None:
@@ -454,6 +462,7 @@ class Financeiro:
             Uteis().fecha_conexao()
             return True
         except Exception as e:
+            print("Erro linha 465")
             print(e)
 
     @staticmethod

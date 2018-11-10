@@ -4,12 +4,15 @@
       <w>achei</w>
       <w>acrescimo</w>
       <w>administrador</w>
+      <w>algum</w>
       <w>alterar</w>
       <w>aplicando</w>
       <w>aplicar</w>
       <w>aprovado</w>
       <w>ativo</w>
       <w>ativos</w>
+      <w>atraso</w>
+      <w>atual</w>
       <w>atualizadas</w>
       <w>atualizando</w>
       <w>atualizar</w>
@@ -24,6 +27,7 @@
       <w>cancelamento</w>
       <w>carencia</w>
       <w>carregando</w>
+      <w>carta</w>
       <w>cartas</w>
       <w>carteira</w>
       <w>caso</w>
@@ -49,6 +53,8 @@
       <w>configurando</w>
       <w>configurar</w>
       <w>configurações</w>
+      <w>constamos</w>
+      <w>constatamos</w>
       <w>consulta</w>
       <w>consultado</w>
       <w>consultando</w>
@@ -57,8 +63,10 @@
       <w>contador</w>
       <w>contas</w>
       <w>contex</w>
+      <w>contraidos</w>
       <w>contrato</w>
       <w>contratos</w>
+      <w>contraídos</w>
       <w>contribuinte</w>
       <w>corretos</w>
       <w>credito</w>
@@ -74,6 +82,7 @@
       <w>datas</w>
       <w>datatables</w>
       <w>debito</w>
+      <w>debitos</w>
       <w>declarando</w>
       <w>desatualizado</w>
       <w>desconto</w>
@@ -84,15 +93,20 @@
       <w>dinheiro</w>
       <w>documento</w>
       <w>débito</w>
+      <w>débitos</w>
       <w>editavel</w>
       <w>emissao</w>
       <w>emissor</w>
       <w>empresa</w>
+      <w>encontra</w>
       <w>encontrado</w>
+      <w>encontram</w>
       <w>endereco</w>
+      <w>entra</w>
       <w>entrada</w>
       <w>envolva</w>
       <w>especie</w>
+      <w>estabelecimento</w>
       <w>estanciando</w>
       <w>esteja</w>
       <w>estoque</w>
@@ -111,7 +125,9 @@
       <w>gerador</w>
       <w>gerando</w>
       <w>gerar</w>
+      <w>gerou</w>
       <w>historico</w>
+      <w>imediata</w>
       <w>importe</w>
       <w>impressao</w>
       <w>impresso</w>
@@ -122,6 +138,7 @@
       <w>informados</w>
       <w>informação</w>
       <w>informações</w>
+      <w>inical</w>
       <w>inicial</w>
       <w>inserindo</w>
       <w>inserir</w>
@@ -136,6 +153,7 @@
       <w>lista</w>
       <w>listagem</w>
       <w>localizando</w>
+      <w>loja</w>
       <w>mais</w>
       <w>menor</w>
       <w>mesmo</w>
@@ -152,11 +170,14 @@
       <w>movimento</w>
       <w>movimentos</w>
       <w>multa</w>
+      <w>máxima</w>
       <w>necessarias</w>
       <w>necessarios</w>
+      <w>nesse</w>
       <w>nota</w>
       <w>numero</w>
       <w>numeros</w>
+      <w>obsequio</w>
       <w>operacao</w>
       <w>orcamento</w>
       <w>ordem</w>
@@ -193,6 +214,7 @@
       <w>porcent</w>
       <w>preco</w>
       <w>precos</w>
+      <w>presença</w>
       <w>prevenda</w>
       <w>prevendas</w>
       <w>previsao</w>
@@ -203,6 +225,7 @@
       <w>produto</w>
       <w>produtos</w>
       <w>proporcional</w>
+      <w>providenciarmos</w>
       <w>proxima</w>
       <w>qant</w>
       <w>quais</w>
@@ -222,6 +245,7 @@
       <w>redirecionando</w>
       <w>redirecione</w>
       <w>referencia</w>
+      <w>regularização</w>
       <w>relatorios</w>
       <w>removendo</w>
       <w>renegociacao</w>
@@ -241,6 +265,7 @@
       <w>sistema</w>
       <w>situacao</w>
       <w>situação</w>
+      <w>solicitamos</w>
       <w>somente</w>
       <w>tabela</w>
       <w>tabelas</w>
@@ -257,6 +282,7 @@
       <w>ultima</w>
       <w>unico</w>
       <w>unitario</w>
+      <w>urgência</w>
       <w>usuario</w>
       <w>usuário</w>
       <w>uteis</w>
