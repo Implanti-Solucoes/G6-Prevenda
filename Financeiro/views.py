@@ -476,6 +476,8 @@ def cartas_gerador(request):
 
         financeiro = Financeiro()
         financeiro.set_query_vencimento_periodo(inicial, final)
+        financeiro.set_query_ativo(True)
+        financeiro.set_query_situacao_codigo(1)
         parcelas_dict = financeiro.execute_all()
         parcelas = {}
 
