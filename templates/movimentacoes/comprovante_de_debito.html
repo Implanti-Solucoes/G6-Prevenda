@@ -116,20 +116,22 @@
         </div>
         <hr />
         {% for item in Mov.ItensBase %}
-        <div class="row">
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                {{ item.ProdutoServico.Descricao }}
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                {{ item.Quantidade|floatformat:2 }}
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                {{ item.PrecoUnitario|floatformat:2 }}
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                {{ item.bruto|floatformat:2 }}
-            </div>
-        </div>
+            {% if item.Cancelado == False  %}
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        {{ item.ProdutoServico.Descricao }}
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        {{ item.Quantidade|floatformat:2 }}
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        {{ item.PrecoUnitario|floatformat:2 }}
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        {{ item.bruto|floatformat:2 }}
+                    </div>
+                </div>
+            {% endif %}
         {% endfor %}
 
 
