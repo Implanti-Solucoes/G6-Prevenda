@@ -59,11 +59,7 @@ def gerar_financeiro(request, id):
     contas = Financeiro().get_contas
     centros_custos = Financeiro().get_centros_custos
     planos_conta = Financeiro().get_planos_conta
-
-    cursor['Total'] = 0
-    for item in cursor['ItensBase']:
-        cursor['Total'] = cursor['Total'] + (item['Quantidade'] * item['PrecoUnitario']) - item['DescontoDigitado'] - \
-                          item['DescontoProporcional']
+    cursor = Uteis().total_venda(cursor)
 
     context = {'items': cursor, 'contas': contas, 'centros_custos': centros_custos, 'planos_conta': planos_conta}
 

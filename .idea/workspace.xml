@@ -3,8 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Financeiro/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Movimentacoes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pessoas/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pessoas/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,10 +35,11 @@
     <session id="58833897">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="24" />
+          <entry key="project.closed" value="26" />
+          <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="4" />
           <entry key="project.open.time.11" value="1" />
-          <entry key="project.open.time.2" value="3" />
+          <entry key="project.open.time.2" value="4" />
           <entry key="project.open.time.25" value="1" />
           <entry key="project.open.time.3" value="3" />
           <entry key="project.open.time.30" value="1" />
@@ -47,35 +50,35 @@
           <entry key="project.open.time.35" value="1" />
           <entry key="project.open.time.36" value="1" />
           <entry key="project.open.time.72" value="1" />
-          <entry key="project.opened" value="25" />
+          <entry key="project.opened" value="27" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Django Console" value="304" />
           <entry key="html" value="5967" />
-          <entry key="py" value="13276" />
+          <entry key="py" value="13324" />
           <entry key="xml" value="189" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="HTML" value="5967" />
-          <entry key="Python" value="13580" />
+          <entry key="Python" value="13628" />
           <entry key="XML" value="189" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="html" value="74" />
-          <entry key="py" value="187" />
+          <entry key="html" value="75" />
+          <entry key="py" value="195" />
           <entry key="xml" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="HTML" value="74" />
-          <entry key="Python" value="187" />
+          <entry key="HTML" value="75" />
+          <entry key="Python" value="195" />
           <entry key="XML" value="1" />
         </counts>
       </usages-collector>
@@ -85,37 +88,47 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
-              <caret line="484" column="35" lean-forward="true" selection-start-line="484" selection-start-column="35" selection-end-line="484" selection-end-column="35" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-                <marker date="1542029408789" expanded="true" signature="9364:9369" ph="..." />
-              </folding>
+            <state relative-caret-position="153">
+              <caret line="51" column="4" lean-forward="true" selection-start-line="51" selection-start-column="4" selection-end-line="51" selection-end-column="40" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
+        <entry file="file://$PROJECT_DIR$/core/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="389">
-              <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-                <element signature="e#1227#1259#0" />
-              </folding>
+            <state relative-caret-position="231">
+              <caret line="279" column="30" selection-start-line="279" selection-start-column="23" selection-end-line="279" selection-end-column="30" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/financeiro/carta_impresso.html">
+        <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1938">
-              <caret line="114" column="38" selection-start-line="114" selection-start-column="38" selection-end-line="114" selection-end-column="38" />
+            <state relative-caret-position="68">
+              <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="253">
+              <caret line="60" column="48" selection-start-line="60" selection-start-column="48" selection-end-line="60" selection-end-column="48" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="406">
+              <caret line="97" column="90" selection-start-line="97" selection-start-column="90" selection-end-line="97" selection-end-column="90" />
             </state>
           </provider>
         </entry>
@@ -211,23 +224,23 @@
         <option value="$PROJECT_DIR$/Orcamento/models.py" />
         <option value="$PROJECT_DIR$/Orcamento/views.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/gerar_financeiro.html" />
-        <option value="$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html" />
         <option value="$PROJECT_DIR$/templates/financeiro/renegociar.html" />
-        <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
         <option value="$PROJECT_DIR$/templates/movimentacoes/listagem.html" />
         <option value="$PROJECT_DIR$/templates/financeiro/index.html" />
         <option value="$PROJECT_DIR$/templates/contratos/index.html" />
         <option value="$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html" />
-        <option value="$PROJECT_DIR$/Pessoas/models.py" />
         <option value="$PROJECT_DIR$/Movimentacoes/models.py" />
         <option value="$PROJECT_DIR$/Relatorios/views.py" />
         <option value="$PROJECT_DIR$/Financeiro/urls.py" />
         <option value="$PROJECT_DIR$/templates/menu.html" />
-        <option value="$PROJECT_DIR$/core/models.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/cartas_gerador.html" />
         <option value="$PROJECT_DIR$/Financeiro/models.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/carta_impresso.html" />
         <option value="$PROJECT_DIR$/Financeiro/views.py" />
+        <option value="$PROJECT_DIR$/Pessoas/models.py" />
+        <option value="$PROJECT_DIR$/core/models.py" />
+        <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
+        <option value="$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html" />
       </list>
     </option>
   </component>
@@ -237,7 +250,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="103" />
     <option name="y" value="74" />
     <option name="width" value="1300" />
@@ -252,6 +265,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -267,20 +281,20 @@
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
               <item name="models.py" type="8704e2dd:PyFileNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
               <item name="models.py" type="8704e2dd:PyFileNode" />
-              <item name="Financeiro" type="dd8bbb05:PyElementNode" />
+              <item name="Uteis" type="dd8bbb05:PyElementNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="Financeiro" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
@@ -291,36 +305,47 @@
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Relatorios" type="462c0819:PsiDirectoryNode" />
+              <item name="Movimentacoes" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="Relatorios" type="462c0819:PsiDirectoryNode" />
+              <item name="Movimentacoes" type="462c0819:PsiDirectoryNode" />
               <item name="views.py" type="8704e2dd:PyFileNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="Pessoas" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="Pessoas" type="462c0819:PsiDirectoryNode" />
+              <item name="models.py" type="8704e2dd:PyFileNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
+              <item name="Pessoas" type="462c0819:PsiDirectoryNode" />
+              <item name="models.py" type="8704e2dd:PyFileNode" />
+              <item name="PessoasMongo" type="dd8bbb05:PyElementNode" />
+            </path>
+            <path>
+              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="financeiro" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="orcamento" type="462c0819:PsiDirectoryNode" />
+              <item name="movimentacoes" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -415,12 +440,12 @@
     <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21035598" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22411004" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32626426" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.48786408" weight="0.3194925" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.48624596" visible="true" weight="0.3194925" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -428,16 +453,40 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32908458" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49676377" weight="0.32410613" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4959547" weight="0.32410613" />
       <window_info anchor="bottom" id="Python Console" order="11" sideWeight="0.49838188" weight="0.32871974" />
       <window_info active="true" anchor="bottom" id="Inspection Results" order="12" visible="true" weight="0.3275218" />
-      <window_info anchor="bottom" id="Event Log" order="13" sideWeight="0.5121359" side_tool="true" visible="true" weight="0.3194925" />
+      <window_info anchor="bottom" id="Event Log" order="13" sideWeight="0.51375407" side_tool="true" weight="0.32410613" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" weight="0.32902735" />
       <window_info anchor="right" id="Database" order="4" weight="0.32674772" />
     </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22411004" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32626426" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.48624596" weight="0.3194925" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32857144" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32908458" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4959547" weight="0.32410613" />
+      <window_info anchor="bottom" id="Python Console" order="11" sideWeight="0.49838188" weight="0.32871974" />
+      <window_info active="true" anchor="bottom" id="Inspection Results" order="12" visible="true" weight="0.3275218" />
+      <window_info anchor="bottom" id="Event Log" order="13" sideWeight="0.51375407" side_tool="true" visible="true" weight="0.32410613" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" weight="0.32902735" />
+      <window_info anchor="right" id="Database" order="4" weight="0.32674772" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -569,20 +618,6 @@
     <entry file="file://$PROJECT_DIR$/Relatorios/apps.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="508">
-          <caret line="61" column="84" selection-start-line="61" selection-start-column="79" selection-end-line="61" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="17" column="30" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/movimentacoes/listagem.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1105">
@@ -604,20 +639,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="243" column="14" lean-forward="true" selection-start-line="243" selection-start-column="14" selection-end-line="243" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-952">
-          <caret line="6" column="19" lean-forward="true" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="54" column="25" lean-forward="true" selection-start-line="54" selection-start-column="25" selection-end-line="54" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -659,13 +680,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="9" column="1" lean-forward="true" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/relatorios/form.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="219">
@@ -677,20 +691,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="81" selection-start-line="81" selection-end-line="87" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="45" selection-start-line="13" selection-start-column="45" selection-end-line="13" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-340">
-          <caret line="8" column="44" lean-forward="true" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="59" />
         </state>
       </provider>
     </entry>
@@ -715,10 +715,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="13" column="45" selection-start-line="13" selection-start-column="45" selection-end-line="13" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="54" column="25" lean-forward="true" selection-start-line="54" selection-start-column="25" selection-end-line="54" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="70" column="38" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
+        <state relative-caret-position="2128">
+          <caret line="160" column="14" lean-forward="true" selection-start-line="160" selection-start-column="14" selection-end-line="160" selection-end-column="14" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
             <element signature="e#1227#1259#0" />
@@ -728,12 +756,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="484" column="35" lean-forward="true" selection-start-line="484" selection-start-column="35" selection-end-line="484" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-            <marker date="1542029408789" expanded="true" signature="9364:9369" ph="..." />
-          </folding>
+        <state relative-caret-position="153">
+          <caret line="51" column="4" lean-forward="true" selection-start-line="51" selection-start-column="4" selection-end-line="51" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="60" column="48" selection-start-line="60" selection-start-column="48" selection-end-line="60" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="279" column="30" selection-start-line="279" selection-start-column="23" selection-end-line="279" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="97" column="90" selection-start-line="97" selection-start-column="90" selection-end-line="97" selection-end-column="90" />
         </state>
       </provider>
     </entry>

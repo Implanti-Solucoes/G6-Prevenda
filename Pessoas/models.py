@@ -68,8 +68,7 @@ class PessoasMongo:
         total_devedor = 0
 
         query = {
-            'Situacao._t':
-                {u'$ne': u'Quitada'},
+            'Situacao._t': u'Pendente',
             'PessoaReferencia': id,
             'Ativo': True
         }
