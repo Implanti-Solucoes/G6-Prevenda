@@ -241,6 +241,7 @@ class Financeiro:
                     'CentroCustoCodigoUnico': centro_custo,
                     'ContaReferencia': conta,
                     'EmpresaReferencia': emitente['_id'],
+                    'NomeUsuario': 'Usuário Administrador',
                     'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
                     'ChequeReferencia': ObjectId('000000000000000000000000')
                 },
@@ -303,6 +304,8 @@ class Financeiro:
                 '_t': 'Quitada',
                 'Codigo': 3
             }
+            modelo['DataQuitacao'] = vencimento if type(vencimento) == datetime else datetime.strptime(vencimento,
+                                                                                                  '%Y-%m-%d')
             modelo['Historico'].append({
                 '_t': 'HistoricoQuitado',
                 'Valor': valor_parcela,
@@ -417,7 +420,6 @@ class Financeiro:
             return False
 
         modelo = {
-            '_id': ObjectId('5be58f078fc35f197466e010'),
             '_t': [
                 'MovimentoConta',
                 'LancamentoRecebimento'
