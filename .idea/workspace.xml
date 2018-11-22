@@ -75,14 +75,14 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="html" value="88" />
-          <entry key="py" value="216" />
+          <entry key="py" value="219" />
           <entry key="xml" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="HTML" value="88" />
-          <entry key="Python" value="216" />
+          <entry key="Python" value="219" />
           <entry key="XML" value="1" />
         </counts>
       </usages-collector>
@@ -95,10 +95,19 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="229" column="22" selection-start-line="229" selection-start-column="9" selection-end-line="229" selection-end-column="22" />
+            <state relative-caret-position="85">
+              <caret line="5" column="50" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="50" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="241">
+              <caret line="126" column="21" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="21" />
               <folding>
-                <element signature="e#0#29#0" expanded="true" />
+                <element signature="e#27#67#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,21 +116,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1921">
-              <caret line="516" column="57" selection-start-line="516" selection-start-column="57" selection-end-line="516" selection-end-column="57" />
+            <state relative-caret-position="299">
+              <caret line="519" column="13" selection-start-line="519" selection-start-column="6" selection-end-line="519" selection-end-column="13" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
                 <element signature="e#1227#1259#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="250" column="47" selection-start-line="250" selection-start-column="47" selection-end-line="250" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -138,7 +138,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>imp</find>
       <find>ie</find>
       <find>create</find>
       <find>Pessoas</find>
@@ -160,7 +159,6 @@
       <find>cpf</find>
       <find>total a pagar</find>
       <find>print(parcelas)</find>
-      <find>print</find>
       <find>Lancamento da movimentação da conta falhou</find>
       <find>function</find>
       <find>get</find>
@@ -168,6 +166,8 @@
       <find>now</find>
       <find>saldo</find>
       <find>tipo</find>
+      <find>parcela</find>
+      <find>print</find>
     </findStrings>
     <replaceStrings>
       <replace>financeiro</replace>
@@ -228,12 +228,12 @@
         <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/carta_impresso.html" />
         <option value="$PROJECT_DIR$/templates/financeiro/cartas_gerador.html" />
-        <option value="$PROJECT_DIR$/Pessoas/models.py" />
         <option value="$PROJECT_DIR$/Financeiro/models.py" />
         <option value="$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html" />
         <option value="$PROJECT_DIR$/templates/financeiro/renegociar.html" />
         <option value="$PROJECT_DIR$/Financeiro/views.py" />
         <option value="$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html" />
+        <option value="$PROJECT_DIR$/Pessoas/models.py" />
       </list>
     </option>
   </component>
@@ -450,7 +450,7 @@
     <frame x="-8" y="-8" width="1296" height="936" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24757281" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27022654" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -733,16 +733,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
-          <folding>
-            <element signature="e#27#67#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/movimentacoes/gerar_financeiro.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1008">
@@ -764,10 +754,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="244" column="10" selection-start-line="244" selection-start-column="10" selection-end-line="244" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1921">
-          <caret line="516" column="57" selection-start-line="516" selection-start-column="57" selection-end-line="516" selection-end-column="57" />
+        <state relative-caret-position="299">
+          <caret line="519" column="13" selection-start-line="519" selection-start-column="6" selection-end-line="519" selection-end-column="13" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
             <element signature="e#1227#1259#0" />
@@ -777,18 +774,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="229" column="22" selection-start-line="229" selection-start-column="9" selection-end-line="229" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="85">
+          <caret line="5" column="50" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="50" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html">
+    <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="250" column="47" selection-start-line="250" selection-start-column="47" selection-end-line="250" selection-end-column="47" />
+        <state relative-caret-position="241">
+          <caret line="126" column="21" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="21" />
+          <folding>
+            <element signature="e#27#67#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

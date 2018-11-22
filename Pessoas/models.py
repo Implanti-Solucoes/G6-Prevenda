@@ -125,7 +125,6 @@ class PessoasMongo:
                         percentual=doc['Multa']['Percentual'],
                         dias_carencia=doc['Multa']['DiasCarencia']
                     )
-                print(doc['Historico'][0]['Valor'])
         finally:
             Uteis().fecha_conexao()
         return total_devedor
