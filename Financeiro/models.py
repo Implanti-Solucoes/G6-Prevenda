@@ -514,7 +514,7 @@ class Contratos(models.Model):
     id_g6_cliente = models.CharField('id do cliente', max_length=24)
     excluido = models.BooleanField()
     motivo = models.CharField('Motivo do cancelamento', max_length=250)
-    desconto = models.FloatField('Desconto')
+    desconto = models.FloatField('Desconto', default=0.00)
 
 
 class Parcelas(models.Model):
