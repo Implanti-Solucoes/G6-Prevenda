@@ -1,13 +1,15 @@
 # Create your models here.
+from datetime import datetime, timedelta
+from pymongo import errors
+from math import ceil
 from core.models import Uteis
 from bson import ObjectId
 from django.db import models
+from bson.tz_util import FixedOffset
 
 
 class PessoasMongo:
-
-    @staticmethod
-    def get_pessoa(id):
+    def get_pessoa(self, id, atrasados=False):
         database = Uteis().conexao
         if type(id) == str and len(id) == 24:
             query = {'_id': ObjectId(id)}
@@ -17,6 +19,8 @@ class PessoasMongo:
             return []
 
         pessoa = database['Pessoas'].find_one(query)
+        pessoa['devedor'] = self.get_saldo_devedor(id=pessoa['_id'], database=database, atrasado=atrasados)
+        pessoa['devedor'] = pessoa['devedor']['total_devedor'] + pessoa['devedor']['juro'] + pessoa['devedor']['multa']
         Uteis().fecha_conexao()
         return pessoa
 
@@ -35,17 +39,37 @@ class PessoasMongo:
         Uteis().fecha_conexao()
         return emitente
 
-    @staticmethod
-    def get_clientes():
+    def get_clientes(self, atrasados=False):
         database = Uteis().conexao
         query = {'Cliente': {u'$exists': True}}
-        clientes = database['Pessoas'].find(query)
-        clients_list = []
-        for x in clientes:
-            x['id'] = str(x['_id'])
-            clients_list.append(x)
+        collection = database['Pessoas']
 
+        # Limitando a quantidade buscada para evitar erro
+        clientes_count = collection.count()
+        limit = 100
+        page = ceil(clientes_count / limit)
+        p = 0
+
+        # Resetando conexão
         Uteis().fecha_conexao()
+        clients_list = []
+        while p < page:
+            dados = []
+            try:
+                database = Uteis().conexao
+                collection = database['Pessoas']
+                clientes = collection.find(query, skip=(p * limit), limit=limit)
+                for x in clientes:
+                    x['id'] = str(x['_id'])
+                    x['devedor'] = self.get_saldo_devedor(x['_id'], database=database, atrasado=atrasados)
+                    x['devedor'] = x['devedor']['total_devedor'] + x['devedor']['juro'] + x['devedor']['multa']
+                    dados.append(x)
+            except:
+                print("Entrei foi nesse aki")
+            finally:
+                p += 1
+                Uteis().fecha_conexao()
+                clients_list.extend(dados)
         return clients_list
 
     def get_nome_emitente(self):
@@ -57,27 +81,51 @@ class PessoasMongo:
         return emitente['Cnpj']
 
     @staticmethod
-    def get_saldo_devedor(id):
+    def get_saldo_devedor(id, database=None, atrasado=False):
+        from Financeiro.models import Financeiro
         if type(id) == str and len(id) == 24:
             id = ObjectId(id)
         elif type(id) == ObjectId:
             pass
         else:
             return False
-        database = Uteis().conexao
-        total_devedor = 0
+
+        if database is None:
+            database = Uteis().conexao
+
+        total_devedor = {'total_devedor': 0, 'juro': 0, 'multa': 0}
 
         query = {
             'Situacao._t': u'Pendente',
             'PessoaReferencia': id,
             'Ativo': True
         }
-        projection = {'Historico': 1.0}
-
-        cursor = database['Recebimentos'].find(query, projection=projection)
+        if atrasado:
+            data = datetime.now().strftime('%Y-%m-%d')
+            query['Vencimento'] = {
+                u"$lt": datetime.strptime(data + ' ' + '00:00:00.000', '%Y-%m-%d %H:%M:%S.%f')
+            }
+        cursor = database['Recebimentos'].find(query)
         try:
             for doc in cursor:
-                total_devedor = total_devedor + doc['Historico'][0]['Valor']
+                total_devedor['total_devedor'] = total_devedor['total_devedor'] + doc['Historico'][0]['Valor']
+                if 'Juro' in doc:
+                    total_devedor['juro'] += Financeiro().calcular_juros(
+                        valor=doc['Historico'][0]['Valor'],
+                        vencimento=doc['Vencimento'],
+                        tipo=doc['Juro']['Codigo'],
+                        percentual=doc['Juro']['Percentual'],
+                        dias_carencia=doc['Juro']['DiasCarencia']
+                    )
+                elif 'Multa' in doc:
+                    total_devedor['multa'] += Financeiro().calcular_juros(
+                        valor=doc['Historico'][0]['Valor'],
+                        vencimento=doc['Vencimento'],
+                        tipo=3,
+                        percentual=doc['Multa']['Percentual'],
+                        dias_carencia=doc['Multa']['DiasCarencia']
+                    )
+                print(doc['Historico'][0]['Valor'])
         finally:
             Uteis().fecha_conexao()
         return total_devedor
@@ -89,8 +137,14 @@ class PessoasMongo:
             pass
         else:
             return False
-        saldo_devedor = self.get_saldo_devedor(id)
-        extenso = Uteis().num_to_currency(saldo_devedor)
+        saldo_devedor = self.get_saldo_devedor(id, database=None)
+        extenso = Uteis().num_to_currency(
+            (
+                    saldo_devedor['total_devedor'] +
+                    saldo_devedor['juro'] +
+                    saldo_devedor['multa']
+            )
+        )
         return extenso
 
     @staticmethod

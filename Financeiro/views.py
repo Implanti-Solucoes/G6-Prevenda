@@ -84,7 +84,7 @@ def gerar_financeiro(request):
             entrada=True
         )
         if id is not None:
-            contrato.parcelas.create(id_g6=id)
+            contrato.parcelas.create(id_g6=id, valor=entrada)
     else:
         y = 0
 
@@ -106,7 +106,7 @@ def gerar_financeiro(request):
                 entrada=False
             )
             if id is not None:
-                contrato.parcelas.create(id_g6=id)
+                contrato.parcelas.create(id_g6=id, valor=valor_parcela)
             y += 1
 
     # Vamos configurar as movimentações
@@ -170,6 +170,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
         cliente = PessoasMongo().get_pessoa(contrato[0].id_g6_cliente)
 
     parcelamento = []
+    total = 0
     for x in contrato[0].parcelas.all():
         # Realizando busca no banco pelas parcelas atualizadas no sistema
         pago = 0
@@ -178,6 +179,12 @@ def comprovante_de_debito_por_movimentacao(request, id):
         if not cliente:
             cliente = PessoasMongo().get_pessoa(result['PessoaReferencia'])
         cliente['SaldoDevedor'] = PessoasMongo().get_saldo_devedor(cliente['_id'])
+        cliente['SaldoDevedor'] = (
+            cliente['SaldoDevedor']['total_devedor'] +
+            cliente['SaldoDevedor']['juro'] +
+            cliente['SaldoDevedor']['multa']
+        )
+
         # Verificando quais parcelas foram quitadas
         for hist in result['Historico']:
             if not emitente:
@@ -186,7 +193,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
             if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
                 pago = hist['Valor']
 
-        # Inserindo a informação de qual valor foi quitado
+        # Inserindo a informação de qual valor foi quitado ou Não
         parcelamento.append(
             {
                 'Vencimento': result['Vencimento'],
@@ -195,6 +202,10 @@ def comprovante_de_debito_por_movimentacao(request, id):
                 'Ativo': 'Sim' if result['Ativo'] else 'Não'
             }
         )
+        total = total + result['Historico'][0]['Valor']
+
+    total_liquido = total
+    total = total + contrato[0].desconto
 
     # Reordenando para exibição
     parcelamento.sort(key=lambda t: t['Vencimento'])
@@ -215,6 +226,8 @@ def comprovante_de_debito_por_movimentacao(request, id):
         'Parcelamento': parcelamento,
         'Emitente': emitente,
         'Cliente': cliente,
+        'total': total,
+        'total_liquido': total_liquido
     }
     return render(request, template_name, context)
 
@@ -243,7 +256,7 @@ def listagem_parcelas_cliente(request, id):
     par = []
     for parcela_mongo in parcelas_mongo:
         if 'Juro' in parcela_mongo:
-            parcela_mongo['Juro']['Valor'] = calcular_juros(
+            parcela_mongo['Juro']['Valor'] = financeiro.calcular_juros(
                 valor=parcela_mongo['Historico'][0]['Valor'],
                 vencimento=parcela_mongo['Vencimento'],
                 tipo=parcela_mongo['Juro']['Codigo'],
@@ -284,6 +297,7 @@ def renegociacao(request):
     total = 0
     juro = 0
     multa = 0
+
     for parcela in parcelas:
         financeiro.set_query_id(parcela)
         financeiro.set_query_ativo(True)
@@ -296,12 +310,20 @@ def renegociacao(request):
         if cliente['_id'] == x['PessoaReferencia']:
             total += x['Historico'][0]['Valor']
             if 'Juro' in x:
-                juro += calcular_juros(
+                juro += financeiro.calcular_juros(
                     valor=x['Historico'][0]['Valor'],
                     vencimento=x['Vencimento'],
                     tipo=x['Juro']['Codigo'],
                     percentual=x['Juro']['Percentual'],
                     dias_carencia=x['Juro']['DiasCarencia']
+                )
+            elif 'Multa' in x:
+                multa += financeiro.calcular_juros(
+                    valor=x['Historico'][0]['Valor'],
+                    vencimento=x['Vencimento'],
+                    tipo=3,
+                    percentual=x['Multa']['Percentual'],
+                    dias_carencia=x['Multa']['DiasCarencia']
                 )
         financeiro.unset_all()
 
@@ -328,9 +350,12 @@ def renegociacao_lancamento(request):
     centro_custo = request.POST['centro_custo']
     planos_contas = request.POST['planos_contas']
 
-    # Recebendo valores de entrada e tratando
+    # Recebendo valores de entrada, desconto e tratando
     entrada = request.POST['entrada']
     entrada = float(entrada.replace(',', '.'))
+
+    desconto = request.POST['desconto']
+    desconto = float(desconto.replace(',', '.'))
 
     # Recebendo valores e tratando
     parcelas = request.POST.getlist('parcela')
@@ -371,12 +396,20 @@ def renegociacao_lancamento(request):
 
             total += x['Historico'][0]['Valor']
             if 'Juro' in x:
-                juro += calcular_juros(
+                juro += financeiro.calcular_juros(
                     valor=x['Historico'][0]['Valor'],
                     vencimento=x['Vencimento'],
                     tipo=x['Juro']['Codigo'],
                     percentual=x['Juro']['Percentual'],
                     dias_carencia=x['Juro']['DiasCarencia']
+                )
+            elif 'Multa' in x:
+                multa += financeiro.calcular_juros(
+                    valor=x['Historico'][0]['Valor'],
+                    vencimento=x['Vencimento'],
+                    tipo=3,
+                    percentual=x['Multa']['Percentual'],
+                    dias_carencia=x['Multa']['DiasCarencia']
                 )
         else:
             print("Parcela " + parcela + " não é do mesmo cliente")
@@ -402,10 +435,12 @@ def renegociacao_lancamento(request):
         tipo=2,
         id_g6='',
         id_g6_cliente=id_cliente,
-        excluido=False
+        excluido=False,
+        desconto=desconto
     )
 
     y = 0
+
     if entrada > 0:
         y = 1
         id = Financeiro().gerar_parcela(
@@ -423,7 +458,8 @@ def renegociacao_lancamento(request):
             entrada=True
         )
         if id is not None:
-            contrato.parcelas.create(id_g6=id)
+            contrato.parcelas.create(id_g6=id, valor=entrada)
+
     valor_parcela = total / qant_parcelas
     for x in vencimentos:
         id = Financeiro().gerar_parcela(
@@ -441,74 +477,24 @@ def renegociacao_lancamento(request):
             entrada=False
         )
         if id is not None:
-            contrato.parcelas.create(id_g6=id)
+            contrato.parcelas.create(id_g6=id, valor=valor_parcela)
         y += 1
-    return redirect('movimentacoes:listagem_prevenda')
-
-
-def calcular_juros(valor, vencimento, tipo, percentual, dias_carencia):
-    # Verificando configurações para aplicar juros e multa
-    config = Configuracoes().configuracoes()
-    if 'Financeiro' in config:
-        dias = int((datetime.now() - vencimento).days)-1
-        juros = 0
-        if dias > 0:
-            if tipo == 1:
-                juros = valor * (percentual/30) * dias / 100
-            elif tipo == 2:
-                juros = ((((1+(percentual/100))**(1/30))**dias)-1)*valor
-        if (dias-dias_carencia) > 0 and tipo == 3:
-            juros = valor * percentual / 100
-        return juros
+    return redirect('financeiro:comprovante_de_debito_por_movimentacao', contrato.id)
 
 
 def cartas_gerador(request):
     if request.method == 'GET':
-        return render(request, 'financeiro/cartas_gerador.html', {})
+        clientes = Movimentacoes().get_clientes()
+        return render(request, 'financeiro/cartas_gerador.html', {'clientes': clientes})
     elif request.method == 'POST':
-        inicial = request.POST['inical']
-        year, month, day = map(int, inicial.split('-'))
-        inicial = datetime(year, month, day, 00, 00, 00)
-
-        final = request.POST['final']
-        year, month, day = map(int, final.split('-'))
-        final = datetime(year, month, day, 23, 59, 59)
-
-        financeiro = Financeiro()
-        financeiro.set_query_vencimento_periodo(inicial, final)
-        financeiro.set_query_ativo(True)
-        financeiro.set_query_situacao_codigo(1)
-        parcelas_dict = financeiro.execute_all()
-        parcelas = {}
-
-        emitente = None
+        cliente = request.POST['cliente']
+        emitente = PessoasMongo().get_emitente()
         data_atual = datetime.now()
-
-        for x in parcelas_dict:
-            if str(x['PessoaReferencia']) not in parcelas:
-                parcelas[str(x['PessoaReferencia'])] = {'valor': 0.0, 'cliente': {}}
-            parcelas[str(x['PessoaReferencia'])]['cliente'] = PessoasMongo().get_pessoa(x['PessoaReferencia'])
-            juros = calcular_juros(
-                valor=x['Historico'][0]['Valor'],
-                vencimento=x['Vencimento'],
-                tipo=x['Juro']['Codigo'],
-                percentual=x['Juro']['Percentual'],
-                dias_carencia=0
-            )
-            multa = calcular_juros(
-                valor=x['Historico'][0]['Valor'],
-                vencimento=x['Vencimento'],
-                tipo=3,
-                percentual=x['Multa']['Percentual'],
-                dias_carencia=x['Multa']['DiasCarencia']
-            )
-
-            if not emitente:
-                emitente = PessoasMongo().get_pessoa(x['EmpresaReferencia'])
-
-            parcelas[str(x['PessoaReferencia'])]['valor'] += (x['Historico'][0]['Valor'] + juros + multa)
-        return render(request, 'financeiro/carta_impresso.html', {'parcelas': parcelas,
-                                                                  'emitente': emitente,
+        if cliente == '':
+            pessoas = PessoasMongo().get_clientes(atrasados=True)
+        else:
+            pessoas = [PessoasMongo().get_pessoa(id=cliente, atrasados=True)]
+        return render(request, 'financeiro/carta_impresso.html', {'pessoas': pessoas, 'emitente': emitente,
                                                                   'data_atual': data_atual})
     else:
         return redirect('movimentacoes:listagem_prevenda')

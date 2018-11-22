@@ -92,6 +92,7 @@
       <w>digitado</w>
       <w>dinheiro</w>
       <w>documento</w>
+      <w>documentos</w>
       <w>débito</w>
       <w>débitos</w>
       <w>editavel</w>
@@ -105,6 +106,7 @@
       <w>entra</w>
       <w>entrada</w>
       <w>envolva</w>
+      <w>erro</w>
       <w>especie</w>
       <w>estabelecimento</w>
       <w>estanciando</w>
@@ -115,12 +117,16 @@
       <w>excluidos</w>
       <w>exibição</w>
       <w>existe</w>
+      <w>existir</w>
       <w>extenso</w>
       <w>fazendo</w>
       <w>filtrado</w>
+      <w>filtro</w>
       <w>financeiro</w>
       <w>fisica</w>
       <w>foram</w>
+      <w>formatando</w>
+      <w>formatar</w>
       <w>garantia</w>
       <w>gerador</w>
       <w>gerando</w>
@@ -149,6 +155,7 @@
       <w>juro</w>
       <w>juros</w>
       <w>lancamento</w>
+      <w>linha</w>
       <w>liquido</w>
       <w>lista</w>
       <w>listagem</w>
@@ -252,6 +259,7 @@
       <w>renegociar</w>
       <w>renegociação</w>
       <w>reordenando</w>
+      <w>repassado</w>
       <w>repetidos</w>
       <w>retorno</w>
       <w>saldo</w>
@@ -269,6 +277,7 @@
       <w>somente</w>
       <w>tabela</w>
       <w>tabelas</w>
+      <w>telefone</w>
       <w>tenha</w>
       <w>tipo</w>
       <w>titulo</w>

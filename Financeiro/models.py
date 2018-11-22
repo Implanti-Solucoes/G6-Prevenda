@@ -464,7 +464,7 @@ class Financeiro:
             Uteis().fecha_conexao()
             return True
         except Exception as e:
-            print("Erro linha 465")
+            print("Erro linha 467")
             print(e)
 
     @staticmethod
@@ -491,6 +491,22 @@ class Financeiro:
         Uteis().fecha_conexao()
         return True
 
+    @staticmethod
+    def calcular_juros(valor, vencimento, tipo, percentual, dias_carencia):
+        # Verificando configurações para aplicar juros e multa
+        config = Configuracoes().configuracoes()
+        if 'Financeiro' in config:
+            dias = int((datetime.now() - vencimento).days)-1
+            juros = 0
+            if dias > 0:
+                if tipo == 1:
+                    juros = valor * (percentual/30) * dias / 100
+                elif tipo == 2:
+                    juros = ((((1+(percentual/100))**(1/30))**dias)-1)*valor
+            if (dias-dias_carencia) > 0 and tipo == 3:
+                juros = valor * percentual / 100
+            return juros
+
 
 class Contratos(models.Model):
     tipo = models.IntegerField()
@@ -498,8 +514,10 @@ class Contratos(models.Model):
     id_g6_cliente = models.CharField('id do cliente', max_length=24)
     excluido = models.BooleanField()
     motivo = models.CharField('Motivo do cancelamento', max_length=250)
+    desconto = models.FloatField('Desconto')
 
 
 class Parcelas(models.Model):
     contrato = models.ForeignKey(Contratos, on_delete=models.CASCADE, related_name='parcelas')
     id_g6 = models.CharField('id da parcela', max_length=24)
+    valor = models.FloatField('Valor Parcela')

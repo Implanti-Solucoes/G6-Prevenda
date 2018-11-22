@@ -49,7 +49,7 @@
 </head>
 <body>
     {% include "menu.html" %}
-    {% for key,p in parcelas.items %}
+    {% for p in pessoas %}
     <div class="container page">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
@@ -76,21 +76,21 @@
         <br />
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {{ p.cliente.Nome }}
+                {{ p.Nome }}
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Logradouro.: {{ p.cliente.Carteira.EnderecoPrincipal.Logradouro }}
-                Nº {{ emitente.Carteira.EnderecoPrincipal.Numero }} -
-                {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+                Logradouro.: {{ p.Carteira.EnderecoPrincipal.Logradouro }}
+                Nº {{ p.Carteira.EnderecoPrincipal.Numero }} -
+                {{ p.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ p.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Valor até esta data: R${{ p.valor|floatformat:2 }}
+                Valor até esta data: R${{ p.devedor|floatformat:2 }}
             </div>
         </div>
         <br /><br /><br />

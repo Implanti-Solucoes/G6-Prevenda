@@ -16,20 +16,22 @@
         function somenteNumeros(num) {
             var er = /[^0-9.]/;
             er.lastIndex = 0;
-            var campo = num, vencimento;
+            var campo = num;
+
             if (er.test(campo.value)) {
                 campo.value = "1";
-            };
+            }
 
             valores = [
                 parseFloat({{ valores.1|stringformat:"f" }}).toFixed(2),
                 parseFloat({{ valores.2|stringformat:"f" }}).toFixed(2),
                 parseFloat({{ valores.3|stringformat:"f" }}).toFixed(2),
-                parseFloat({{ valores.4|stringformat:"f" }}).toFixed(2)
+                parseFloat({{ valores.4|stringformat:"f" }}).toFixed(2),
             ];
             data = Date.now();
-            total = document.getElementById('total');;
+            total = document.getElementById('total');
             parcelas = parseFloat(document.getElementById('parcelas').value);
+            desconto = parseFloat(document.getElementById('desconto').value);
             entrada = parseFloat(document.getElementById('entrada').value);
             vencimentos = document.getElementById('vencimentos');
             valor_parcela = document.getElementById('valor');
@@ -49,7 +51,9 @@
                 vencimentos.innerHTML = vencimento
             }
 
-            valor_parcela.value = ((valores[parseInt(total.value)-1] - entrada) / parcelas).toFixed(2).replace('.', ',');
+            valor_parcela.value = (
+                (valores[parseInt(total.value)-1] - entrada - desconto) / parcelas
+            ).toFixed(2).replace('.', ',');
 
         }
     </script>
@@ -69,7 +73,7 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="conta">Conta</label>
                 <select id="conta" name="conta" class="form-control" required="required">
                     {% for conta in contas %}
@@ -77,7 +81,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="centro_custo">Centro de custo</label>
                 <select id="centro_custo" name="centro_custo" class="form-control" required="required">
                     {% for custo in centros_custos %}
@@ -85,7 +89,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="planos_contas">Plano de contas</label>
                 <select id="planos_contas" name="planos_contas" class="form-control" required="required">
                     {% for plano in planos_conta %}
@@ -93,8 +97,6 @@
                     {% endfor %}
                 </select>
             </div>
-        </div>
-        <div class="form-row">
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="total">Total</label>
                 <select id="total" name="total" class="form-control" required="required" onchange="somenteNumeros(this)">
@@ -104,10 +106,15 @@
                     <option value="4" selected="selected">{{ valores.4|floatformat:2 }} (Valor total + Juros + Multa)</option>
                 </select>
             </div>
-
+        </div>
+        <div class="form-row">
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="valor">Valor Parcela</label>
                 <input type="text" class="form-control" id="valor" value="0" readonly>
+            </div>
+            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <label for="desconto">Desconto</label>
+                <input type="number" class="form-control" id="desconto" name="desconto" min="0" max="{{ items.Total|stringformat:"f" }}" step="0.01" pattern="^\d+(?:\.\d{1,2})?$" onblur="this.parentNode.parentNode.style.backgroundColor=/^\d+(?:\.\d{1,2})?$/.test(this.value)?'inherit':'red'" value="0.00" onkeyup="somenteNumeros(this);">
             </div>
             <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <label for="entrada">Entrada</label>
