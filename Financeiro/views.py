@@ -415,13 +415,13 @@ def renegociacao_lancamento(request):
             print("Parcela " + parcela + " não é do mesmo cliente")
 
     if id_total == 1:
-        pass
+        total = total - desconto
     elif id_total == 2:
-        total = total + juro - entrada
+        total = total + juro - entrada - desconto
     elif id_total == 3:
-        total = total + multa - entrada
+        total = total + multa - entrada - desconto
     elif id_total == 4:
-        total = total + multa + juro - entrada
+        total = total + multa + juro - entrada - desconto
     else:
         print("Total ID é invalido")
         return redirect('movimentacoes:listagem_prevenda')
