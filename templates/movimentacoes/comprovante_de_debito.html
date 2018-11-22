@@ -240,11 +240,6 @@
     </div>
     {% endfor %}
     <br />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Saldo devedor.: R$ {{ Cliente.SaldoDevedor|floatformat:2 }}
-        </div>
-    </div>
     {% if Contrato.0.tipo == 2 %}
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -285,6 +280,11 @@
             {{ Cliente.Carteira.EnderecoPrincipal.Bairro }},
             {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Nome }},
             {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            Saldo devedor.: R$ {{ Cliente.SaldoDevedor|floatformat:2 }}
         </div>
     </div>
     <div class="row">
