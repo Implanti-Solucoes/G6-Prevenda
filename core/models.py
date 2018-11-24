@@ -19,7 +19,7 @@ class Uteis:
         self.client.close()
         return True
 
-    def execute(self, tabela, query, projection, sort, limit=500):
+    def execute(self, tabela, query, projection, sort, limit=100):
         database = self.conexao
         if limit == 0:
             busca = []
