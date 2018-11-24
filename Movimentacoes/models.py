@@ -10,7 +10,7 @@ class Movimentacoes:
         self.query = {}
         self.projection = {}
         self.sort = []
-        self.limit = 500
+        self.limit = 100
         self.uteis = Uteis()
 
     def set_query_id(self, con):
@@ -151,7 +151,7 @@ class Movimentacoes:
         self.query = {}
         self.projection = {}
         self.sort = []
-        self.limit = 500
+        self.limit = 100
 
     def execute_all(self):
         busca = self.uteis.execute(
