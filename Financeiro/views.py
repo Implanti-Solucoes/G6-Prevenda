@@ -74,7 +74,7 @@ def gerar_financeiro(request):
             informacoes_pesquisa=cursor['InformacoesPesquisa'],
             pessoa=cursor['Pessoa']['PessoaReferencia'],
             emitente=cursor['Empresa']['PessoaReferencia'],
-            documento=cursor['Numero'],
+            documento=contrato.id,
             num=y,
             conta=conta,
             centro_custo=centro_custo,
@@ -96,7 +96,7 @@ def gerar_financeiro(request):
                 informacoes_pesquisa=cursor['InformacoesPesquisa'],
                 pessoa=cursor['Pessoa']['PessoaReferencia'],
                 emitente=cursor['Empresa']['PessoaReferencia'],
-                documento=cursor['Numero'],
+                documento=contrato.id,
                 num=y + 1,
                 conta=conta,
                 centro_custo=centro_custo,
@@ -121,6 +121,9 @@ def gerar_financeiro(request):
         # Removendo totais para pode atualizar no banco
         cursor = Uteis().remover_totais(cursor)
 
+        # Removendo ID tratado para pode inserir no banco
+        del cursor['id']
+
         # Modificar para status aprovado
         cursor['Situacao'] = {
             '_t': [
@@ -133,8 +136,8 @@ def gerar_financeiro(request):
             'DescricaoComando': 'Tornar pendente'
         }
 
-        # Removendo ID tratado para pode inserir no banco
-        del cursor['id']
+        # Modificando o número da pre-venda para o numero do contrato
+        cursor['Numero'] = contrato.id
 
         # Atualizando movimentação
         database = Uteis().conexao
@@ -448,7 +451,7 @@ def renegociacao_lancamento(request):
             informacoes_pesquisa=[],
             pessoa=id_cliente,
             emitente=emitente['_id'],
-            documento='1',
+            documento=contrato.id,
             num=y,
             conta=conta,
             centro_custo=centro_custo,
@@ -467,7 +470,7 @@ def renegociacao_lancamento(request):
             informacoes_pesquisa=[],
             pessoa=id_cliente,
             emitente=emitente['_id'],
-            documento='1',
+            documento=contrato.id,
             num=y+1,
             conta=conta,
             centro_custo=centro_custo,
