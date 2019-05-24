@@ -1,6 +1,7 @@
 import datetime
 from django.conf.urls import url
 from django.shortcuts import render, redirect
+from Pessoas.models import PessoasMongo
 from Movimentacoes.models import Movimentacoes
 from core.models import Uteis
 
@@ -8,8 +9,13 @@ from core.models import Uteis
 def index(request):
     movimentacoes = Movimentacoes()
     if request.method != 'POST':
-        clientes = movimentacoes.get_clientes()
-        vendedores = movimentacoes.get_vendedores()
+        pessoas = PessoasMongo()
+        pessoas.set_query_client()
+        clientes = pessoas.execute_all()
+
+        pessoas = PessoasMongo()
+        pessoas.set_query_vendedor()
+        vendedores = pessoas.execute_all()
         context = {
             'clientes': clientes,
             'vendedores': vendedores,

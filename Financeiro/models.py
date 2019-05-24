@@ -1,5 +1,5 @@
 from datetime import datetime
-from bson import ObjectId, Regex
+from bson import ObjectId
 from Pessoas.models import PessoasMongo
 from core.models import Uteis, Configuracoes
 from bson.tz_util import FixedOffset
@@ -15,6 +15,7 @@ class Financeiro:
         self.query = {}
         self.projection = {}
         self.limit = 250
+        self.sort = []
 
     def set_query_id(self, con):
         if type(con) == str and len(con) == 24:
@@ -162,25 +163,17 @@ class Financeiro:
                       emitente, documento, num, conta, centro_custo,
                       planos_contas, valor_parcela, vencimento, entrada=False):
 
-        # Cliente
-        if type(pessoa) == str and len(pessoa) == 24:
-            pessoa = ObjectId(pessoa)
-        elif type(pessoa) == ObjectId:
-            pass
-        else:
-            print("ID do cliente repassado é invalido")
-            return False
-        pessoa = PessoasMongo().get_pessoa(pessoa)
+        cursor = PessoasMongo()
+        cursor.set_query_id(pessoa)
+        pessoa = cursor.execute_all()
+        if len(pessoa) > 0:
+            pessoa = pessoa[0]
 
-        # Emitente
-        if type(emitente) == str and len(emitente) == 24:
-            emitente = ObjectId(pessoa)
-        elif type(emitente) == ObjectId:
-            pass
-        else:
-            print("ID do emitente repassado é invalido")
-            return False
-        emitente = PessoasMongo().get_pessoa(emitente)
+        cursor = PessoasMongo()
+        cursor.set_query_id(emitente)
+        emitente = cursor.execute_all()
+        if len(emitente) > 0:
+            emitente = emitente[0]
 
         if '_id' not in emitente or '_id' not in pessoa:
             print("ID do cliente ou emitente não foi encontrado")
@@ -382,24 +375,18 @@ class Financeiro:
 
     def lancamento_movimento_conta(self, doc, parc, valor, emitente, pessoa, conta, plano_contas, centro_custo):
         # Cliente
-        if type(pessoa) == str and len(pessoa) == 24:
-            pessoa = ObjectId(pessoa)
-        elif type(pessoa) == ObjectId:
-            pass
-        else:
-            print("ID do cliente repassado invalido")
-            return False
-        pessoa = PessoasMongo().get_pessoa(pessoa)
+        cursor = PessoasMongo()
+        cursor.set_query_id(pessoa)
+        pessoa = cursor.execute_all()
+        if len(pessoa) > 0:
+            pessoa = pessoa[0]
 
         # Emitente
-        if type(emitente) == str and len(emitente) == 24:
-            emitente = ObjectId(pessoa)
-        elif type(emitente) == ObjectId:
-            pass
-        else:
-            print("ID do Emitente repassado invalido")
-            return False
-        emitente = PessoasMongo().get_pessoa(emitente)
+        cursor = PessoasMongo()
+        cursor.set_query_id(emitente)
+        emitente = cursor.execute_all()
+        if len(emitente) > 0:
+            emitente = emitente[0]
 
         if '_id' not in emitente or '_id' not in pessoa:
             print("ID do cliente ou emitente não foi encontrado")
@@ -464,7 +451,6 @@ class Financeiro:
             Uteis().fecha_conexao()
             return True
         except Exception as e:
-            print("Erro linha 467")
             print(e)
 
     @staticmethod

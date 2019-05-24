@@ -137,7 +137,11 @@ def tabela_edit_post(request):
     price = request.POST.getlist('price[]')
 
     # Chamando metodos necessarios
-    emitente = PessoasMongo().get_emitente()
+    cursor = PessoasMongo()
+    cursor.set_query_emitente()
+    emitente = cursor.execute_all()
+    if len(emitente) > 0:
+        emitente = emitente[0]
     tabelas = tabelas_class.get(id)
     database = uteis.conexao
 

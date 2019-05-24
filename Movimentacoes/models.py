@@ -1,6 +1,5 @@
 from bson import ObjectId
 from bson.regex import Regex
-
 from Pessoas.models import PessoasMongo
 from core.models import Uteis
 
@@ -198,38 +197,6 @@ class Movimentacoes:
                 )
         return busca
 
-    def get_vendedores(self):
-        database = self.uteis.conexao
-
-        vendedores = []
-        query = {'Vendedor': {u'$exists': True}}
-        projection = {'_id': 1.0, 'Nome': 1.0}
-        cursor = database['Pessoas'].find(query, projection=projection)
-
-        try:
-            for vendedor in cursor:
-                vendedor['id'] = str(vendedor['_id'])
-                vendedores.append(vendedor)
-        finally:
-            self.uteis.fecha_conexao()
-
-        return vendedores
-
-    def get_clientes(self):
-        database = self.uteis.conexao
-
-        clientes = []
-        query = {'Cliente': {u'$exists': True}}
-        projection = {'_id': 1.0, 'Nome': 1.0}
-        cursor = database['Pessoas'].find(query, projection=projection, sort=[('Nome', 1)])
-        try:
-            for cliente in cursor:
-                cliente['id'] = str(cliente['_id'])
-                clientes.append(cliente)
-        finally:
-            self.uteis.fecha_conexao()
-        return clientes
-
     def edit_status_aprovado(self, id):
         database = self.uteis.conexao
         Aprovado = {
@@ -250,11 +217,14 @@ class Movimentacoes:
 
     @staticmethod
     def pessoas_movimentacao(id_cliente):
-        id = id_cliente
-        cliente = PessoasMongo().get_pessoa(id)
+        cursor = PessoasMongo()
+        cursor.set_query_id(id_cliente)
+        pessoa: list = cursor.execute_all()
+        if len(pessoa) > 0:
+            return False
+        cliente: dict = pessoa[0]
 
         pessoa_dict = {}
-
         if 'Fisica' in cliente['_t']:
             pessoa_dict['_t'] = 'FisicaHistorico'
             if 'Cpf' in cliente:

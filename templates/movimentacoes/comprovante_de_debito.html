@@ -140,7 +140,7 @@
     <hr />
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            TOTAL A PAGAR.: R$ {{ Mov.bruto|floatformat:2 }}
+            TOTAL A PAGAR.: R$ {{ Mov.bruto|floatformat:2 }} ({{ Mov.bruto_extenso }})
         </div>
     </div>
     <hr />
@@ -243,12 +243,12 @@
     {% if Contrato.0.tipo == 2 %}
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Total contrato.: R$ {{ total|floatformat:2 }}
+            Total contrato.: R$ {{ total_liquido.total|floatformat:2 }} ({{ total_liquido.extenso }})
         </div>
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Total liquido.: R$ {{ total_liquido|floatformat:2 }}
+            Total liquido.: R$ {{ total_liquido.total|floatformat:2 }} ({{ total_liquido.extenso }})
         </div>
     </div>
     <div class="row">
@@ -284,7 +284,7 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Saldo devedor.: R$ {{ Cliente.SaldoDevedor|floatformat:2 }}
+            Saldo devedor.: R$ {{ Cliente.devedor.total_devedor|floatformat:2 }} ({{ Cliente.devedor.extenso }})
         </div>
     </div>
     <div class="row">

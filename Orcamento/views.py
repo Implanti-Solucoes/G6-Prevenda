@@ -7,16 +7,19 @@ from core.models import Configuracoes
 
 
 def create_form(request):
-    emitente = PessoasMongo().get_emitente()
-    clientes = PessoasMongo().get_clientes()
+    cursor = PessoasMongo()
+    cursor.set_query_emitente()
+    emitente = cursor.execute_all()
+    if len(emitente) > 0:
+        emitente = emitente[0]
+    emitente['Cnpj'] = cursor.formatar_documento(emitente['Cnpj'])
+
+    cursor = PessoasMongo()
+    cursor.set_query_client()
+    cursor.set_query_ativo()
+    clientes = cursor.execute_all()
+
     produtos = Products().list()
-    emitente['Cnpj'] = '%s.%s.%s/%s-%s' % (
-        emitente['Cnpj'][0:2],
-        emitente['Cnpj'][2:5],
-        emitente['Cnpj'][5:8],
-        emitente['Cnpj'][8:12],
-        emitente['Cnpj'][12:14]
-    )
 
     context = {
         'emitente': emitente,
@@ -57,10 +60,11 @@ def create(request):
     if len(produtos) == len(precos):
         pass
 
-    if PessoasMongo().get_pessoa(cliente):
-        pass
-
-    cliente = PessoasMongo().get_pessoa(cliente)
+    cursor = PessoasMongo()
+    cursor.set_query_id(cliente)
+    cliente = cursor.execute_all()
+    if len(cliente) > 0:
+        cliente = cliente[0]
     ultimo_numero = Configuracoes().ultimo_numero()
     ultimo_numero = ultimo_numero['Contador']+1
 

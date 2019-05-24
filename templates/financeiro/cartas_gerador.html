@@ -16,15 +16,45 @@
         <form action="#" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <div class="form-group">
-                    <label for="cliente" class="col-sm-6 col-form-label">Selecione o cliente</label>
-                    <select name="cliente" id="cliente" class="form-control">
-                        <option value="">Sem filtro de cliente</option>
-                        {% for cliente in clientes %}
-                        <option value="{{ cliente.id }}">{{ cliente.Nome }}</option>
+                <label for="cliente" class="col-sm-6 col-form-label">Selecione o cliente</label>
+                <select name="cliente" id="cliente" class="form-control">
+                    <option value="">Sem filtro de cliente</option>
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.Nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="letras_inicio" class="col-form-label">Range de Letra inicio</label>
+                    <select name="letras_inicio" id="letras_inicio" class="form-control">
+                        <option value="">Selecione a letra inicial</option>
+                        {% for letra in letras %}
+                        <option value="{{ letra }}">{{ letra }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                <div class="col-6">
+                    <label for="letras_fim" class="col-sm-6 col-form-label">Range de Letra fim</label>
+                    <select name="letras_fim" id="letras_fim" class="form-control">
+                        <option value="">Selecione a letra final</option>
+                        {% for letra in letras %}
+                        <option value="{{ letra }}">{{ letra }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="inical_vencimento" class="col-form-label">Range de data de vencimento inicial</label>
+                    <input type="date" name="inical_vencimento" id="inical_vencimento" class="form-control">
+                </div>
+                <div class="col-6">
+                    <label for="final_vencimento" class="col-form-label">Range de data de vencimento final</label>
+                    <input type="date" name="final_vencimento" id="final_vencimento" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
                 <button type="submit" class="btn btn-success">Gerar relatorio</button>
             </div>
         </form>

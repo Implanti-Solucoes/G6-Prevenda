@@ -50,75 +50,77 @@
 <body>
     {% include "menu.html" %}
     {% for p in pessoas %}
-    <div class="container page">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
-                {{ emitente.Nome }}<br />
-                Logradouro.: {{ emitente.Carteira.EnderecoPrincipal.Logradouro }}
-                Numero.: {{ emitente.Carteira.EnderecoPrincipal.Numero }}
-                Complemento.: {{ emitente.Carteira.EnderecoPrincipal.Complemento }}<br />
-                Fone.: {{ emitente.Carteira.TelefonePrincipal.Numero }}<br />
-                {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+        {% if p.devedor.total_devedor > 0  %}
+            <div class="container page">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
+                        {{ emitente.Nome }}<br />
+                        Logradouro.: {{ emitente.Carteira.EnderecoPrincipal.Logradouro }}
+                        Numero.: {{ emitente.Carteira.EnderecoPrincipal.Numero }}
+                        Complemento.: {{ emitente.Carteira.EnderecoPrincipal.Complemento }}<br />
+                        Fone.: {{ emitente.Carteira.TelefonePrincipal.Numero }}<br />
+                        {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+                    </div>
+                </div>
+                <br /><br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-right" style="text-align: right;">
+                        {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}({{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}), {{ data_atual }}
+                    </div>
+                </div>
+                <br /><br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        A(O)
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        {{ p.Nome }}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        Logradouro.: {{ p.Carteira.EnderecoPrincipal.Logradouro }}
+                        Nº {{ p.Carteira.EnderecoPrincipal.Numero }} -
+                        {{ p.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ p.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        Valor até esta data: R${{ p.devedor.total_devedor|floatformat:2 }} ({{ p.devedor.extenso }})
+                    </div>
+                </div>
+                <br /><br /><br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        Constatamos que se encontra em atraso débitos contraídos por V. Sr(a) nesse estabelecimento.
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        Solicitamos por obsequio a sua presença nesta loja com a máxima urgência a fim de providenciarmos a
+                        imediata regularização de sua conta.
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        Gratos pela compreensão.
+                    </div>
+                </div>
+                <br /><br /><br /><br /><br />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
+                        Atenciosamente, a direção.
+                    </div>
+                </div>
             </div>
-        </div>
-        <br /><br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-right" style="text-align: right;">
-                {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }}({{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}), {{ data_atual }}
-            </div>
-        </div>
-        <br /><br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                A(O)
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {{ p.Nome }}
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Logradouro.: {{ p.Carteira.EnderecoPrincipal.Logradouro }}
-                Nº {{ p.Carteira.EnderecoPrincipal.Numero }} -
-                {{ p.Carteira.EnderecoPrincipal.Municipio.Nome }}-{{ p.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}<br />
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Valor até esta data: R${{ p.devedor|floatformat:2 }}
-            </div>
-        </div>
-        <br /><br /><br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Constatamos que se encontra em atraso débitos contraídos por V. Sr(a) nesse estabelecimento.
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Solicitamos por obsequio a sua presença nesta loja com a máxima urgência a fim de providenciarmos a
-                imediata regularização de sua conta.
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                Gratos pela compreensão.
-            </div>
-        </div>
-        <br /><br /><br /><br /><br />
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-lg-center" style="text-align: center;">
-                Atenciosamente, a direção.
-            </div>
-        </div>
-    </div>
+        {% endif %}
     {% endfor %}
 </body>
 </html>

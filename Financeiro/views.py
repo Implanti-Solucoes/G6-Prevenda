@@ -1,7 +1,7 @@
 from datetime import datetime
 from bson import ObjectId
 from django.shortcuts import render, redirect
-from core.models import Uteis, Configuracoes
+from core.models import Uteis
 from Movimentacoes.models import Movimentacoes
 from .models import Financeiro, Contratos, Parcelas
 from Pessoas.models import PessoasMongo
@@ -159,9 +159,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
     # Carregando contrato
     contrato = Contratos.objects.all().filter(id=id)
 
-    # Cliente e Emitente
-    emitente = None
-    cliente = []
+    # Movimentação
     mov = {}
     if contrato[0].id_g6 != '':
         movimentacao = Movimentacoes()
@@ -169,30 +167,40 @@ def comprovante_de_debito_por_movimentacao(request, id):
         mov = movimentacao.execute_one()
         mov = Uteis().total_venda(mov)
 
+    # Carregando cliente e o saldo devedor
+    cliente = {}
     if contrato[0].id_g6_cliente != '':
-        cliente = PessoasMongo().get_pessoa(contrato[0].id_g6_cliente)
+        cursor = PessoasMongo()
+        cursor.set_query_id(contrato[0].id_g6_cliente)
+        cursor.add_lookup_recebimentos()
+        cursor.add_match_situacao_t('Pendente')
+        cursor.add_match_ativo()
+        cliente = cursor.execute_all()
+        if len(cliente) > 0:
+            cliente = cursor.get_saldo_devedor(cliente)[0]
+        else:
+            return False
 
-    parcelamento = []
+    emitente = None  # Criando para validação se o emitente foi carregado
+    parcelamento = []  # Criando para carregar as parcelas
     total = 0
     for x in contrato[0].parcelas.all():
         # Realizando busca no banco pelas parcelas atualizadas no sistema
         pago = 0
         financeiro.set_query_id(x.id_g6)
         result = financeiro.execute_one()
-        if not cliente:
-            cliente = PessoasMongo().get_pessoa(result['PessoaReferencia'])
-        cliente['SaldoDevedor'] = PessoasMongo().get_saldo_devedor(cliente['_id'])
-        cliente['SaldoDevedor'] = (
-            cliente['SaldoDevedor']['total_devedor'] +
-            cliente['SaldoDevedor']['juro'] +
-            cliente['SaldoDevedor']['multa']
-        )
 
-        # Verificando quais parcelas foram quitadas
         for hist in result['Historico']:
+            # Carregando emitente, caso seja False
             if not emitente:
-                emitente = PessoasMongo().get_pessoa(hist['EmpresaReferencia'])
+                # Emitente
+                cursor = PessoasMongo()
+                cursor.set_query_id(hist['EmpresaReferencia'])
+                emitente = cursor.execute_all()
+                if len(emitente) > 0:
+                    emitente = emitente[0]
 
+            # Verificando quais parcelas foram quitadas
             if 'HistoricoQuitado' in hist['_t'] or 'HistoricoQuitadoParcial' in hist['_t']:
                 pago = hist['Valor']
 
@@ -207,17 +215,23 @@ def comprovante_de_debito_por_movimentacao(request, id):
         )
         total = total + result['Historico'][0]['Valor']
 
-    total_liquido = total
-    total = total + contrato[0].desconto
+    total_liquido = {
+        'total': total,
+        'extenso': Uteis().num_to_currency(total)
+    }
+    total = {
+        'total': total + contrato[0].desconto,
+        'extenso': Uteis().num_to_currency(total + contrato[0].desconto)
+    }
 
     # Reordenando para exibição
     parcelamento.sort(key=lambda t: t['Vencimento'])
 
     # Formatando documentos, caso existir
     emitente['Cnpj'] = PessoasMongo().formatar_documento(emitente['Cnpj'])
-    if 'Cnpj' in cliente:
+    if cliente['Cnpj'] is not None:
         cliente['Documento'] = 'CNPJ: ' + PessoasMongo().formatar_documento(cliente['Cnpj'])
-    elif 'Cpf' in cliente:
+    elif cliente['Cpf'] is not None:
         cliente['Documento'] = 'CPF: ' + PessoasMongo().formatar_documento(cliente['Cpf'])
     else:
         cliente['Documento'] = ''
@@ -307,8 +321,11 @@ def renegociacao(request):
         financeiro.set_query_situacao_codigo(1)
         x = financeiro.execute_one()
         if cliente is None:
-            cliente = PessoasMongo().get_pessoa(x['PessoaReferencia'])
-            cliente['id'] = str(cliente['_id'])
+            cursor = PessoasMongo()
+            cursor.set_query_id(x['PessoaReferencia'])
+            cliente = cursor.execute_all()
+            if len(cliente) > 0:
+                cliente = cliente[0]
 
         if cliente['_id'] == x['PessoaReferencia']:
             total += x['Historico'][0]['Valor']
@@ -367,7 +384,11 @@ def renegociacao_lancamento(request):
     # Dados extras
     id_cliente = request.POST['id_cliente']
     id_total = int(request.POST['total'])
-    emitente = PessoasMongo().get_emitente()
+    cursor = PessoasMongo()
+    cursor.set_query_emitente()
+    emitente = cursor.execute_all()
+    if len(emitente) > 0:
+        emitente = emitente[0]
 
     # Recebendo datas de vecimento
     vencimentos = request.POST.getlist('vencimentos[]')
@@ -487,16 +508,60 @@ def renegociacao_lancamento(request):
 
 def cartas_gerador(request):
     if request.method == 'GET':
-        clientes = Movimentacoes().get_clientes()
-        return render(request, 'financeiro/cartas_gerador.html', {'clientes': clientes})
+        cursor = PessoasMongo()
+        cursor.set_query_client()
+        cursor.set_query_ativo()
+        letras = []
+        for i in range(ord('A'), ord('Z') + 1):
+            letras.append(chr(i))
+        clientes = cursor.execute_all()
+        return render(request, 'financeiro/cartas_gerador.html', {'clientes': clientes, 'letras': letras})
     elif request.method == 'POST':
         cliente = request.POST['cliente']
-        emitente = PessoasMongo().get_emitente()
+        letras_inicio = request.POST['letras_inicio']
+        letras_fim = request.POST['letras_fim']
+        inical_vencimento = request.POST['inical_vencimento']
+        final_vencimento = request.POST['final_vencimento']
+        cursor = PessoasMongo()
+        cursor.set_query_emitente()
+        emitente = cursor.execute_all()
+        if len(emitente) > 0:
+            emitente = emitente[0]
         data_atual = datetime.now()
-        if cliente == '':
-            pessoas = PessoasMongo().get_clientes(atrasados=True)
+        cursor = PessoasMongo()
+        if cliente != '':
+            cursor.set_query_id(cliente)
+        if letras_inicio != '' and letras_fim != '':
+            cursor.set_query_name_range_start_with(letras_inicio, letras_fim)
+        cursor.set_query_client()
+        cursor.set_query_ativo()
+        cursor.add_lookup_recebimentos()
+
+        if inical_vencimento != '':
+            inical_vencimento = inical_vencimento.split('-')
+            cursor.add_match_vencimento_maior_igual(
+                datetime.date(
+                    int(inical_vencimento[0]),
+                    int(inical_vencimento[1]),
+                    int(inical_vencimento[2])
+                )
+            )
+
+        if final_vencimento != '':
+            final_vencimento = final_vencimento.split('-')
+            cursor.add_match_vencimento_menor_igual(
+                datetime.date(
+                    int(final_vencimento[0]),
+                    int(final_vencimento[1]),
+                    int(final_vencimento[2])
+                )
+            )
         else:
-            pessoas = [PessoasMongo().get_pessoa(id=cliente, atrasados=True)]
+            cursor.add_match_vencimento_menor_que(data_atual.strftime('%Y-%m-%d'))
+        cursor.add_match_situacao_t('Pendente')
+        cursor.add_match_ativo()
+        pessoas = cursor.execute_all()
+        pessoas = cursor.get_saldo_devedor(pessoas)
         return render(request, 'financeiro/carta_impresso.html', {'pessoas': pessoas, 'emitente': emitente,
                                                                   'data_atual': data_atual})
     else:

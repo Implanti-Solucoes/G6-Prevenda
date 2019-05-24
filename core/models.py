@@ -203,6 +203,7 @@ class Uteis:
                     stgs.append(three_stg + ' ' + pot_singular[idx])
                 elif int(threeDigits) == 0:
                     pass
+
             # Agora junte todos os números de três dígitos
             if stgs:
                 first = True
@@ -227,7 +228,7 @@ class Uteis:
     def num_to_currency(self, num):
         # partes de centésimos e inteiros divididos
         stg = ''
-        num = str(num)
+        num = '{0:.2f}'.format(num).replace('.', '').replace(',', '')
         cent = int(num[-2:])
         if len(num) > 2:
             inteiro = int(num[:-2])
@@ -258,8 +259,7 @@ class Uteis:
                     stg = '%s reais%s' % (self.num_to_str(inteiro), stg)
         return stg
 
-    @staticmethod
-    def total_venda(venda):
+    def total_venda(self, venda):
         # Setando variaveis de totalizadores globais das vendas
         venda['bruto'] = 0
         venda['desconto'] = 0
@@ -298,6 +298,11 @@ class Uteis:
 
                     venda['comissao'] = venda['comissao'] + comissao_venda
             x = x+1
+
+        venda['bruto_extenso'] = self.num_to_currency(venda['bruto'])
+        venda['desconto_extenso'] = self.num_to_currency(venda['desconto'])
+        venda['liquido_extenso'] = self.num_to_currency(venda['liquido'])
+        venda['comissao_extenso'] = self.num_to_currency(venda['comissao'])
         return venda
 
     def totais(self, vendas):
@@ -317,6 +322,10 @@ class Uteis:
             totais_vendas['liquido'] = totais_vendas['liquido'] + venda['liquido']
             totais_vendas['comissao'] = totais_vendas['comissao'] + venda['comissao']
 
+        totais_vendas['bruto_extenso'] = self.num_to_currency(totais_vendas['bruto'])
+        totais_vendas['desconto_extenso'] = self.num_to_currency(totais_vendas['desconto'])
+        totais_vendas['liquido_extenso'] = self.num_to_currency(totais_vendas['liquido'])
+        totais_vendas['comissao_extenso'] = self.num_to_currency(totais_vendas['comissao'])
         return totais_vendas
 
     @staticmethod

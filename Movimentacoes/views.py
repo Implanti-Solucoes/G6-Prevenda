@@ -1,5 +1,4 @@
 import datetime
-
 from django.shortcuts import render
 from .models import Movimentacoes
 from Financeiro.models import Financeiro, Contratos
@@ -32,7 +31,6 @@ def listagem_prevenda(request):
 def impresso_prevenda(request, id):
     movimentacoes = Movimentacoes()
     uteis = Uteis
-
     movimentacoes.set_query_id(id)
     movimentacoes.set_query_t('PreVenda', 'or')
     movimentacoes.set_query_t('NotaFiscalServico', 'or')
@@ -44,6 +42,10 @@ def impresso_prevenda(request, id):
         cursor['tipo'] = 'PreVenda'
 
     cursor = uteis.total_venda(cursor)
+    if len(cursor['Pessoa']['Documento']) == 14:
+        cursor['Pessoa']['Tipo'] = 'CPF'
+    else:
+        cursor['Pessoa']['Tipo'] = 'CNPJ'
 
     context = {'Numero': str(cursor['Numero']), 'venda': cursor}
     return render(request, 'movimentacoes/impresso.html', context)

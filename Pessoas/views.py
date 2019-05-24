@@ -5,7 +5,10 @@ from Financeiro.models import Contratos
 
 def listagem(request):
     template_name = 'pessoas/index.html'
-    clientes = PessoasMongo().get_clientes()
+    cursor = PessoasMongo()
+    cursor.set_query_client()
+    cursor.set_query_ativo()
+    clientes = cursor.execute_all()
     clientes1 = []
     for cliente in clientes:
         contratos = Contratos.objects.all()
