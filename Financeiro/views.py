@@ -173,7 +173,6 @@ def comprovante_de_debito_por_movimentacao(request, id):
         cursor = PessoasMongo()
         cursor.set_query_id(contrato[0].id_g6_cliente)
         cursor.add_lookup_recebimentos()
-        cursor.add_match_situacao_t('Pendente')
         cursor.add_match_ativo()
         cliente = cursor.execute_all()
         if len(cliente) > 0:

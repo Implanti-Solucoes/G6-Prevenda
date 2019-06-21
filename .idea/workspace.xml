@@ -3,19 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0b337ba8-6e53-43f4-9990-b249241041b3" name="Default" comment="Melhoria nas buscas de pessoas;&#10;Correção na função que converter numero em moedas;&#10;Romoção de funções antigas que não era mais uteis e eram lentas;&#10;Aptado logica paras novas funções;&#10;Criando tratamento de tipo de documento para view de movimentação;&#10;Corrigida carta de cobrança.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Estoque/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Estoque/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Financeiro/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Financeiro/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Financeiro/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Movimentacoes/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Movimentacoes/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Orcamento/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Orcamento/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pessoas/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pessoas/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pessoas/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pessoas/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Relatorios/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Relatorios/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/financeiro/carta_impresso.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/financeiro/carta_impresso.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/financeiro/cartas_gerador.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/financeiro/cartas_gerador.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -61,35 +50,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="99" column="26" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="26" />
-              <folding>
-                <element signature="e#7096#7492#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3145">
-              <caret line="197" column="20" selection-start-line="197" selection-start-column="20" selection-end-line="197" selection-end-column="20" />
-              <folding>
-                <element signature="e#0#25#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Relatorios/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="39" lean-forward="true" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="364">
+              <caret line="205" column="85" lean-forward="true" selection-start-line="205" selection-start-column="85" selection-end-line="205" selection-end-column="85" />
             </state>
           </provider>
         </entry>
@@ -97,16 +59,23 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="167" column="30" lean-forward="true" selection-start-line="167" selection-start-column="30" selection-end-line="167" selection-end-column="30" />
+            <state relative-caret-position="106">
+              <caret line="174" column="40" selection-start-line="174" selection-start-column="40" selection-end-line="174" selection-end-column="40" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
-                <element signature="e#308#5052#0" />
-                <element signature="e#8504#8916#0" />
-                <element signature="e#8967#10283#0" />
-                <element signature="e#10317#12295#0" />
-                <element signature="e#12340#16820#0" />
+                <element signature="e#8526#8938#0" />
+                <element signature="e#8989#10305#0" />
+                <element signature="e#12362#16842#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="486">
+              <caret line="102" column="19" selection-start-line="102" selection-start-column="19" selection-end-line="102" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -114,11 +83,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
+            <state relative-caret-position="5491">
               <caret line="324" column="21" selection-start-line="324" selection-start-column="21" selection-end-line="324" selection-end-column="21" />
-              <folding>
-                <element signature="e#9182#10816#0" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -127,7 +93,7 @@
         <entry file="file://$PROJECT_DIR$/templates/financeiro/carta_impresso.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="136">
-              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
             </state>
           </provider>
         </entry>
@@ -135,7 +101,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
+            <state relative-caret-position="2414">
               <caret line="142" column="82" selection-start-line="142" selection-start-column="82" selection-end-line="142" selection-end-column="82" />
             </state>
           </provider>
@@ -144,7 +110,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/financeiro/cartas_gerador.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
+            <state relative-caret-position="833">
               <caret line="49" column="62" selection-start-line="49" selection-start-column="45" selection-end-line="49" selection-end-column="62" />
             </state>
           </provider>
@@ -162,9 +128,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>now</find>
-      <find>saldo</find>
-      <find>tipo</find>
       <find>parcela</find>
       <find>limit</find>
       <find>Entrei foi nesse aki</find>
@@ -187,11 +150,14 @@
       <find>ra</find>
       <find>duzentos</find>
       <find>p</find>
-      <find>print</find>
       <find>deve</find>
       <find>TOTAL A PAGAR.</find>
       <find>devedor</find>
       <find>mov</find>
+      <find>Contratos.objects.create(</find>
+      <find>contrato</find>
+      <find>add_match_situacao_t</find>
+      <find>print</find>
     </findStrings>
     <replaceStrings>
       <replace>financeiro</replace>
@@ -207,7 +173,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/pre_venda/comprovante_de_debito.html" />
         <option value="$PROJECT_DIR$/templates/recibo/impresso.html" />
         <option value="$PROJECT_DIR$/templates/pre_venda/gerar_financeiro.html" />
         <option value="$PROJECT_DIR$/templates/relatorios/vendas_por_vendedor.html" />
@@ -251,13 +216,14 @@
         <option value="$PROJECT_DIR$/Financeiro/models.py" />
         <option value="$PROJECT_DIR$/Movimentacoes/views.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/cartas_gerador.html" />
-        <option value="$PROJECT_DIR$/Financeiro/views.py" />
         <option value="$PROJECT_DIR$/templates/financeiro/carta_impresso.html" />
         <option value="$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html" />
         <option value="$PROJECT_DIR$/core/models.py" />
-        <option value="$PROJECT_DIR$/Pessoas/models.py" />
         <option value="$PROJECT_DIR$/Movimentacoes/models.py" />
         <option value="$PROJECT_DIR$/Relatorios/views.py" />
+        <option value="$PROJECT_DIR$/Pessoas/models.py" />
+        <option value="$PROJECT_DIR$/Financeiro/views.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -276,6 +242,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -293,40 +260,10 @@
               <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
               <item name="Movimentacoes" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="financeiro" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="movimentacoes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="pessoas" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="G6-Prevenda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="G6-Prevenda" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="relatorios" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -410,12 +347,24 @@
       <workItem from="1558356107007" duration="26399000" />
       <workItem from="1558438464915" duration="4022000" />
       <workItem from="1558535480787" duration="550000" />
-      <workItem from="1558711918530" duration="17111000" />
+      <workItem from="1558711918530" duration="17560000" />
+      <workItem from="1559217700142" duration="245000" />
+      <workItem from="1560791294948" duration="638000" />
+      <workItem from="1560859078643" duration="642000" />
+      <workItem from="1561142984921" duration="3005000" />
     </task>
+    <task id="LOCAL-00001" summary="Melhoria nas buscas de pessoas;&#10;Correção na função que converter numero em moedas;&#10;Romoção de funções antigas que não era mais uteis e eram lentas;&#10;Aptado logica paras novas funções;&#10;Criando tratamento de tipo de documento para view de movimentação;&#10;Corrigida carta de cobrança.">
+      <created>1558730650236</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1558730650236</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48082000" />
+    <option name="totallyTimeSpent" value="53061000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -430,7 +379,7 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3491471" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3640725" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -486,6 +435,10 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Melhoria nas buscas de pessoas;&#10;Correção na função que converter numero em moedas;&#10;Romoção de funções antigas que não era mais uteis e eram lentas;&#10;Aptado logica paras novas funções;&#10;Criando tratamento de tipo de documento para view de movimentação;&#10;Corrigida carta de cobrança." />
+    <option name="LAST_COMMIT_MESSAGE" value="Melhoria nas buscas de pessoas;&#10;Correção na função que converter numero em moedas;&#10;Romoção de funções antigas que não era mais uteis e eram lentas;&#10;Aptado logica paras novas funções;&#10;Criando tratamento de tipo de documento para view de movimentação;&#10;Corrigida carta de cobrança." />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -498,9 +451,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Orcamento/migrations/0001_initial.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/Financeiro/admin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -659,22 +609,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="das://1a6bf061-04ca-494d-b305-ffe50fa72c3a/schema/main/table/Financeiro_contratos">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="93c910ea-fcc7-4e1f-89c0-4d1aef65ccf9">
-          <filtering>
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="39" lean-forward="true" selection-start-line="2" selection-start-column="39" selection-end-line="2" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Movimentacoes/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="310">
@@ -735,58 +669,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/financeiro/cartas_gerador.html">
+    <entry file="file://$PROJECT_DIR$/core/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="49" column="62" selection-start-line="49" selection-start-column="45" selection-end-line="49" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="142" column="82" selection-start-line="142" selection-start-column="82" selection-end-line="142" selection-end-column="82" />
+        <state relative-caret-position="5491">
+          <caret line="324" column="21" selection-start-line="324" selection-start-column="21" selection-end-line="324" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/financeiro/carta_impresso.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
-          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/models.py">
+    <entry file="file://$PROJECT_DIR$/templates/movimentacoes/comprovante_de_debito.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="324" column="21" selection-start-line="324" selection-start-column="21" selection-end-line="324" selection-end-column="21" />
-          <folding>
-            <element signature="e#9182#10816#0" />
-          </folding>
+        <state relative-caret-position="2414">
+          <caret line="142" column="82" selection-start-line="142" selection-start-column="82" selection-end-line="142" selection-end-column="82" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
+    <entry file="file://$PROJECT_DIR$/templates/financeiro/cartas_gerador.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="99" column="26" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="26" />
-          <folding>
-            <element signature="e#7096#7492#0" />
-          </folding>
+        <state relative-caret-position="833">
+          <caret line="49" column="62" selection-start-line="49" selection-start-column="45" selection-end-line="49" selection-end-column="62" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="167" column="30" lean-forward="true" selection-start-line="167" selection-start-column="30" selection-end-line="167" selection-end-column="30" />
+        <state relative-caret-position="1693">
+          <caret line="211" column="12" selection-start-line="211" selection-start-column="12" selection-end-line="211" selection-end-column="12" />
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
-            <element signature="e#308#5052#0" />
-            <element signature="e#8504#8916#0" />
-            <element signature="e#8967#10283#0" />
-            <element signature="e#10317#12295#0" />
-            <element signature="e#12340#16820#0" />
+            <element signature="e#0#25#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -794,20 +710,56 @@
     <entry file="file://$PROJECT_DIR$/Relatorios/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
-          <caret line="17" column="39" lean-forward="true" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Movimentacoes/models.py">
+    <entry file="file://$PROJECT_DIR$/Financeiro/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3145">
-          <caret line="197" column="20" selection-start-line="197" selection-start-column="20" selection-end-line="197" selection-end-column="20" />
+        <state relative-caret-position="1758">
+          <caret line="496" column="14" selection-start-line="496" selection-start-column="6" selection-end-line="496" selection-end-column="14" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#29#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://1a6bf061-04ca-494d-b305-ffe50fa72c3a/schema/main/table/Financeiro_contratos">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state projectRestartId="9a32e224-7a28-4053-8590-be5b23e89594">
+          <filtering>
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pessoas/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="205" column="85" lean-forward="true" selection-start-line="205" selection-start-column="85" selection-end-line="205" selection-end-column="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Financeiro/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="106">
+          <caret line="174" column="40" selection-start-line="174" selection-start-column="40" selection-end-line="174" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#8526#8938#0" />
+            <element signature="e#8989#10305#0" />
+            <element signature="e#12362#16842#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="102" column="19" selection-start-line="102" selection-start-column="19" selection-end-line="102" selection-end-column="19" />
         </state>
       </provider>
     </entry>

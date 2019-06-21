@@ -323,7 +323,6 @@ class PessoasMongo:
                     pipeline,
                     allowDiskUse=False
                 )
-
                 for doc in cursor:
                     doc['id'] = str(doc['_id'])
                     dados.append(doc)
