@@ -482,7 +482,7 @@ class Financeiro:
         # Verificando configurações para aplicar juros e multa
         config = Configuracoes().configuracoes()
         if 'Financeiro' in config:
-            dias = int((datetime.now() - vencimento).days)-1
+            dias = int((datetime.now().date() - vencimento.date()).days)-1
             juros = 0
             if dias > 0:
                 if tipo == 1:

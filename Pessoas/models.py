@@ -95,7 +95,7 @@ class PessoasMongo:
         if '$or' in self.__query or '$and' in self.__query and bloco_and is not False:
             return Warning('Digite o bloco como parametro')
         else:
-            self.__query = {'Cliente': {u'$exists': True}}
+            self.__query['Cliente'] = {u'$exists': True}
 
     def set_query_vendedor(self, bloco_and: bool = False):
         if '$or' in self.__query or '$and' in self.__query and bloco_and is not False:
@@ -105,9 +105,9 @@ class PessoasMongo:
 
     def set_query_id(self, id):
         if type(id) == str and len(id) == 24:
-            self.__query = {'_id': ObjectId(id)}
+            self.__query['_id'] = ObjectId(id)
         elif type(id) == ObjectId:
-            self.__query = {'_id': id}
+            self.__query['_id'] = id
         else:
             return False
 
