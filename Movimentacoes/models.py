@@ -11,6 +11,20 @@ class Movimentacoes:
         self.sort = []
         self.limit = 100
         self.uteis = Uteis()
+        self.set_query_agrregate_receitas = False
+        self.__pipeline__ = []
+
+    @staticmethod
+    def set_query_agrregate_receitas_base():
+        pipeline = {
+                u"$lookup": {
+                    u"from": u"Receitas",
+                    u"localField": u"_id",
+                    u"foreignField": u"MovimentacaoReferencia",
+                    u"as": u"Receitas"
+                }
+            }
+        return pipeline
 
     def set_query_id(self, con):
         if type(con) == str and len(con) == 24:
@@ -153,15 +167,35 @@ class Movimentacoes:
         self.limit = 100
 
     def execute_all(self):
-        busca = self.uteis.execute(
-            'Movimentacoes',
-            self.query,
-            projection=self.projection,
-            sort=self.sort,
-            limit=self.limit
-        )
-        self.unset_all()
-        return busca
+        if self.set_query_agrregate_receitas is False:
+            busca = self.uteis.execute(
+                'Movimentacoes',
+                self.query,
+                projection=self.projection,
+                sort=self.sort,
+                limit=self.limit
+            )
+            self.unset_all()
+            return busca
+        else:
+            items = []
+            if len(self.query) > 0:
+                self.__pipeline__.append({
+                    u"$match": self.query
+                })
+            self.__pipeline__.append(self.set_query_agrregate_receitas_base())
+            conexao = self.uteis.conexao
+            collection = conexao['Movimentacoes']
+            cursor = collection.aggregate(
+                self.__pipeline__,
+                allowDiskUse=False
+            )
+            try:
+                for doc in cursor:
+                    items.append(doc)
+            finally:
+                self.uteis.fecha_conexao()
+                return items
 
     def execute_one(self):
         busca = self.uteis.execute('Movimentacoes', self.query, projection=self.projection, sort=self.sort, limit=1)

@@ -4,6 +4,7 @@ from Pessoas.models import PessoasMongo
 from core.models import Uteis, Configuracoes
 from bson.tz_util import FixedOffset
 from django.db import models
+import clr
 
 
 class Financeiro:
@@ -162,7 +163,6 @@ class Financeiro:
     def gerar_parcela(self, titulo, informacoes_pesquisa, pessoa,
                       emitente, documento, num, conta, centro_custo,
                       planos_contas, valor_parcela, vencimento, entrada=False):
-
         cursor = PessoasMongo()
         cursor.set_query_id(pessoa)
         pessoa = cursor.execute_all()
@@ -217,7 +217,8 @@ class Financeiro:
             'Descricao': titulo + " " + str(documento) + " " + str(num),
             'Documento': str(documento),
             'PessoaReferencia': pessoa['_id'],
-            'Vencimento': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+            'Vencimento': vencimento if type(vencimento) == datetime else
+            datetime.strptime(vencimento, '%Y-%m-%d'),
             'Historico': [
                 {
                     '_t': 'HistoricoAguardando',
@@ -235,7 +236,8 @@ class Financeiro:
                     'ContaReferencia': conta,
                     'EmpresaReferencia': emitente['_id'],
                     'NomeUsuario': 'Usuário Administrador',
-                    'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+                    'Data': vencimento if type(vencimento) == datetime else
+                    datetime.strptime(vencimento, '%Y-%m-%d'),
                     'ChequeReferencia': ObjectId('000000000000000000000000')
                 },
                 {
@@ -254,7 +256,9 @@ class Financeiro:
                     'ContaReferencia': conta,
                     'EmpresaReferencia': emitente['_id'],
                     'NomeUsuario': 'Usuário Administrador',
-                    'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+                    'Data':
+                        vencimento if type(vencimento) == datetime else
+                        datetime.strptime(vencimento, '%Y-%m-%d'),
                     'ChequeReferencia': ObjectId('000000000000000000000000')
                 }
             ],
@@ -291,14 +295,23 @@ class Financeiro:
                 'DiasCarencia': carencia
             }
 
+        # Importando DLL para gerar codigo de referencia
+        clr.AddReference(
+            R'C:\DigiSat\SuiteG6\Sistema\DigisatServer.Infrastructure.Crosscutting.dll'
+        )
+        from DigisatServer.Infrastructure.Crosscutting.Function import Referencia
+        class_referencia = Referencia
+        modelo['Referencia'] = class_referencia.GerarSequencia(1)[0]
+
         # Verificando se é entrada ou não
         if entrada:
             modelo['Situacao'] = {
                 '_t': 'Quitada',
                 'Codigo': 3
             }
-            modelo['DataQuitacao'] = vencimento if type(vencimento) == datetime else datetime.strptime(vencimento,
-                                                                                                  '%Y-%m-%d')
+            modelo['DataQuitacao'] = vencimento \
+                if type(vencimento) == datetime else \
+                datetime.strptime(vencimento, '%Y-%m-%d')
             modelo['Historico'].append({
                 '_t': 'HistoricoQuitado',
                 'Valor': valor_parcela,

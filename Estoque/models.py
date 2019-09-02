@@ -298,14 +298,15 @@ class Products:
             return retorno
 
     @staticmethod
-    def get_produto_servico(id):
+    def get_produto_servico(id=None, ms=None):
         if type(id) == str and len(id) == 24:
             query = {'_id': ObjectId(id)}
         elif type(id) == ObjectId:
             query = {'_id': id}
+        elif ms is not None and len(str(ms)) == 13:
+            query = {'RegistroMinisterioSaude': str(ms)}
         else:
             return []
-
         # Importe Uteis para criar conexao com mongo
         database = Uteis().conexao
 

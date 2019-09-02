@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'Financeiro.apps.ReciboConfig',
     'Relatorios.apps.RelatoriosConfig',
     'Estoque.apps.EstoqueConfig',
-    'Orcamento.apps.OrcamentoConfig'
+    'Orcamento.apps.OrcamentoConfig',
+    'Sngpc.apps.SngpcConfig',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +70,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+                'sngpc_templatetags': 'Sngpc.templatetags.filtros',
+            }
         },
     },
 ]

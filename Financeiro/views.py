@@ -111,7 +111,8 @@ def gerar_financeiro(request):
 
     # Vamos configurar as movimentações
     try:
-        cursor['InformacoesPesquisa'] = Financeiro().remove_repetidos(cursor['InformacoesPesquisa'])
+        cursor['InformacoesPesquisa'] = Financeiro().\
+            remove_repetidos(cursor['InformacoesPesquisa'])
         # Configurando CFOP para não gerar financeiro
         z = 0
         for _ in cursor['ItensBase']:
@@ -502,7 +503,8 @@ def renegociacao_lancamento(request):
         if id is not None:
             contrato.parcelas.create(id_g6=id, valor=valor_parcela)
         y += 1
-    return redirect('financeiro:comprovante_de_debito_por_movimentacao', contrato.id)
+    return redirect('financeiro:comprovante_de_debito_por_movimentacao',
+                    contrato.id)
 
 
 def cartas_gerador(request):
@@ -514,7 +516,8 @@ def cartas_gerador(request):
         for i in range(ord('A'), ord('Z') + 1):
             letras.append(chr(i))
         clientes = cursor.execute_all()
-        return render(request, 'financeiro/cartas_gerador.html', {'clientes': clientes, 'letras': letras})
+        return render(request, 'financeiro/cartas_gerador.html',
+                      {'clientes': clientes, 'letras': letras})
     elif request.method == 'POST':
         cliente = request.POST['cliente']
         letras_inicio = request.POST['letras_inicio']
@@ -535,33 +538,26 @@ def cartas_gerador(request):
         cursor.set_query_client()
         cursor.set_query_ativo()
         cursor.add_lookup_recebimentos()
-
         if inical_vencimento != '':
-            inical_vencimento = inical_vencimento.split('-')
-            cursor.add_match_vencimento_maior_igual(
-                datetime.date(
-                    int(inical_vencimento[0]),
-                    int(inical_vencimento[1]),
-                    int(inical_vencimento[2])
-                )
-            )
+            cursor.add_match_vencimento_maior_igual(inical_vencimento)
 
         if final_vencimento != '':
-            final_vencimento = final_vencimento.split('-')
-            cursor.add_match_vencimento_menor_igual(
-                datetime.date(
-                    int(final_vencimento[0]),
-                    int(final_vencimento[1]),
-                    int(final_vencimento[2])
-                )
-            )
+            cursor.add_match_vencimento_menor_igual(final_vencimento)
         else:
-            cursor.add_match_vencimento_menor_que(data_atual.strftime('%Y-%m-%d'))
+            cursor.add_match_vencimento_menor_que(
+                data_atual.strftime('%Y-%m-%d')
+            )
         cursor.add_match_situacao_t('Pendente')
         cursor.add_match_ativo()
         pessoas = cursor.execute_all()
         pessoas = cursor.get_saldo_devedor(pessoas)
-        return render(request, 'financeiro/carta_impresso.html', {'pessoas': pessoas, 'emitente': emitente,
-                                                                  'data_atual': data_atual})
+        return render(
+            request, 'financeiro/carta_impresso.html',
+            {
+                'pessoas': pessoas,
+                'emitente': emitente,
+                'data_atual': data_atual
+            }
+        )
     else:
         return redirect('movimentacoes:listagem_prevenda')
