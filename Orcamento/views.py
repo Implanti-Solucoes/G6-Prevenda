@@ -36,7 +36,8 @@ def xml_consulta(request):
     else:
         print(id)
     context = {'ok': Products().get_full_product(id=id)}
-    return render(request, 'orcamento/xml_consulta.xml', context, content_type="text/xml; charset=utf-8")
+    return render(request, 'orcamento/xml_consulta.xml', context,
+                  content_type="text/xml; charset=utf-8")
 
 
 def create(request):

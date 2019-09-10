@@ -24,4 +24,7 @@ urlpatterns = [
     url('sngpc/',
         include(('Sngpc.urls', 'sngpc'),
                 namespace='sngpc')),
+    url('restaurante/',
+        include(('Restaurante.urls', 'restaurante'),
+                namespace='restaurante')),
 ]

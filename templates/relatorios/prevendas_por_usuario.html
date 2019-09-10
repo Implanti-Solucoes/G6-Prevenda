@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <title>Relatorios</title>
-     <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
-    <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
-    <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
-    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <style>
         @page {
             size: A4;
@@ -37,59 +35,61 @@
     </style>
 </head>
 <body>
-{% include "menu.html" %}
-<div class="container page">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
-            <h1>Pré-Vendas por Vendedor</h1><br />
-            De {{ inicial }} à {{ final }}
-        </div>
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <table class="table">
-                <thead class="thead-light">
-                    <tr>
-                        <th scope="col" colspan="2">Usuario</th>
-                        <th scope="col">Total Bruto</th>
-                        <th scope="col">Desconto</th>
-                        <th scope="col">Total Liquido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in vendas.items %}
-                        <tr class="thead-light">
-                            <td colspan="2" style="background-color: #5f6877;">{{ key }}</td>
-                            <td style="background-color: #5f6877;">{{ value.bruto|floatformat:2 }}</td>
-                            <td style="background-color: #5f6877;">{{ value.desconto|floatformat:2 }}</td>
-                            <td style="background-color: #5f6877;">{{ value.liquido|floatformat:2 }}</td>
-                        </tr>
-                        <tr class="thead-light">
-                            <td scope="row" style="background-color: #d4dbff;">Numero</td>
-                            <td scope="row" style="background-color: #d4dbff;">Data</td>
-                            <td scope="row" style="background-color: #d4dbff;">Total Bruto</td>
-                            <td scope="row" style="background-color: #d4dbff;">Desconto</td>
-                            <td scope="row" style="background-color: #d4dbff;">Total Liquido</td>
-                        </tr>
-                        {% for venda in value.vendas %}
+    {% include "menu.html" %}
+    <div class="container page">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
+                <h1>Pré-Vendas por Vendedor</h1><br />
+                De {{ inicial }} à {{ final }}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <table class="table">
+                    <thead class="thead-light">
                         <tr>
-                            <td scope="row">{{ venda.numero }}</td>
-                            <td scope="row">{{ venda.data }}</td>
-                            <td scope="row">{{ venda.bruto|floatformat:2 }}</td>
-                            <td scope="row">{{ venda.desconto|floatformat:2 }}</td>
-                            <td scope="row">{{ venda.liquido|floatformat:2 }}</td>
+                            <th scope="col" colspan="2">Usuario</th>
+                            <th scope="col">Total Bruto</th>
+                            <th scope="col">Desconto</th>
+                            <th scope="col">Total Liquido</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in vendas.items %}
+                            <tr class="thead-light">
+                                <td colspan="2" style="background-color: #5f6877;">{{ key }}</td>
+                                <td style="background-color: #5f6877;">{{ value.bruto|floatformat:2 }}</td>
+                                <td style="background-color: #5f6877;">{{ value.desconto|floatformat:2 }}</td>
+                                <td style="background-color: #5f6877;">{{ value.liquido|floatformat:2 }}</td>
+                            </tr>
+                            <tr class="thead-light">
+                                <td scope="row" style="background-color: #d4dbff;">Numero</td>
+                                <td scope="row" style="background-color: #d4dbff;">Data</td>
+                                <td scope="row" style="background-color: #d4dbff;">Total Bruto</td>
+                                <td scope="row" style="background-color: #d4dbff;">Desconto</td>
+                                <td scope="row" style="background-color: #d4dbff;">Total Liquido</td>
+                            </tr>
+                            {% for venda in value.vendas %}
+                            <tr>
+                                <td scope="row">{{ venda.numero }}</td>
+                                <td scope="row">{{ venda.data }}</td>
+                                <td scope="row">{{ venda.bruto|floatformat:2 }}</td>
+                                <td scope="row">{{ venda.desconto|floatformat:2 }}</td>
+                                <td scope="row">{{ venda.liquido|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr class="thead-dark" align="center" style="font-family: 'Roboto', 'Lucida Grande', 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, Arial, sans-serif">
-                        <th>Total Bruto: R$ {{ bruto|floatformat:2 }}</th>
-                        <th>Total Desconto: R$ {{ desconto|floatformat:2 }}</th>
-                        <th colspan="3">Total Liquido: R$ {{ liquido|floatformat:2 }}</th>
-                    </tr>
-                </tfoot>
-            </table>
+                    </tbody>
+                    <tfoot>
+                        <tr class="thead-dark" align="center" style="font-family: 'Roboto', 'Lucida Grande', 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, Arial, sans-serif">
+                            <th>Total Bruto: R$ {{ bruto|floatformat:2 }}</th>
+                            <th>Total Desconto: R$ {{ desconto|floatformat:2 }}</th>
+                            <th colspan="3">Total Liquido: R$ {{ liquido|floatformat:2 }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

@@ -4,280 +4,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Title</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    {% load bootstrap4 %}
-    {% load filtros %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
 </head>
 <body class="bg-light">
-{% include "menu.html" %}
-<div class="container">
-    <div class="text-center">
-        <h3>CABEÇALHO</h3>
+    {% include "menu.html" %}
+    <div class="container">
+        <div class="text-center">
+            <h3>CABEÇALHO</h3>
+        </div>
+        <div class="row ">
+            <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
+                CNPJ Emitente
+            </div>
+            <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
+                Farmaceutico
+            </div>
+            <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
+                Data inicio
+            </div>
+            <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
+                Data Fim
+            </div>
+            <div class="col-md-3 border border-info">
+                {{ file.cabecalho.cnpjEmissor }}
+            </div>
+            <div class="col-md-3 border border-info">
+                {{ file.cabecalho.cpfTransmissor }}
+            </div>
+            <div class="col-md-3 border border-info">
+                {{ file.cabecalho.dataInicio }}
+            </div>
+            <div class="col-md-3 border border-info">
+                {{ file.cabecalho.dataFim }}
+            </div>
+        </div>
     </div>
-    <div class="row ">
-        <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
-            CNPJ Emitente
-        </div>
-        <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
-            Farmaceutico
-        </div>
-        <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
-            Data inicio
-        </div>
-        <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">
-            Data Fim
-        </div>
-        <div class="col-md-3 border border-info">
-            {{ file.cabecalho.cnpjEmissor }}
-        </div>
-        <div class="col-md-3 border border-info">
-            {{ file.cabecalho.cpfTransmissor }}
-        </div>
-        <div class="col-md-3 border border-info">
-            {{ file.cabecalho.dataInicio }}
-        </div>
-        <div class="col-md-3 border border-info">
-            {{ file.cabecalho.dataFim }}
-        </div>
+    <hr />
+    <div class="container-fluid">
+        <form action="#">
+            {% for entrada in file.corpo.medicamentos.entradaMedicamentos %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h3>MOVIMENTAÇÕES DE COMPRA</h3>
+                    </div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">NF-e / NFC-e</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Operação</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Data da Operação</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">CNPJ Origem</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">CNPJ Destino</div>
+                    <div class="col-md-2 border border-info">
+                        {{ entrada.notaFiscalEntradaMedicamento.numeroNotaFiscal }}
+                    </div>
+                    <div class="col-md-2 border border-info">
+                        {% if entrada.notaFiscalEntradaMedicamento.tipoOperacaoNotaFiscal == 1 %}
+                            Compra
+                        {% elif entrada.notaFiscalEntradaMedicamento.tipoOperacaoNotaFiscal == 2 %}
+                            Transferência
+                        {% else %}
+                            Venda
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2 border border-info">
+                        {{ entrada.notaFiscalEntradaMedicamento.dataNotaFiscal }}
+                    </div>
+                    <div class="col-md-3 border border-info">{{ entrada.notaFiscalEntradaMedicamento.cnpjOrigem }}</div>
+                    <div class="col-md-3 border border-info">
+                        {{ entrada.notaFiscalEntradaMedicamento.cnpjDestino }}
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-10">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Produto</th>
+                                    <th>Classe Terapeutica</th>
+                                    <th>MS Medicamento</th>
+                                    <th>Lote Medicamento</th>
+                                    <th>Quantidade</th>
+                                    <th>Unidade Medida Medicamento</th>
+                                    <th>Enviar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicamento in entrada.medicamentoEntrada %}
+                                    <tr>
+                                        <td>{{ medicamento.registroMSMedicamento|busca_produto }}</td>
+                                        <td>{% if medicamento.classeTerapeutica == 1 %}Antimicrobiano{% elif medicamento.classeTerapeutica == 2 %}Sujeito a controle Especial{% endif %}</td>
+                                        <td>{{ medicamento.registroMSMedicamento }}</td>
+                                        <td>
+                                            <label>
+                                                <input type="text" name="entrada_lote_" placeholder="{{ medicamento.numeroLoteMedicamento }}" class="form-control">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input type="text" name="entrada_quantidade_" placeholder="{{ medicamento.quantidadeMedicamento }}" class="form-control">
+                                            </label>
+                                        </td>
+                                        <td>{% if medicamento.unidadeMedidaMedicamento == 1 %}Caixas{% elif medicamento.Frascos == 2 %}Sujeito a controle Especial{% endif %}</td>
+                                        <td>
+                                            <label>
+                                                <input type="checkbox" name="entrada_enviar_" checked="checked">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+            {% for saida in file.corpo.medicamentos.saidaMedicamentoVendaAoConsumidor %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h3>MOVIMENTAÇÕES DE SAIDA</h3>
+                    </div>
+                    <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">DADOS DA RECEITA</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Tipo de Receituario</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Notificacao</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Data Prescrição</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Uso do Medicamento</div>
+                    <div class="col-md-3 border border-info">
+                        {% if saida.tipoReceituarioMedicamento == 1 %}
+                            Receita de Controle Especial em 2 vias (Receita Branca)
+                        {% elif saida.tipoReceituarioMedicamento == 2 %}
+                            Notificação de Receita B (Notificação Azul)
+                        {% elif saida.tipoReceituarioMedicamento == 3 %}
+                            Notificação de Receita Especial (Notificação Branca)
+                        {% elif saida.tipoReceituarioMedicamento == 4 %}
+                            Notificação de Receita A (Notificação Amarela)
+                        {% elif saida.tipoReceituarioMedicamento == 5 %}
+                            Receita Antimicrobiano em 2 vias
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3 border border-info">
+                        {{ saida.numeroNotificacaoMedicamento }}
+                    </div>
+                    <div class="col-md-3 border border-info">
+                        {{ saida.dataPrescricaoMedicamento }}
+                    </div>
+                    <div class="col-md-3 border border-info">
+                         {% if saida.dataPrescricaoMedicamento == 1 %}
+                             Humano
+                        {% elif saida.dataPrescricaoMedicamento == 2 %}
+                             Veterinário
+                        {% endif %}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">Prescritor Medicamento</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Nome Prescritor</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Numero Registro Profissional</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Conselho Profissional</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">UF Conselho</div>
+                    <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.nomePrescritor }}</div>
+                    <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.numeroRegistroProfissional }}</div>
+                    <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.conselhoProfissional }}</div>
+                    <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.UFConselho }}</div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">Comprador Medicamento</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Nome Comprador</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Tipo Documento</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Numero Documento</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Orgao Expedidor</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">UF Emissao Documento</div>
+                    <div class="col-md-3 border border-info">{{ saida.compradorMedicamento.nomeComprador }}</div>
+                    <div class="col-md-3 border border-info">
+                        {% if saida.compradorMedicamento.tipoDocumento == 1 %}
+                            CARTEIRA DE REGISTRO PROFISSIONAL
+                        {% elif saida.compradorMedicamento.tipoDocumento == 2 %}
+                            CARTEIRA DE IDENTIDADE
+                        {% elif saida.compradorMedicamento.tipoDocumento == 4 %}
+                            PEDIDO DE AUTORIZAÇÃO DE TRABALHO
+                        {% elif saida.compradorMedicamento.tipoDocumento == 5 %}
+                            CERTIDÃO DE NASCIMENTO
+                        {% elif saida.compradorMedicamento.tipoDocumento == 6 %}
+                            CERTIDÃO DE CASAMENTO
+                        {% elif saida.compradorMedicamento.tipoDocumento == 7 %}
+                            CERTIFICADO DE RESERVISTA
+                        {% elif saida.compradorMedicamento.tipoDocumento == 8 %}
+                            CARTA PATENTE
+                        {% elif saida.compradorMedicamento.tipoDocumento == 10 %}
+                            CERTIFICADO DE DISPENSA DE INCORPORAÇÃO
+                        {% elif saida.compradorMedicamento.tipoDocumento == 11 %}
+                            CARTEIRA DE IDENTIDADE DO ESTRANGEIRO
+                        {% elif saida.compradorMedicamento.tipoDocumento == 13 %}
+                            PASSAPORTE
+                        {% elif saida.compradorMedicamento.tipoDocumento == 14 %}
+                            PROTOCOLO DA POLÍCIA FEDERAL
+                        {% elif saida.compradorMedicamento.tipoDocumento == 19 %}
+                            INSCRIÇÃO ESTADUAL
+                        {% elif saida.compradorMedicamento.tipoDocumento == 20 %}
+                            INSCRIÇÃO MUNICIPAL
+                        {% elif saida.compradorMedicamento.tipoDocumento == 21 %}
+                            ALVARÁ/LICENÇA SANITÁRIA MUNICIPAL
+                        {% elif saida.compradorMedicamento.tipoDocumento == 38 %}
+                            AUTORIZAÇÃO DE FUNCIONAMENTO DE EMPRESA
+                        {% elif saida.compradorMedicamento.tipoDocumento == 39 %}
+                            AUTORIZAÇÃO ESPECIAL DE FUNCIONAMENTO
+                        {% elif saida.compradorMedicamento.tipoDocumento == 40 %}
+                            AUTORIZAÇÃO ESPECIAL SIMPLIFICADA
+                        {% elif saida.compradorMedicamento.tipoDocumento == 50 %}
+                            CARTEIRA DE TRABALHO E PREVIDÊNCIA SOCIAL
+                        {% elif saida.compradorMedicamento.tipoDocumento == 62 %}
+                            CADASTRO NACIONAL DE PESSOA JURIDICA
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2 border border-info">{{ saida.compradorMedicamento.numeroDocumento }}</div>
+                    <div class="col-md-2 border border-info">{{ saida.compradorMedicamento.orgaoExpedidor }}</div>
+                    <div class="col-md-2 border border-info">{{ saida.compradorMedicamento.UFEmissaoDocumento }}</div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">Paciente</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Nome</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Idade</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">sexo</div>
+                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Cid</div>
+                    <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.nome }}</div>
+                    <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.idade }} {% if saida.pacienteMedicamento.unidadeIdade == 1 %}Ano(s){% elif saida.pacienteMedicamento.unidadeIdade == 2 %}Mese(s){% endif %}</div>
+                    <div class="col-md-3 border border-info">{% if saida.pacienteMedicamento.sexo == 1 %}Masculino{% elif saida.pacienteMedicamento.sexo == 2 %}Feminino{% endif %}</div>
+                    <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.cid }}</div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-10">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Produto</th>
+                                    <th>Uso Prolongado</th>
+                                    <th>MS Medicamento</th>
+                                    <th>Lote Medicamento</th>
+                                    <th>Quantidade</th>
+                                    <th>Unidade Medida Medicamento</th>
+                                    <th>Enviar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicamento in saida.medicamentoVenda %}
+                                    <tr>
+                                        <td>{{ medicamento.registroMSMedicamento|busca_produto }}</td>
+                                        <td>{{ medicamento.usoProlongado }}</td>
+                                        <td>{{ medicamento.registroMSMedicamento }}</td>
+                                        <td>
+                                            <label>
+                                                <input name="saida_lote_" placeholder="{{ medicamento.numeroLoteMedicamento }}" class="form-control">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input name="saida_quantidade_" placeholder="{{ medicamento.quantidadeMedicamento }}" class="form-control">
+                                            </label>
+                                        </td>
+                                        <td>{% if medicamento.unidadeMedidaMedicamento == 1 %}Caixas{% elif medicamento.Frascos == 2 %}Sujeito a controle Especial{% endif %}</td>
+                                        <td>
+                                            <label>
+                                                <input type="checkbox" name="saida_enviar_" checked="checked">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <hr />
+            {% endfor %}
+        </form>
     </div>
-</div>
-<hr />
-<div class="container-fluid">
-    <form action="#">
-        {% for entrada in file.corpo.medicamentos.entradaMedicamentos %}
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <h3>MOVIMENTAÇÕES DE COMPRA</h3>
-                </div>
-                <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">NF-e / NFC-e</div>
-                <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Operação</div>
-                <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Data da Operação</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">CNPJ Origem</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">CNPJ Destino</div>
-                <div class="col-md-2 border border-info">
-                    {{ entrada.notaFiscalEntradaMedicamento.numeroNotaFiscal }}
-                </div>
-                <div class="col-md-2 border border-info">
-                    {% if entrada.notaFiscalEntradaMedicamento.tipoOperacaoNotaFiscal == 1 %}
-                        Compra
-                    {% elif entrada.notaFiscalEntradaMedicamento.tipoOperacaoNotaFiscal == 2 %}
-                        Transferência
-                    {% else %}
-                        Venda
-                    {% endif %}
-                </div>
-                <div class="col-md-2 border border-info">
-                    {{ entrada.notaFiscalEntradaMedicamento.dataNotaFiscal }}
-                </div>
-                <div class="col-md-3 border border-info">{{ entrada.notaFiscalEntradaMedicamento.cnpjOrigem }}</div>
-                <div class="col-md-3 border border-info">
-                    {{ entrada.notaFiscalEntradaMedicamento.cnpjDestino }}
-                </div>
-                <div class="col-md-1"></div>
-                <div class="col-md-10">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Nome do Produto</th>
-                                <th>Classe Terapeutica</th>
-                                <th>MS Medicamento</th>
-                                <th>Lote Medicamento</th>
-                                <th>Quantidade</th>
-                                <th>Unidade Medida Medicamento</th>
-                                <th>Enviar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for medicamento in entrada.medicamentoEntrada %}
-                                <tr>
-                                    <td>{{ medicamento.registroMSMedicamento|busca_produto }}</td>
-                                    <td>{% if medicamento.classeTerapeutica == 1 %}Antimicrobiano{% elif medicamento.classeTerapeutica == 2 %}Sujeito a controle Especial{% endif %}</td>
-                                    <td>{{ medicamento.registroMSMedicamento }}</td>
-                                    <td>
-                                        <label>
-                                            <input type="text" name="entrada_lote_" placeholder="{{ medicamento.numeroLoteMedicamento }}" class="form-control">
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input type="text" name="entrada_quantidade_" placeholder="{{ medicamento.quantidadeMedicamento }}" class="form-control">
-                                        </label>
-                                    </td>
-                                    <td>{% if medicamento.unidadeMedidaMedicamento == 1 %}Caixas{% elif medicamento.Frascos == 2 %}Sujeito a controle Especial{% endif %}</td>
-                                    <td>
-                                        <label>
-                                            <input type="checkbox" name="entrada_enviar_" checked="checked">
-                                        </label>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        {% endfor %}
-        {% for saida in file.corpo.medicamentos.saidaMedicamentoVendaAoConsumidor %}
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <h3>MOVIMENTAÇÕES DE SAIDA</h3>
-                </div>
-                <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">DADOS DA RECEITA</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Tipo de Receituario</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Notificacao</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Data Prescrição</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Uso do Medicamento</div>
-                <div class="col-md-3 border border-info">
-                    {% if saida.tipoReceituarioMedicamento == 1 %}
-                        Receita de Controle Especial em 2 vias (Receita Branca)
-                    {% elif saida.tipoReceituarioMedicamento == 2 %}
-                        Notificação de Receita B (Notificação Azul)
-                    {% elif saida.tipoReceituarioMedicamento == 3 %}
-                        Notificação de Receita Especial (Notificação Branca)
-                    {% elif saida.tipoReceituarioMedicamento == 4 %}
-                        Notificação de Receita A (Notificação Amarela)
-                    {% elif saida.tipoReceituarioMedicamento == 5 %}
-                        Receita Antimicrobiano em 2 vias
-                    {% endif %}
-                </div>
-                <div class="col-md-3 border border-info">
-                    {{ saida.numeroNotificacaoMedicamento }}
-                </div>
-                <div class="col-md-3 border border-info">
-                    {{ saida.dataPrescricaoMedicamento }}
-                </div>
-                <div class="col-md-3 border border-info">
-                     {% if saida.dataPrescricaoMedicamento == 1 %}
-                         Humano
-                    {% elif saida.dataPrescricaoMedicamento == 2 %}
-                         Veterinário
-                    {% endif %}
-                </div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">Prescritor Medicamento</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Nome Prescritor</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Numero Registro Profissional</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Conselho Profissional</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">UF Conselho</div>
-                <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.nomePrescritor }}</div>
-                <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.numeroRegistroProfissional }}</div>
-                <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.conselhoProfissional }}</div>
-                <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.UFConselho }}</div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">Comprador Medicamento</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Nome Comprador</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Tipo Documento</div>
-                <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Numero Documento</div>
-                <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Orgao Expedidor</div>
-                <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">UF Emissao Documento</div>
-                <div class="col-md-3 border border-info">{{ saida.compradorMedicamento.nomeComprador }}</div>
-                <div class="col-md-3 border border-info">
-                    {% if saida.compradorMedicamento.tipoDocumento == 1 %}
-                        CARTEIRA DE REGISTRO PROFISSIONAL
-                    {% elif saida.compradorMedicamento.tipoDocumento == 2 %}
-                        CARTEIRA DE IDENTIDADE
-                    {% elif saida.compradorMedicamento.tipoDocumento == 4 %}
-                        PEDIDO DE AUTORIZAÇÃO DE TRABALHO
-                    {% elif saida.compradorMedicamento.tipoDocumento == 5 %}
-                        CERTIDÃO DE NASCIMENTO
-                    {% elif saida.compradorMedicamento.tipoDocumento == 6 %}
-                        CERTIDÃO DE CASAMENTO
-                    {% elif saida.compradorMedicamento.tipoDocumento == 7 %}
-                        CERTIFICADO DE RESERVISTA
-                    {% elif saida.compradorMedicamento.tipoDocumento == 8 %}
-                        CARTA PATENTE
-                    {% elif saida.compradorMedicamento.tipoDocumento == 10 %}
-                        CERTIFICADO DE DISPENSA DE INCORPORAÇÃO
-                    {% elif saida.compradorMedicamento.tipoDocumento == 11 %}
-                        CARTEIRA DE IDENTIDADE DO ESTRANGEIRO
-                    {% elif saida.compradorMedicamento.tipoDocumento == 13 %}
-                        PASSAPORTE
-                    {% elif saida.compradorMedicamento.tipoDocumento == 14 %}
-                        PROTOCOLO DA POLÍCIA FEDERAL
-                    {% elif saida.compradorMedicamento.tipoDocumento == 19 %}
-                        INSCRIÇÃO ESTADUAL
-                    {% elif saida.compradorMedicamento.tipoDocumento == 20 %}
-                        INSCRIÇÃO MUNICIPAL
-                    {% elif saida.compradorMedicamento.tipoDocumento == 21 %}
-                        ALVARÁ/LICENÇA SANITÁRIA MUNICIPAL
-                    {% elif saida.compradorMedicamento.tipoDocumento == 38 %}
-                        AUTORIZAÇÃO DE FUNCIONAMENTO DE EMPRESA
-                    {% elif saida.compradorMedicamento.tipoDocumento == 39 %}
-                        AUTORIZAÇÃO ESPECIAL DE FUNCIONAMENTO
-                    {% elif saida.compradorMedicamento.tipoDocumento == 40 %}
-                        AUTORIZAÇÃO ESPECIAL SIMPLIFICADA
-                    {% elif saida.compradorMedicamento.tipoDocumento == 50 %}
-                        CARTEIRA DE TRABALHO E PREVIDÊNCIA SOCIAL
-                    {% elif saida.compradorMedicamento.tipoDocumento == 62 %}
-                        CADASTRO NACIONAL DE PESSOA JURIDICA
-                    {% endif %}
-                </div>
-                <div class="col-md-2 border border-info">{{ saida.compradorMedicamento.numeroDocumento }}</div>
-                <div class="col-md-2 border border-info">{{ saida.compradorMedicamento.orgaoExpedidor }}</div>
-                <div class="col-md-2 border border-info">{{ saida.compradorMedicamento.UFEmissaoDocumento }}</div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-md-12 border border-info text-center font-weight-bold text-uppercase">Paciente</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Nome</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Idade</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">sexo</div>
-                <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Cid</div>
-                <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.nome }}</div>
-                <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.idade }} {% if saida.pacienteMedicamento.unidadeIdade == 1 %}Ano(s){% elif saida.pacienteMedicamento.unidadeIdade == 2 %}Mese(s){% endif %}</div>
-                <div class="col-md-3 border border-info">{% if saida.pacienteMedicamento.sexo == 1 %}Masculino{% elif saida.pacienteMedicamento.sexo == 2 %}Feminino{% endif %}</div>
-                <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.cid }}</div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-md-1"></div>
-                <div class="col-md-10">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Nome do Produto</th>
-                                <th>Uso Prolongado</th>
-                                <th>MS Medicamento</th>
-                                <th>Lote Medicamento</th>
-                                <th>Quantidade</th>
-                                <th>Unidade Medida Medicamento</th>
-                                <th>Enviar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for medicamento in saida.medicamentoVenda %}
-                                <tr>
-                                    <td>{{ medicamento.registroMSMedicamento|busca_produto }}</td>
-                                    <td>{{ medicamento.usoProlongado }}</td>
-                                    <td>{{ medicamento.registroMSMedicamento }}</td>
-                                    <td>
-                                        <label>
-                                            <input name="saida_lote_" placeholder="{{ medicamento.numeroLoteMedicamento }}" class="form-control">
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="saida_quantidade_" placeholder="{{ medicamento.quantidadeMedicamento }}" class="form-control">
-                                        </label>
-                                    </td>
-                                    <td>{% if medicamento.unidadeMedidaMedicamento == 1 %}Caixas{% elif medicamento.Frascos == 2 %}Sujeito a controle Especial{% endif %}</td>
-                                    <td>
-                                        <label>
-                                            <input type="checkbox" name="saida_enviar_" checked="checked">
-                                        </label>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <hr />
-        {% endfor %}
-    </form>
-</div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

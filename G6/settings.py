@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'Estoque.apps.EstoqueConfig',
     'Orcamento.apps.OrcamentoConfig',
     'Sngpc.apps.SngpcConfig',
-    'bootstrap4',
+    'bootstrap',
+    'fontawesome',
 ]
 
 MIDDLEWARE = [
@@ -127,4 +128,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = 'http://static.implanti.com.br/static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]

@@ -4,10 +4,8 @@
     {% load static %}
     <meta charset="UTF-8">
     <title>COMPROVANTE DE DEBITO</title>
-    <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
-    <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
-    <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
-    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <style>
         .page{
             width: 210mm;
@@ -43,9 +41,117 @@
     </style>
 </head>
 <body>
-{% include "menu.html" %}
-<div class="container-fluid page">
-    {% if Contrato.0.id_g6 != '' %}
+    {% include "menu.html" %}
+    <div class="container-fluid page">
+        {% if Contrato.0.id_g6 != '' %}
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    {{ Emitente.Nome }}
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    DATA.: {{ Data }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    CNPJ.: {{ Emitente.Cnpj }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    {{ Emitente.Carteira.EnderecoPrincipal.Logradouro }},
+                    {{ Emitente.Carteira.EnderecoPrincipal.Numero }},
+                    {% if Emitente.Carteira.EnderecoPrincipal.Complemento %}
+                        {{ Emitente.Carteira.EnderecoPrincipal.Complemento }},
+                    {% endif %}
+                    {{ Emitente.Carteira.EnderecoPrincipal.Bairro }},
+                    {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Nome }},
+                    {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    TELEFONE.: {{ Emitente.TelefonePrincipal }}
+                </div>
+                <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="right">
+                    VENDEDOR.: {{ Prevenda.Vendedor.Nome }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    DOCUMENTO.: {{ Contrato.0.id }}
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    RECIBO DE ENTREGA DE PRODUTOS
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                    CLIENTE.: {{ Cliente.Nome }}
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                    {% if Cliente.Documento != '' %}
+                        {{ Cliente.Documento }}
+                    {% else %}
+                        Sem documento
+                    {% endif %}
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    P R O D U T O
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    QUANTIDADE
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    PRECO UNIT
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    TOTAL
+                </div>
+            </div>
+            <hr />
+            {% for item in Mov.ItensBase %}
+                {% if item.Cancelado == False  %}
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                            {{ item.ProdutoServico.Descricao }}
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            {{ item.Quantidade|floatformat:2 }}
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            {{ item.PrecoUnitario|floatformat:2 }}
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            {{ item.bruto|floatformat:2 }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+
+        <br />
+        <br />
+        <hr />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                TOTAL A PAGAR.: R$ {{ Mov.bruto|floatformat:2 }} ({{ Mov.bruto_extenso }})
+            </div>
+        </div>
+        <hr />
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow: hidden" align="center">
+                __________________/______de _______ de ________ ________________________________________________<br />
+                Local, Data e Assinatura do Recebedor
+            </div>
+        </div>
+        <br />
+        <br />
+        {% endif %}
         <div class="row">
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 {{ Emitente.Nome }}
@@ -84,7 +190,7 @@
                 DOCUMENTO.: {{ Contrato.0.id }}
             </div>
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                RECIBO DE ENTREGA DE PRODUTOS
+                COMPROVANTE DE DEBITOS
             </div>
         </div>
         <div class="row">
@@ -101,213 +207,107 @@
         </div>
         <hr />
         <div class="row">
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                P R O D U T O
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                VENCIMENTO
             </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                QUANTIDADE
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                VALOR A PAGAR
             </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                PRECO UNIT
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                VALOR PAGO
             </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                TOTAL
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                ATIVA
             </div>
         </div>
         <hr />
-        {% for item in Mov.ItensBase %}
-            {% if item.Cancelado == False  %}
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                        {{ item.ProdutoServico.Descricao }}
-                    </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        {{ item.Quantidade|floatformat:2 }}
-                    </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        {{ item.PrecoUnitario|floatformat:2 }}
-                    </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        {{ item.bruto|floatformat:2 }}
-                    </div>
-                </div>
-            {% endif %}
+        {% for parcela in Parcelamento %}
+        <div class="row">
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                {{ parcela.Vencimento|date:"d/m/Y" }}
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                {{ parcela.Valor|floatformat:2 }}
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                {{ parcela.Pago|floatformat:2 }}
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                {{ parcela.Ativo }}
+            </div>
+        </div>
         {% endfor %}
-
-
-    <br />
-    <br />
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            TOTAL A PAGAR.: R$ {{ Mov.bruto|floatformat:2 }} ({{ Mov.bruto_extenso }})
-        </div>
-    </div>
-    <hr />
-    <br />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow: hidden" align="center">
-            __________________/______de _______ de ________ ________________________________________________<br />
-            Local, Data e Assinatura do Recebedor
-        </div>
-    </div>
-    <br />
-    <br />
-    {% endif %}
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            {{ Emitente.Nome }}
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            DATA.: {{ Data }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            CNPJ.: {{ Emitente.Cnpj }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {{ Emitente.Carteira.EnderecoPrincipal.Logradouro }},
-            {{ Emitente.Carteira.EnderecoPrincipal.Numero }},
-            {% if Emitente.Carteira.EnderecoPrincipal.Complemento %}
-                {{ Emitente.Carteira.EnderecoPrincipal.Complemento }},
-            {% endif %}
-            {{ Emitente.Carteira.EnderecoPrincipal.Bairro }},
-            {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Nome }},
-            {{ Emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-            TELEFONE.: {{ Emitente.TelefonePrincipal }}
-        </div>
-        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="right">
-            VENDEDOR.: {{ Prevenda.Vendedor.Nome }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            DOCUMENTO.: {{ Contrato.0.id }}
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            COMPROVANTE DE DEBITOS
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-            CLIENTE.: {{ Cliente.Nome }}
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {% if Cliente.Documento != '' %}
-                {{ Cliente.Documento }}
-            {% else %}
-                Sem documento
-            {% endif %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            VENCIMENTO
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            VALOR A PAGAR
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            VALOR PAGO
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            ATIVA
-        </div>
-    </div>
-    <hr />
-    {% for parcela in Parcelamento %}
-    <div class="row">
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {{ parcela.Vencimento|date:"d/m/Y" }}
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {{ parcela.Valor|floatformat:2 }}
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {{ parcela.Pago|floatformat:2 }}
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {{ parcela.Ativo }}
-        </div>
-    </div>
-    {% endfor %}
-    <br />
-    {% if Contrato.0.tipo == 2 %}
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Total contrato.: R$ {{ total_liquido.total|floatformat:2 }} ({{ total_liquido.extenso }})
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Total liquido.: R$ {{ total_liquido.total|floatformat:2 }} ({{ total_liquido.extenso }})
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Total desconto.: R$ {{ Contrato.0.desconto|floatformat:2 }}
-        </div>
-    </div>
-    {% endif %}
-    <br />
-    <div class="row">
-        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-            CLIENTE.: {{ Cliente.Nome }}
-        </div>
-        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-            {% if Cliente.Documento != '' %}
-                {{ Cliente.Documento }}
-            {% else %}
-                Sem documento
-            {% endif %}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {{ Cliente.Carteira.EnderecoPrincipal.Logradouro }},
-            {{ Cliente.Carteira.EnderecoPrincipal.Numero }},
-            {% if Cliente.Carteira.EnderecoPrincipal.Complemento %}
-                {{ Cliente.Carteira.EnderecoPrincipal.Complemento }},
-            {% endif %}
-            {{ Cliente.Carteira.EnderecoPrincipal.Bairro }},
-            {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Nome }},
-            {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Saldo devedor.: R$ {{ Cliente.devedor.total_devedor|floatformat:2 }} ({{ Cliente.devedor.extenso }})
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            Reconheço e Pagarei pelo Debito Acima Informado
-        </div>
-    </div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 border-top border-dark" align="center">
-                Assinatura do Cliente
+        <br />
+        {% if Contrato.0.tipo == 2 %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Total contrato.: R$ {{ total_liquido.total|floatformat:2 }} ({{ total_liquido.extenso }})
             </div>
         </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 border-top border-dark" align="center">
-                Assinatura Representante Empresa
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Total liquido.: R$ {{ total_liquido.total|floatformat:2 }} ({{ total_liquido.extenso }})
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Total desconto.: R$ {{ Contrato.0.desconto|floatformat:2 }}
+            </div>
+        </div>
+        {% endif %}
+        <br />
+        <div class="row">
+            <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                CLIENTE.: {{ Cliente.Nome }}
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                {% if Cliente.Documento != '' %}
+                    {{ Cliente.Documento }}
+                {% else %}
+                    Sem documento
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{ Cliente.Carteira.EnderecoPrincipal.Logradouro }},
+                {{ Cliente.Carteira.EnderecoPrincipal.Numero }},
+                {% if Cliente.Carteira.EnderecoPrincipal.Complemento %}
+                    {{ Cliente.Carteira.EnderecoPrincipal.Complemento }},
+                {% endif %}
+                {{ Cliente.Carteira.EnderecoPrincipal.Bairro }},
+                {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Nome }},
+                {{ Cliente.Carteira.EnderecoPrincipal.Municipio.Uf.Nome }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Saldo devedor.: R$ {{ Cliente.devedor.total_devedor|floatformat:2 }} ({{ Cliente.devedor.extenso }})
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Reconheço e Pagarei pelo Debito Acima Informado
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 border-top border-dark" align="center">
+                    Assinatura do Cliente
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 border-top border-dark" align="center">
+                    Assinatura Representante Empresa
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

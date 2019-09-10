@@ -4,10 +4,8 @@
     {% load static %}
     <meta charset="UTF-8">
     <title>{% if venda.tipo == 'NotaFiscalServico'%} ORÇAMENTO {% else %} PRE-VENDA {% endif %}- {{ Numero }}</title>
-    <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
-    <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
-    <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
-    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <style>
         .page{
             width: 210mm;
@@ -43,113 +41,115 @@
     </style>
 </head>
 <body>
-{% include "menu.html" %}
-<div class="container page">
-    <!-- Empresa emitente -->
-    <div class="row" align="center">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {% if venda.tipo == 'NotaFiscalServico'%}
-            <h1>ORÇAMENTO</h1><br />
-            {% else %}
-            <b>
-                DOCUMENTO AUXILIAR DE VENDA - PRÉ-VENDA<br>
-                NÃO É DOCUMENTO FISCAL - NÃO É VÁLIDO COMO RECIBO E COMO GARANTIA DE<br>
-                MERCADORIA - NÃO COMPROVA PAGAMENTO
-            </b>
-            {% endif %}
-        </div>
-    </div>
-    <div class="row border" align="center">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">Identificação do Estabelecimento</div>
-    </div>
-    <div class="row border">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            Denominação: <b>{{ venda.Empresa.Nome }}</b>
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            CNPJ:
-            {{ venda.Empresa.Documento }}
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            {{ venda.Empresa.EnderecoPrincipal.Logradouro }} <br />
-            {{ venda.Empresa.EnderecoPrincipal.Numero }} <br />
-            {{ venda.Empresa.EnderecoPrincipal.Cep }} -
-            {{ venda.Empresa.EnderecoPrincipal.Municipio.Nome }} -
-            {{ venda.Empresa.EnderecoPrincipal.Municipio.Uf.Sigla }} <br />
-            {{ venda.Empresa.EnderecoPrincipal.Bairro }} <br />
-            {% if venda.Empresa.TelefonePrincipal %}
-                Fone/Fax: {{ venda.Empresa.TelefonePrincipal }}
-            {% endif %}
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
-    </div>
-
-    <div class="row border" align="center">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">Identificação do Destinatário</div>
-    </div>
-    <div class="row border">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            Denominação: <b>{{ venda.Pessoa.Nome }}</b>
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            {{ venda.Pessoa.Tipo }}
-            {{ venda.Pessoa.Documento }}
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            {{ venda.Pessoa.EnderecoPrincipal.Logradouro }} <br />
-            {{ venda.Pessoa.EnderecoPrincipal.Numero }} <br />
-            {{ venda.Pessoa.EnderecoPrincipal.Cep }} -
-            {{ venda.Pessoa.EnderecoPrincipal.Municipio.Nome }} -
-            {{ venda.Pessoa.EnderecoPrincipal.Municipio.Uf.Sigla }} <br />
-            {{ venda.Pessoa.EnderecoPrincipal.Bairro }} <br />
-            {% if venda.Pessoa.TelefonePrincipal %}
-                Fone/Fax: {{ venda.Pessoa.TelefonePrincipal }}
-            {% endif %}
-        </div>
-        <div class="col-xl-6 border-right"></div>
-    </div>
-    <div class="row border">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"><b>NÚMERO {% if venda.tipo == 'NotaFiscalServico'%}ORÇAMENTO {% else %}PRE-VENDA {% endif %}: {{ Numero }}</b></div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
-    </div>
-    <div class="row clear"></div>
-    <br>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Descrição</th>
-                <th>UNID.</th>
-                <th>Quantid.</th>
-                <th>Desconto</th>
-                <th>Valor Unit.</th>
-                <th>Valor Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in venda.ItensBase %}
-                {% if item.Cancelado == False %}
-                <tr>
-                    <td>{{ item.ProdutoServico.CodigoInterno }}</td>
-                    <td>{{ item.ProdutoServico.Descricao }}</td>
-                    <td>{{ item.ProdutoServico.UnidadeMedida.Sigla }}</td>
-                    <td>{{ item.Quantidade|floatformat:2 }}</td>
-                    <td>R${{ item.desconto_total|floatformat:2 }}</td>
-                    <td>R${{ item.PrecoUnitario|floatformat:2 }}</td>
-                    <td>R${{ item.bruto|floatformat:2 }}</td>
-                </tr>
+    {% include "menu.html" %}
+    <div class="container page">
+        <!-- Empresa emitente -->
+        <div class="row" align="center">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% if venda.tipo == 'NotaFiscalServico'%}
+                <h1>ORÇAMENTO</h1><br />
+                {% else %}
+                <b>
+                    DOCUMENTO AUXILIAR DE VENDA - PRÉ-VENDA<br>
+                    NÃO É DOCUMENTO FISCAL - NÃO É VÁLIDO COMO RECIBO E COMO GARANTIA DE<br>
+                    MERCADORIA - NÃO COMPROVA PAGAMENTO
+                </b>
                 {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
-    <div class="row border">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right" style="background-color: #8a8f94;"></div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
-            Total produtos: <b>R${{ venda.bruto|floatformat:2 }}</b><br />
-            Total desconto: <b>R${{ venda.desconto|floatformat:2 }}</b><br />
-            Total geral: <b>R${{ venda.liquido|floatformat:2 }}</b><br />
+            </div>
+        </div>
+        <div class="row border" align="center">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">Identificação do Estabelecimento</div>
+        </div>
+        <div class="row border">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                Denominação: <b>{{ venda.Empresa.Nome }}</b>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                CNPJ:
+                {{ venda.Empresa.Documento }}
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                {{ venda.Empresa.EnderecoPrincipal.Logradouro }} <br />
+                {{ venda.Empresa.EnderecoPrincipal.Numero }} <br />
+                {{ venda.Empresa.EnderecoPrincipal.Cep }} -
+                {{ venda.Empresa.EnderecoPrincipal.Municipio.Nome }} -
+                {{ venda.Empresa.EnderecoPrincipal.Municipio.Uf.Sigla }} <br />
+                {{ venda.Empresa.EnderecoPrincipal.Bairro }} <br />
+                {% if venda.Empresa.TelefonePrincipal %}
+                    Fone/Fax: {{ venda.Empresa.TelefonePrincipal }}
+                {% endif %}
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
+        </div>
+
+        <div class="row border" align="center">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">Identificação do Destinatário</div>
+        </div>
+        <div class="row border">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                Denominação: <b>{{ venda.Pessoa.Nome }}</b>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                {{ venda.Pessoa.Tipo }}
+                {{ venda.Pessoa.Documento }}
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                {{ venda.Pessoa.EnderecoPrincipal.Logradouro }} <br />
+                {{ venda.Pessoa.EnderecoPrincipal.Numero }} <br />
+                {{ venda.Pessoa.EnderecoPrincipal.Cep }} -
+                {{ venda.Pessoa.EnderecoPrincipal.Municipio.Nome }} -
+                {{ venda.Pessoa.EnderecoPrincipal.Municipio.Uf.Sigla }} <br />
+                {{ venda.Pessoa.EnderecoPrincipal.Bairro }} <br />
+                {% if venda.Pessoa.TelefonePrincipal %}
+                    Fone/Fax: {{ venda.Pessoa.TelefonePrincipal }}
+                {% endif %}
+            </div>
+            <div class="col-xl-6 border-right"></div>
+        </div>
+        <div class="row border">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"><b>NÚMERO {% if venda.tipo == 'NotaFiscalServico'%}ORÇAMENTO {% else %}PRE-VENDA {% endif %}: {{ Numero }}</b></div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right"></div>
+        </div>
+        <div class="row clear"></div>
+        <br>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descrição</th>
+                    <th>UNID.</th>
+                    <th>Quantid.</th>
+                    <th>Desconto</th>
+                    <th>Valor Unit.</th>
+                    <th>Valor Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in venda.ItensBase %}
+                    {% if item.Cancelado == False %}
+                    <tr>
+                        <td>{{ item.ProdutoServico.CodigoInterno }}</td>
+                        <td>{{ item.ProdutoServico.Descricao }}</td>
+                        <td>{{ item.ProdutoServico.UnidadeMedida.Sigla }}</td>
+                        <td>{{ item.Quantidade|floatformat:2 }}</td>
+                        <td>R${{ item.desconto_total|floatformat:2 }}</td>
+                        <td>R${{ item.PrecoUnitario|floatformat:2 }}</td>
+                        <td>R${{ item.bruto|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="row border">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right" style="background-color: #8a8f94;"></div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 border-right">
+                Total produtos: <b>R${{ venda.bruto|floatformat:2 }}</b><br />
+                Total desconto: <b>R${{ venda.desconto|floatformat:2 }}</b><br />
+                Total geral: <b>R${{ venda.liquido|floatformat:2 }}</b><br />
+            </div>
         </div>
     </div>
-</div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

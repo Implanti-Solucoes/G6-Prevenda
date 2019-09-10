@@ -4,13 +4,10 @@
     {% load static %}
     <meta charset="UTF-8">
     <title>Tabela de Preço</title>
-    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
-
-    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
-    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
-    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
 </head>
 <body>
 {% include "menu.html" %}
@@ -53,6 +50,10 @@
             </form>
         </div>
     </div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
 </div>
 </body>
 </html>

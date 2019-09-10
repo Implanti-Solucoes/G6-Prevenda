@@ -4,14 +4,9 @@
     {% load static %}
     <meta charset="UTF-8">
     <title>PRE-VENDA - {{ items.Numero }}</title>
-    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
-
-    <script src="{% static "jquery/2.1.1/jquery.min.js" %}"></script>
-    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
-    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script>
         function somenteNumeros(num) {
             var er = /[^0-9.]/;
@@ -53,70 +48,75 @@
 </head>
 <body>
 {% include "menu.html" %}
-<div class="container page">
-    <form action="{% url 'financeiro:gerar_financeiro' %}" method="post">
-        <input type="hidden" name="id" value="{{ items.id }}" required="required">
-        <div class="form-row">
-            <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <label for="cliente">Cliente</label>
-                <input type="text" id="cliente" class="form-control" value="{{ items.Pessoa.Nome }}" readonly>
+    <div class="container page">
+        <form action="{% url 'financeiro:gerar_financeiro' %}" method="post">
+            <input type="hidden" name="id" value="{{ items.id }}" required="required">
+            <div class="form-row">
+                <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label for="cliente">Cliente</label>
+                    <input type="text" id="cliente" class="form-control" value="{{ items.Pessoa.Nome }}" readonly>
+                </div>
+                <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <label for="vendedor">Vendedor</label>
+                    <input type="text" id="vendedor" class="form-control" value="{{ items.Vendedor.Nome }}" readonly>
+                </div>
             </div>
-            <div class="form-group col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <label for="vendedor">Vendedor</label>
-                <input type="text" id="vendedor" class="form-control" value="{{ items.Vendedor.Nome }}" readonly>
+            <div class="form-row">
+                <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    <label for="conta">Conta</label>
+                    <select id="conta" name="conta" class="form-control" required="required">
+                        {% for conta in contas %}
+                        <option value="{{ conta.id }}">{{ conta.Descricao }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    <label for="centro_custo">Centro de custo</label>
+                    <select id="centro_custo" name="centro_custo" class="form-control" required="required">
+                        {% for custo in centros_custos %}
+                        <option value="{{ custo.CodigoUnico }}">{{ custo.CodigoUnico }} - {{ custo.Descricao }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    <label for="planos_contas">Plano de contas</label>
+                    <select id="planos_contas" name="planos_contas" class="form-control" required="required">
+                        {% for plano in planos_conta %}
+                        <option value="{{ plano.CodigoUnico }}">{{ plano.CodigoUnico }} - {{ plano.Descricao }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <label for="conta">Conta</label>
-                <select id="conta" name="conta" class="form-control" required="required">
-                    {% for conta in contas %}
-                    <option value="{{ conta.id }}">{{ conta.Descricao }}</option>
-                    {% endfor %}
-                </select>
+            <div class="form-row">
+                <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                    <label for="parcelas">Parcelas</label>
+                    <input type="text" class="form-control" id="parcelas" name="parcelas" maxlength="2" onkeyup="somenteNumeros(this);" placeholder="Digite a quantidade de parcelas" required="required">
+                </div>
+                <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                    <label for="entrada">Entrada</label>
+                    <input type="number" class="form-control" id="entrada" name="entrada" min="0" max="{{ items.Total|stringformat:"f" }}" step="0.01" pattern="^\d+(?:\.\d{1,2})?$" onblur="this.parentNode.parentNode.style.backgroundColor=/^\d+(?:\.\d{1,2})?$/.test(this.value)?'inherit':'red'" value="0.00" onkeyup="somenteNumeros(this);">
+                </div>
+                <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                    <label for="total">Total</label>
+                    <input type="text" id="total" class="form-control" value="{{ items.liquido|floatformat:2 }}" readonly>
+                </div>
+                <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                    <label for="valor">Valor Parcela</label>
+                    <input type="text" class="form-control" id="valor" value="0" readonly>
+                </div>
             </div>
-            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <label for="centro_custo">Centro de custo</label>
-                <select id="centro_custo" name="centro_custo" class="form-control" required="required">
-                    {% for custo in centros_custos %}
-                    <option value="{{ custo.CodigoUnico }}">{{ custo.CodigoUnico }} - {{ custo.Descricao }}</option>
-                    {% endfor %}
-                </select>
+            <div class="form-row" id="vencimentos">
             </div>
-            <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <label for="planos_contas">Plano de contas</label>
-                <select id="planos_contas" name="planos_contas" class="form-control" required="required">
-                    {% for plano in planos_conta %}
-                    <option value="{{ plano.CodigoUnico }}">{{ plano.CodigoUnico }} - {{ plano.Descricao }}</option>
-                    {% endfor %}
-                </select>
+            {% csrf_token %}
+            <div class="form-row">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Gerar financeiro</button>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                <label for="parcelas">Parcelas</label>
-                <input type="text" class="form-control" id="parcelas" name="parcelas" maxlength="2" onkeyup="somenteNumeros(this);" placeholder="Digite a quantidade de parcelas" required="required">
-            </div>
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                <label for="entrada">Entrada</label>
-                <input type="number" class="form-control" id="entrada" name="entrada" min="0" max="{{ items.Total|stringformat:"f" }}" step="0.01" pattern="^\d+(?:\.\d{1,2})?$" onblur="this.parentNode.parentNode.style.backgroundColor=/^\d+(?:\.\d{1,2})?$/.test(this.value)?'inherit':'red'" value="0.00" onkeyup="somenteNumeros(this);">
-            </div>
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                <label for="total">Total</label>
-                <input type="text" id="total" class="form-control" value="{{ items.liquido|floatformat:2 }}" readonly>
-            </div>
-            <div class="form-group col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                <label for="valor">Valor Parcela</label>
-                <input type="text" class="form-control" id="valor" value="0" readonly>
-            </div>
-        </div>
-        <div class="form-row" id="vencimentos">
-        </div>
-        {% csrf_token %}
-        <div class="form-row">
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Gerar financeiro</button>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 </body>
 </html>

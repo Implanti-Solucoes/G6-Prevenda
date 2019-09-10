@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <title>Relatorios</title>
-    <link rel="stylesheet" href="{% static "bootstrap/4.1.0/css/bootstrap.min.css" %}">
-    <script src="{% static "jquery/3.2.1/jquery-3.2.1.slim.min.js" %}"></script>
-    <script src="{% static "popper/1.12.9/popper.min.js" %}"></script>
-    <script src="{% static "bootstrap/4.1.0/js/bootstrap.min.js" %}"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <script>
         window.onload=function() {
             document.getElementById('relatorio').relatorioAction.onchange = function () {
@@ -73,60 +71,62 @@
     </script>
 </head>
 <body>
-{% include "menu.html" %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <form method="post" action="#" class="form" id="relatorio">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="relatorioAction" class="col-sm-6 col-form-label">Selecione o relatorio</label>
-                    <select name="relatorioAction" id="relatorioAction" class="form-control" required="required">
-                        <option>Selecione o relatorio</option>
-                        <option value="{% url 'relatorios:operacoes_por_pessoa' %}">Operações por pessoa</option>
-                        <option value="{% url 'relatorios:sintetico_produtos' %}">Sinteticos de produtos</option>
-                        <option value="{% url 'relatorios:prevendas_por_vendedor' %}">Pré-Vendas por Vendedor</option>
-                        <option value="{% url 'relatorios:prevendas_por_usuario' %}">Pré-Vendas por Usuario</option>
-                    </select>
-                </div>
-                <div class="form-group" id="clientediv" style="display: none;">
-                    <label for="cliente" class="col-sm-6 col-form-label">Selecione o cliente</label>
-                    <select name="cliente" id="cliente" class="form-control">
-                        <option value="">Sem filtro de cliente</option>
-                        {% for cliente in clientes %}
-                        <option value="{{ cliente.id }}">{{ cliente.Nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group" id="vendedordiv" style="display: none;">
-                    <label for="vendedor" class="col-sm-6 col-form-label">Selecione o vendedor</label>
-                    <select name="vendedor" id="vendedor" class="form-control">
-                        <option value="">Sem filtro de vendedor</option>
-                        {% for vendedor in vendedores %}
-                        <option value="{{ vendedor.id }}">{{ vendedor.Nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="inical" class="col-sm-6 col-form-label">Escolha a data inicial</label>
-                    <input type="date" name="inical" id="inical" class="form-control" required="required">
-                </div>
-                <div class="form-group">
-                    <label for="final" class="col-sm-6 col-form-label">Escolha a data final</label>
-                    <input type="date" name="final" id="final" class="form-control" required="required">
-                </div>
-                <div class="form-group" style="display: none;" id="mostradiv" align="left">
-                    <label for="vendas" class="col-sm-6 col-form-label">Mostrar vendas</label>
-                    <input type="checkbox" name="vendas" id="vendas" class="form-control">
-                </div>
-                <div class="form-group" style="display: none;" id="fiscaldiv" align="left">
-                    <label for="fiscal" class="col-sm-6 col-form-label">Somente notas fiscais</label>
-                    <input type="checkbox" name="fiscal" id="fiscal" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">Gerar relatorio</button>
-            </form>
+    {% include "menu.html" %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <form method="post" action="#" class="form" id="relatorio">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="relatorioAction" class="col-sm-6 col-form-label">Selecione o relatorio</label>
+                        <select name="relatorioAction" id="relatorioAction" class="form-control" required="required">
+                            <option>Selecione o relatorio</option>
+                            <option value="{% url 'relatorios:operacoes_por_pessoa' %}">Operações por pessoa</option>
+                            <option value="{% url 'relatorios:sintetico_produtos' %}">Sinteticos de produtos</option>
+                            <option value="{% url 'relatorios:prevendas_por_vendedor' %}">Pré-Vendas por Vendedor</option>
+                            <option value="{% url 'relatorios:prevendas_por_usuario' %}">Pré-Vendas por Usuario</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="clientediv" style="display: none;">
+                        <label for="cliente" class="col-sm-6 col-form-label">Selecione o cliente</label>
+                        <select name="cliente" id="cliente" class="form-control">
+                            <option value="">Sem filtro de cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}">{{ cliente.Nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group" id="vendedordiv" style="display: none;">
+                        <label for="vendedor" class="col-sm-6 col-form-label">Selecione o vendedor</label>
+                        <select name="vendedor" id="vendedor" class="form-control">
+                            <option value="">Sem filtro de vendedor</option>
+                            {% for vendedor in vendedores %}
+                            <option value="{{ vendedor.id }}">{{ vendedor.Nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inical" class="col-sm-6 col-form-label">Escolha a data inicial</label>
+                        <input type="date" name="inical" id="inical" class="form-control" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="final" class="col-sm-6 col-form-label">Escolha a data final</label>
+                        <input type="date" name="final" id="final" class="form-control" required="required">
+                    </div>
+                    <div class="form-group" style="display: none;" id="mostradiv" align="left">
+                        <label for="vendas" class="col-sm-6 col-form-label">Mostrar vendas</label>
+                        <input type="checkbox" name="vendas" id="vendas" class="form-control">
+                    </div>
+                    <div class="form-group" style="display: none;" id="fiscaldiv" align="left">
+                        <label for="fiscal" class="col-sm-6 col-form-label">Somente notas fiscais</label>
+                        <input type="checkbox" name="fiscal" id="fiscal" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success">Gerar relatorio</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

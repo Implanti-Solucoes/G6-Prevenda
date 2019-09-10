@@ -1,0 +1,19 @@
+D:\ConversorG6\DigisatServer.Infrastructure.Crosscutting.Criptografia.dll
+ProdutosServicos - ChavePafProdutoServicoLayout.cs
+	CodigoInterno
+	Descricao
+	UnidadeMedida Sigla
+	IndicadorArredondamentoTruncamento (A = Arredondamento ou T = Truncamento)
+	IndicadorProducaoPropriaTerceiro (T = Terceiro ou P = Propria)
+
+ChavePafProdutoEmpresaLayout.cs
+	NcmNbs.Codigo
+	CodigoEspecificadorSubstituicaoTributaria(Se tiver com 7 digitos e so numeros, se não tiver coloca 7 brancos)
+	
+ChavePafPrecoLayout.cs
+	Venda.Valor - formatado com virgulas e ponto para decimal e 2 casas decimais
+	
+http://prntscr.com/p1c06g
+http://prntscr.com/p1c0lo
+http://prntscr.com/p1c1jo
+http://prntscr.com/p1c21q

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
+</head>
+<body class="bg-light">
+    {% include "menu.html" %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-9" style="background-color: #edf9ff;">
+                <nav class="nav flex-column">
+                    <div class="row border" style="border-color: #d2c0c6;">
+                        {% for cardapio in cardapios %}
+                            <div class="col-md-2" style="padding-top: 5px;">
+                                <a href="#{{ cardapio.id }}" class="nav-item nav-link" id="{{ cardapio.id }}-tab" data-toggle="tab" role="tab" aria-controls="{{ cardapio.id }}" aria-selected="false">
+                                    <div class="card border border-info mb-3 shadow-sm" style="background-color: #ffffff; height: 100px; padding-top: 25px;">
+                                        {% if cardapio.Imagem != '' %}
+                                            <img src="data:image/png; base64,{{ cardapio.Imagem }}" class="align-self-center" height="50" width="50"/>
+                                        {% else %}
+                                            <img src="{% static "restaurante/Cardapio.png" %}" class="align-self-center" height="50" width="50"/>
+                                        {% endif %}
+                                        <p class="text-center" style="font-size: x-small;">{{ cardapio.Descricao }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </nav>
+                <div class="tab-content">
+                    {% for cardapio in cardapios %}
+                        <div class="border tab-pane fade" id="{{ cardapio.id }}" style="border-color: #d2c0c6;" role="tabpanel" aria-labelledby="{{ cardapio.id }}-tab">
+                            <div class="row">
+                                {% for item in cardapio.ItensCardapio %}
+                                    <div class="col-md-1" style="padding-top: 5px; min-width: 100px!important; min-height: 100px!important;">
+                                        <div class="card border border-info mb-3 shadow-sm" style="background-color: #ffffff; font-size: x-small; min-height: 100px; padding-top: 10px;">
+                                            {% if item.ProdutoServico.0.Imagem != '' %}
+                                                <img src="data:image/png; base64,{{ item.ProdutoServico.0.Imagem }}" class="align-self-center" height="25" width="25"/>
+                                            {% else %}
+                                                <img src="{% static "restaurante/hamburguer.png" %}" class="align-self-center" height="25" width="25"/>
+                                            {% endif %}
+                                            <p class="text-center">{{ item.DescricaoTela }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border border-info" style="background-color: #edf9ff;">
+                    {% for item in mesa_conta %}
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{ item.Descricao }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ item.Quantidade }} {{ item.Unidade }} X {{ item.ValorUnitario|floatformat:-2 }}
+                            </div>
+                            <div class="col-md-6">
+                                Garçom:
+                                {% if item.GarcomReferencia.0.Nome %}
+                                    {{ item.GarcomReferencia.0.Nome }}
+                                {% else %}
+                                    Nenhum
+                                {% endif %}
+                            </div>
+                            <hr />
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript">
+        $('.flex-column').on('shown.bs.tab', 'a', function (e) {
+            if (e.relatedTarget) {
+                $(e.relatedTarget).removeClass('active');
+                $(e.relatedTarget).removeClass('show');
+            }
+        })
+    </script>
+</body>
+</html>

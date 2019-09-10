@@ -1,55 +1,59 @@
-<nav class="navbar navbar-dark navbar-expand-md bg-dark voltar">
-    <div class="container-fluid">
-        <a class="navbar-brand d-none" href="#"> </a>
-        <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
-            <span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navcol-1">
-            <ul class="nav navbar-nav main-nav">
-                <li class="nav-item dropdown" role="presentation">
-                    <a class="nav-link text-white" href="#" data-toggle="dropdown">Pessoas</a>
-                    <div class="dropdown">
-                        <ul class="dropdown-menu">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link text-dark" href="{% url 'pessoas:listagem' %}">Clientes</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link text-dark" href="{% url 'financeiro:cartas_gerador' %}">Cartas</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item dropdown" role="presentation">
-                    <a class="nav-link text-white" href="#" data-toggle="dropdown">Movimentações</a>
-                    <div class="dropdown">
-                        <ul class="dropdown-menu">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link text-dark" href="{% url 'movimentacoes:listagem_prevenda' %}">Listagem</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link text-dark" href="{% url 'relatorios:index' %}">Relatorios</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item dropdown" role="presentation">
-                    <a class="nav-link text-white" href="#" data-toggle="dropdown">Estoque</a>
-                    <div class="dropdown">
-                        <ul class="dropdown-menu">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link text-dark" href="{% url 'estoque:tabelas' %}">Tabela Preço - Listagem</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link text-dark" href="{% url 'estoque:tabela_create' %}">Tabela Preço - Novo</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'sngpc:index' %}">Sngpc</a>
-                </li>
-            </ul>
+<header class="mb-3">
+    <nav class="navbar navbar-dark navbar-expand-md bg-dark voltar">
+        <div class="container-fluid">
+            <a class="navbar-brand d-none" href="#"> </a>
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
+                <span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav main-nav">
+                    <li class="nav-item dropdown" role="presentation">
+                        <a class="nav-link text-white" href="#" data-toggle="dropdown">Pessoas</a>
+                        <div class="dropdown">
+                            <ul class="dropdown-menu">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'pessoas:listagem' %}">Clientes</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'financeiro:cartas_gerador' %}">Cartas</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown" role="presentation">
+                        <a class="nav-link text-white" href="#" data-toggle="dropdown">Movimentações</a>
+                        <div class="dropdown">
+                            <ul class="dropdown-menu">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'movimentacoes:listagem_prevenda' %}">Listagem</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'relatorios:index' %}">Relatorios</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown" role="presentation">
+                        <a class="nav-link text-white" href="#" data-toggle="dropdown">Estoque</a>
+                        <div class="dropdown">
+                            <ul class="dropdown-menu">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'estoque:tabelas' %}">Tabela Preço - Listagem</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'estoque:tabela_create' %}">Tabela Preço - Novo</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'sngpc:index' %}">Sngpc</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'restaurante:index' %}">Restaurante</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
-<br />
+    </nav>
+</header>
