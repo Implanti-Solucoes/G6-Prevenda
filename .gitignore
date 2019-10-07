@@ -101,3 +101,5 @@ ENV/
 db.sqlite3
 db.sqlite3
 .idea/workspace.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml

@@ -156,7 +156,7 @@ class Financeiro:
         l = []
         for i in lista:
             if i not in l:
-                l.append(i)
+                l.append(i.lower())
         l.sort()
         return l
 
@@ -302,7 +302,7 @@ class Financeiro:
         from DigisatServer.Infrastructure.Crosscutting.Function import Referencia
         class_referencia = Referencia
         modelo['Referencia'] = class_referencia.GerarSequencia(1)[0]
-
+        modelo['InformacoesPesquisa'].append(str(modelo['Referencia']))
         # Verificando se é entrada ou não
         if entrada:
             modelo['Situacao'] = {
@@ -328,12 +328,13 @@ class Financeiro:
                 'ContaReferencia': conta,
                 'EmpresaReferencia': emitente['_id'],
                 'NomeUsuario': 'Usuário Administrador',
-                'Data': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento, '%Y-%m-%d'),
+                'Data': vencimento if type(vencimento) == datetime else
+                datetime.strptime(vencimento, '%Y-%m-%d'),
                 'ChequeReferencia': ObjectId('000000000000000000000000'),
                 'Desconto': 0.0,
                 'Acrescimo': 0.0,
-                'DataQuitacao': vencimento if type(vencimento) == datetime else datetime.strptime(vencimento,
-                                                                                                  '%Y-%m-%d')
+                'DataQuitacao': vencimento if type(vencimento) == datetime else
+                datetime.strptime(vencimento, '%Y-%m-%d')
             })
             lancamento_movimento = self.lancamento_movimento_conta(
                 doc=documento,
@@ -517,6 +518,7 @@ class Contratos(models.Model):
 
 
 class Parcelas(models.Model):
-    contrato = models.ForeignKey(Contratos, on_delete=models.CASCADE, related_name='parcelas')
+    contrato = models.ForeignKey(
+        Contratos, on_delete=models.CASCADE, related_name='parcelas')
     id_g6 = models.CharField('id da parcela', max_length=24)
     valor = models.FloatField('Valor Parcela')

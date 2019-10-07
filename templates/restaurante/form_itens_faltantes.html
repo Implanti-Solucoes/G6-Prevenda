@@ -1,0 +1,72 @@
+<form action="{% url 'restaurante:add_item_post' %}" method="post">
+    {% csrf_token %}
+    <div class="modal fade" id="dados_faltantes" tabindex="-1" role="dialog" aria-labelledby="vendedor_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="text-center col">
+                        <h5 class="modal-title">{{ produto.ProdutosServicos.0.Descricao }}</h5>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="item" value="{{ produto.id }}">
+                    {% if mesa != False %}
+                        <input type="hidden" name="mesa" value="{{ mesa }}">
+                    {% else %}
+                        <input type="hidden" name="conta" value="{{ conta }}">
+                    {% endif %}
+                    {% if vendedores != false %}
+                        <div class="form-check">
+                            <label for="vendedor" class="form-check-label">Vendedor
+                                <br/><input type="radio" name="vendedor" value="0" class="form-check-input" checked="checked" />Nenhum
+                                {% for x in vendedores %}
+                                    <br/><input type="radio" name="vendedor" value="{{ x.id }}" class="form-check-input"/>{{ x.Nome }}
+                                {% endfor %}
+                            </label>
+                        </div>
+                        <hr />
+                    {% endif %}
+                    {% if produto.ProdutosServicos.0.Pesavel != False %}
+                        <div class="form-group">
+                            <label for="quantidade">Peso</label>
+                            <input type="text" name="quantidade" id="quantidade_peso" class="form-control text-right" value="0.000"/>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade</label>
+                            <input type="text" name="quantidade" id="quantidade" class="form-control text-right" value="1.00"/>
+                        </div>
+                    {% endif %}
+                    <hr />
+                    <div id="observacoes_inputs">
+                    </div>
+                    <button id="add_observacoes" class="btn btn-primary mt-1">Adicionar mais observacões</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Adicionar Produto</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    function remover_observacao_input (e) {
+        e.parentNode.parentNode.removeChild(e.parentNode);
+    }
+    $(document).ready(function(){
+        $('#quantidade').mask('0000000000000000000000000000000000000000000,00',
+            {reverse: true});
+        $('#quantidade_peso').mask('0000000000000000000000000000000000000,000',
+            {reverse: true});
+        $('#dados_faltantes').modal('show');
+        $("#add_observacoes").click(function(e){
+            e.preventDefault();
+            var newInput = "<div class=\"form-group\"><button type=\"button\" class=\"close\" onclick=\"remover_observacao_input(this);\"><span aria-hidden=\"true\">&times;</span></button><label for=\"observacoes[]\">Observações</label><input name=\"observacoes[]\" placeholder=\"Observações\" class=\"form-control\" maxlength=\"30\"></div>";
+            $("#observacoes_inputs").append($(newInput));
+        });
+    });
+</script>

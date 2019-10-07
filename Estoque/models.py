@@ -136,6 +136,18 @@ class Tabela_Preco:
 
 
 class Products:
+    def __init__(self):
+        self.__query__ = {}
+        self.__projection__ = {}
+        self.__sort__ = []
+        self.__limit__ = 250
+
+        self.__collection__ = 'ProdutosServicos'
+        self.__aggregate_pre__ = False  # Precos
+        self.__aggregate_estoq__ = False  # Quantidades
+        self.__aggregate_pro_ser__ = False  # Produtos e Servicos
+        self.__aggregate_pro_emp__ = False  # Produtos e Empresa
+
     @staticmethod
     def list():
         # Importe Uteis para criar conexao com mongo
@@ -185,7 +197,8 @@ class Products:
                 doc['id'] = str(doc['_id'])
                 doc['Precos'][0]['id'] = str(doc['Precos'][0]['_id'])
                 doc['Estoques'][0]['id'] = str(doc['Estoques'][0]['_id'])
-                doc['ProdutoServico'][0]['id'] = str(doc['ProdutoServico'][0]['_id'])
+                doc['ProdutoServico'][0]['id'] = str(
+                    doc['ProdutoServico'][0]['_id'])
                 retorno.append(doc)
         finally:
             Uteis().fecha_conexao()
@@ -200,9 +213,12 @@ class Products:
             return []
 
         retorno = {'empresa': self.get_produto_empresa(id)}
-        retorno['preco'] = self.get_preco(retorno['empresa'][0]['PrecoReferencia'])
-        retorno['estoque'] = self.get_estoque(retorno['empresa'][0]['EstoqueReferencia'])
-        retorno['produto'] = self.get_produto_servico(retorno['empresa'][0]['ProdutoServicoReferencia'])
+        retorno['preco'] = self.get_preco(
+            retorno['empresa'][0]['PrecoReferencia'])
+        retorno['estoque'] = self.get_estoque(
+            retorno['empresa'][0]['EstoqueReferencia'])
+        retorno['produto'] = self.get_produto_servico(
+            retorno['empresa'][0]['ProdutoServicoReferencia'])
 
         return retorno
 
@@ -349,3 +365,107 @@ class Products:
         finally:
             Uteis().fecha_conexao()
             return retorno
+
+    def set_query_id(self, data):
+        if type(data) == str and len(data) == 24:
+            self.__query__['_id'] = ObjectId(data)
+        elif type(data) == ObjectId:
+            self.__query__['_id'] = data
+
+    def set_collection(self, data: str = '1'):
+        if data == '1' or data == 'ProdutosServicos':
+            self.__collection__ = 'ProdutosServicos'
+
+        if data == '2' or data == 'ProdutosServicosEmpresa':
+            self.__collection__ = 'ProdutosServicosEmpresa'
+
+    def set_aggregate_produtos_servicos(self):
+        self.__aggregate_pro_ser__ = True
+
+    def set_aggregate_produtos_servicos_empresa(self):
+        self.__aggregate_pro_emp__ = True
+
+    def set_aggregate_precos(self):
+        self.__aggregate_pre__ = True
+
+    def set_aggregate_quantidades(self):
+        self.__aggregate_estoq__ = True
+
+    def execute_all(self):
+        dados = []
+        uteis = Uteis()
+        database = uteis.conexao
+        pipeline = []
+        if self.__aggregate_estoq__ is True or \
+                self.__aggregate_pre__ is True or self.__aggregate_pro_emp__ \
+                is True or self.__aggregate_pro_ser__ is True:
+            if len(self.__query__) > 0:
+                pipeline.append({
+                    u"$match": self.__query__
+                })
+
+        if self.__aggregate_estoq__ is True or \
+                self.__aggregate_pre__ is True or self.__aggregate_pro_emp__ \
+                is True:
+            if 'ProdutosServicos' == self.__collection__:
+                pipeline.append(
+                    {
+                        u"$lookup": {
+                            u"from": u"ProdutosServicosEmpresa",
+                            u"localField": u"_id",
+                            u"foreignField": u"ProdutoServicoReferencia",
+                            u"as": u"ProdutosServicosEmpresa"
+                        }
+                    }
+                )
+
+        if self.__aggregate_pro_ser__ is True and \
+                'ProdutosServicosEmpresa' == self.__collection__:
+            pipeline.append(
+                {
+                    u"$lookup": {
+                        u"from": u"ProdutosServicos",
+                        u"localField": u"ProdutoServicoReferencia",
+                        u"foreignField": u"_id",
+                        u"as": u"ProdutosServicos"
+                    }
+                }
+            )
+
+        if self.__aggregate_estoq__ is True:
+            pipeline.append(
+                {
+                    u"$lookup": {
+                        u"from": u"Estoques",
+                        u"localField": u"ProdutosServicosEmpresa.0.EstoqueReferencia" if 'ProdutosServicos' == self.__collection__ else u"EstoqueReferencia",
+                        u"foreignField": u"_id",
+                        u"as": u"Estoques"
+                    }
+                }
+            )
+
+        if self.__aggregate_pre__ is True:
+            pipeline.append(
+                {
+                    u"$lookup": {
+                        u"from": u"Precos",
+                        u"localField": u"ProdutosServicosEmpresa.0.PrecoReferencia" if 'ProdutosServicos' == self.__collection__ else u"PrecoReferencia",
+                        u"foreignField": u"_id",
+                        u"as": u"Precos"
+                    }
+                }
+            )
+
+        collection = database[self.__collection__]
+        if len(pipeline) > 0:
+            cursor = collection.aggregate(
+                pipeline,
+                allowDiskUse=False
+            )
+            try:
+                for doc in cursor:
+                    doc['id'] = str(doc['_id'])
+                    dados.append(doc)
+            finally:
+                uteis.fecha_conexao()
+                return dados

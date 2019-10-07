@@ -89,7 +89,7 @@ class PessoasMongo:
         if '$or' in self.__query or '$and' in self.__query and bloco_and is not False:
             return Warning('Digite o bloco como parametro')
         else:
-            self.__query = {u"_t": Regex(u".*Emitente.*", "i")}
+            self.__query[u'_t'] = Regex(u".*Emitente.*", "i")
 
     def set_query_client(self, bloco_and: bool = False):
         if '$or' in self.__query or '$and' in self.__query and bloco_and is not False:
@@ -101,7 +101,7 @@ class PessoasMongo:
         if '$or' in self.__query or '$and' in self.__query and bloco_and is not False:
             return Warning('Digite o bloco como parametro')
         else:
-            self.__query = {'Vendedor': {u'$exists': True}}
+            self.__query['Vendedor'] = {u'$exists': True}
 
     def set_query_id(self, id):
         if type(id) == str and len(id) == 24:

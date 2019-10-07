@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    {% load filtros %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
+    <style>
+    @page {
+        size: 80mm 100mm;
+    } /* output size */
+    body{
+        background-color: #f6f6f6;
+        font-family:sans-serif;
+    }
+    .print80colunas {
+        background-color: white;
+        margin-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 3mm;
+        padding-left: 2mm!important;
+        padding-right: 2mm!important;;
+        display: block;
+        width: 74mm;
+        height: 100mm;
+        font-size: 8pt;
+        border: 1px #D3D3D3 solid;
+        border-radius: 5px;
+    } /* sheet size */
+    @media print {
+        header {
+            display: none!important;
+        }
+        @page {
+            size: 80mm 100mm!important;
+        } /* output size */
+        body {
+            background-color: white!important;
+            width: 80mm!important;
+            min-width: 0!important;
+            color: initial!important;
+        }
+        .print80colunas * {
+            display: block;
+            font-family:sans-serif!important;
+            text-transform: uppercase;
+        }
+        .print80colunas {
+            width: 80mm!important;
+            height: 100mm!important;
+            margin-top: 3mm!important;
+            padding-left: 2mm!important;
+            padding-right: 2mm!important;
+            border: 0 !important;
+            border-radius: 0!important;
+            font-size: 8pt!important;
+        }
+    } /* fix for Chrome */
+    </style>
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="print80colunas">
+        <div style="width: 100%;font-weight: bold;text-align: center; margin-bottom: 2mm;font-size: 10pt;">
+            {{ emitente.Nome }}<br />
+        </div>
+        <div style="width: 70%;float: left;">
+            CPF/CNPJ: {{ emitente.Cnpj|formata_cpf_cnpj }}
+        </div>
+        <div style="width: 30%;float: left;">
+            IE: {{ emitente.Carteira.Ie.Numero }}
+        </div>
+        <div style="width: 40%;float: left;">
+            IM: {{ emitente.RegistroMunicipal }}
+        </div>
+        <div style="width: 60%;float: left;">
+            Telefone: {{ emitente.Carteira.TelefonePrincipal.Numero }}
+        </div>
+        <div style="width: 100%;float: left;">
+            {{ emitente.Carteira.EnderecoPrincipal.Logradouro }},
+            {{ emitente.Carteira.EnderecoPrincipal.Numero }},
+            {{ emitente.Carteira.EnderecoPrincipal.Bairro }},
+            {{ emitente.Carteira.EnderecoPrincipal.Municipio.Nome }} -
+            {{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Sigla }}
+            {{ emitente.Carteira.EnderecoPrincipal.Municipio.Uf.Pais.Nome }}
+            {{ emitente.Carteira.EnderecoPrincipal.Cep }}
+        </div>
+        <div style="width: 70%;float: left;">
+            Numero do Comp: {{ id }}
+        </div>
+        <div style="width: 30%;float: left;">
+            {% if comprovante.mesa != 0 %}Mesa: {{ comprovante.mesa }}{% elif comprovante.conta != 0 %}Conta: {{ comprovante.conta }}{% endif %}
+        </div>
+        <div style="width: 100%;float: left;font-weight: bold;text-align: center;font-size: 10pt;margin-bottom: 3mm;margin-top: 3mm;">
+            PRÉ-VENDA
+        </div>
+        <div style="width: 40%;float: left;font-weight:bold;">
+            DESCRIÇÃO
+        </div>
+        <div style="width: 10%;float: left;font-weight:bold;">
+            UN
+        </div>
+        <div style="width: 15%;float: left;font-weight:bold;">
+            VLR <br />UN.
+        </div>
+        <div style="width: 15%;float: left;font-weight:bold;">
+            QTD.
+        </div>
+        <div style="width: 20%;float: left;font-weight:bold;">
+            TOTAL
+        </div>
+        {% for item in comprovante_itens %}
+            <div style="width: 40%;float: left;">
+                {{ item.produto }}
+            </div>
+            <div style="width: 10%;float: left;">
+                {{ item.unidade_medida }}
+            </div>
+            <div style="width: 15%;float: left;">
+                {{ item.unitario|floatformat:2  }}
+            </div>
+            <div style="width: 15%;float: left;">
+                {{ item.quantidade|floatformat:3 }}
+            </div>
+            <div style="width: 20%;float: left;">
+                {{ item.total|floatformat:2 }}
+            </div>
+        {% endfor %}
+        <br style="clear: both;" />
+        <div style="width: 98%;float: left;font-weight:bold; border: 1px solid #000000;text-align: right;margin-top: 5px;padding: 1%;">
+            TOTAL DOS PRODUTOS: R$ {{ comprovante.total|floatformat:2 }}<br />
+            - DESCONTO: R$ 0,00<br />
+            + SERVIÇO 10%: R$ {{ total_servico|floatformat:2 }}<br />
+            TOTAL DA CONTA+10%: {{ total_conta_10|floatformat:2 }}<br />
+            TOTAL DA CONTA: R$ {{ total_conta|floatformat:2 }}<br />
+        </div>
+        <br style="clear: both;" />
+    </div>
+</body>
+</html>

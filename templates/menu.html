@@ -1,10 +1,6 @@
 <header class="mb-3">
     <nav class="navbar navbar-dark navbar-expand-md bg-dark voltar">
         <div class="container-fluid">
-            <a class="navbar-brand d-none" href="#"> </a>
-            <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1">
-                <span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav main-nav">
                     <li class="nav-item dropdown" role="presentation">
@@ -51,6 +47,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'restaurante:index' %}">Restaurante</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>
                     </li>
                 </ul>
             </div>

@@ -10,8 +10,19 @@ clr.AddReference(
 )
 
 
-class ItensMesaContaMongo:
-    def __init__(self):
+class MesasConta(models.Model):
+    mesa = models.IntegerField('mesa', default=0)
+    conta = models.IntegerField('conta', default=0)
+    total = models.FloatField('Total', default=0.0)
+    dinheiro = models.FloatField('Dinheiro', default=0.0)
+    cartao_credito = models.FloatField('Cartão credito', default=0.0)
+    cartao_debito = models.FloatField('Cartão debito', default=0.0)
+    outros = models.FloatField('Outros', default=0.0)
+
+
+class ItensMesaContaMongo(models.Model):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.__query__ = {}
         self.__projection__ = {}
         self.__sort__ = []
@@ -26,6 +37,9 @@ class ItensMesaContaMongo:
 
     def set_query_situacao(self, data: int):
         self.__query__['Situacao'] = Int64(data)
+
+    def set_query_cancelado(self, data: bool = False):
+        self.__query__['Cancelado'] = data
 
     def set_query_numero_mesa(self, data: int):
         self.__query__[u"NumeroMesa"] = data
@@ -53,6 +67,19 @@ class ItensMesaContaMongo:
 
     def set_aggregate_garcom(self):
         self.__aggregate_garcom_referencia__ = True
+
+    def fechar_mesa(self, data: ObjectId):
+        uteis = Uteis()
+        database = uteis.conexao
+        collection = database["ItensMesaConta"]
+        collection.update_one(
+            {'_id': data}, {
+                '$set': {
+                    'Situacao': 3,
+                    'ContaEmitida': True
+                }
+            })
+        uteis.fecha_conexao()
 
     def execute_all(self):
         dados = []
@@ -97,9 +124,34 @@ class ItensMesaContaMongo:
             finally:
                 uteis.fecha_conexao()
 
+    class Meta:
+        default_permissions = (
+            'index',
+            'mesa_conta',
+            'get_add_item_mesa',
+            'set_add_item_mesa',
+            'fechar_conta',
+        )
+
+    id_g6 = models.CharField('ID do produto', max_length=24)
+    produto = models.CharField('Nome do produto', max_length=100)
+    cancelado = models.BooleanField(default=False)
+    id_garcom = models.CharField('ID do Garcom', max_length=24, blank=True)
+    garcom_nome = models.CharField('Garcom', max_length=100, blank=True)
+    percent_comissao = models.FloatField(
+        'Percentual da comissao', default=0.0, blank=True)
+    comissao = models.FloatField('Comissao', default=0.0)
+    unidade_medida = models.CharField('Unidade de medida', max_length=10)
+    quantidade = models.FloatField('Quantidade', default=0.0)
+    unitario = models.FloatField('Unitario', default=0.0)
+    total = models.FloatField('Total', default=0.0)
+    mesa_conta = models.ForeignKey(
+        MesasConta, on_delete=models.CASCADE, related_name='itens')
+
 
 class CardapiosMongo:
     def __init__(self):
+        super().__init__()
         self.__query__ = {}
         self.__projection__ = {}
         self.__sort__ = []
@@ -218,6 +270,10 @@ class CardapiosMongo:
                     doc['Imagem'] = doc['Imagem'].decode("utf-8")
                     x = 0
                     for item in doc['ItensCardapio']:
+                        doc['ItensCardapio'][x]['ProdutoEmpresaReferencia'][0]['id'] = \
+                            str(doc['ItensCardapio'][x]['ProdutoEmpresaReferencia'][0]['_id'])
+                        doc['ItensCardapio'][x]['ProdutoServico'][0]['id'] = \
+                            str(doc['ItensCardapio'][x]['ProdutoServico'][0]['_id'])
                         byte_image = io.BytesIO(
                             bytearray(
                                 class_imported1.Decompress(
@@ -234,3 +290,4 @@ class CardapiosMongo:
             finally:
                 uteis.fecha_conexao()
                 return dados
+

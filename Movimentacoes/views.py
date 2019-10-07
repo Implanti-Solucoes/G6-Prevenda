@@ -3,8 +3,10 @@ from django.shortcuts import render
 from .models import Movimentacoes
 from Financeiro.models import Financeiro, Contratos
 from core.models import Uteis
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(redirect_field_name='next')
 def listagem_prevenda(request):
     movimentacao = Movimentacoes()
     movimentacao.set_query_t('PreVenda')
@@ -28,9 +30,10 @@ def listagem_prevenda(request):
     return render(request, 'movimentacoes/listagem.html', context)
 
 
+@login_required(redirect_field_name='next')
 def impresso_prevenda(request, id):
     movimentacoes = Movimentacoes()
-    uteis = Uteis
+    uteis = Uteis()
     movimentacoes.set_query_id(id)
     movimentacoes.set_query_t('PreVenda', 'or')
     movimentacoes.set_query_t('NotaFiscalServico', 'or')
@@ -42,15 +45,17 @@ def impresso_prevenda(request, id):
         cursor['tipo'] = 'PreVenda'
 
     cursor = uteis.total_venda(cursor)
-    if len(cursor['Pessoa']['Documento']) == 14:
-        cursor['Pessoa']['Tipo'] = 'CPF'
-    else:
-        cursor['Pessoa']['Tipo'] = 'CNPJ'
+    if 'Documento' in cursor['Pessoa']:
+        if len(cursor['Pessoa']['Documento']) == 14:
+            cursor['Pessoa']['Tipo'] = 'CPF'
+        else:
+            cursor['Pessoa']['Tipo'] = 'CNPJ'
 
     context = {'Numero': str(cursor['Numero']), 'venda': cursor}
     return render(request, 'movimentacoes/impresso.html', context)
 
 
+@login_required(redirect_field_name='next')
 def gerar_financeiro(request, id):
     movimentacao = Movimentacoes()
     movimentacao.set_query_id(id)
@@ -63,7 +68,12 @@ def gerar_financeiro(request, id):
     planos_conta = Financeiro().get_planos_conta
     cursor = Uteis().total_venda(cursor)
 
-    context = {'items': cursor, 'contas': contas, 'centros_custos': centros_custos, 'planos_conta': planos_conta}
+    context = {
+        'items': cursor,
+        'contas': contas,
+        'centros_custos': centros_custos,
+        'planos_conta': planos_conta
+    }
 
     if 'Vendedor' in cursor:
         context['Vendedor'] = {

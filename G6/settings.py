@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'Estoque.apps.EstoqueConfig',
     'Orcamento.apps.OrcamentoConfig',
     'Sngpc.apps.SngpcConfig',
+    'Restaurante.apps.RestauranteConfig',
     'bootstrap',
     'fontawesome',
 ]
@@ -73,6 +74,7 @@ TEMPLATES = [
             ],
             'libraries':{
                 'sngpc_templatetags': 'Sngpc.templatetags.filtros',
+                'restaurante_templatetags': 'Restaurante.templatetags.filtros',
             }
         },
     },

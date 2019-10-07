@@ -8,43 +8,64 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
 </head>
-<body class="bg-light">
+<body style="background-color: #BCD4DE;">
     {% include "menu.html" %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-9" style="background-color: #edf9ff;">
+            <button class="col-md-5 mb-3 btn" style="background-color: #3B879F; font-weight: bold; color: #FFF; margin-left: auto;margin-right: auto;" data-toggle="modal" data-target="#modal_pagamento">
+                ENCERRAR CONTA
+            </button>
+            <div class="col-md-8" style="background-color: #edf9ff; margin-left: auto;">
                 <nav class="nav flex-column">
-                    <div class="row border" style="border-color: #d2c0c6;">
+                    <div class="row border rounded" style="border-color: #d2c0c6;">
                         {% for cardapio in cardapios %}
                             <div class="col-md-2" style="padding-top: 5px;">
                                 <a href="#{{ cardapio.id }}" class="nav-item nav-link" id="{{ cardapio.id }}-tab" data-toggle="tab" role="tab" aria-controls="{{ cardapio.id }}" aria-selected="false">
-                                    <div class="card border border-info mb-3 shadow-sm" style="background-color: #ffffff; height: 100px; padding-top: 25px;">
+                                    <div class="card border border-info mb-3 shadow-sm" style="background-color: #ffffff; min-height: 100px; padding-top: 10px;">
                                         {% if cardapio.Imagem != '' %}
                                             <img src="data:image/png; base64,{{ cardapio.Imagem }}" class="align-self-center" height="50" width="50"/>
                                         {% else %}
                                             <img src="{% static "restaurante/Cardapio.png" %}" class="align-self-center" height="50" width="50"/>
                                         {% endif %}
-                                        <p class="text-center" style="font-size: x-small;">{{ cardapio.Descricao }}</p>
+                                        <div class="text-center" style="background-color: #434945; color: #FFF; min-height: 50px; padding: 2px; margin-top: 5px; font-size: small;">
+                                            <span class="align-middle">{{ cardapio.Descricao }}</span>
+                                        </div>
                                     </div>
                                 </a>
                             </div>
                         {% endfor %}
                     </div>
                 </nav>
-                <div class="tab-content">
+                <div class="tab-content" style="background-color: #8BB6C6;margin-left: -15px;margin-right: -15px;padding-left: 15px; padding-right: 15px;">
                     {% for cardapio in cardapios %}
-                        <div class="border tab-pane fade" id="{{ cardapio.id }}" style="border-color: #d2c0c6;" role="tabpanel" aria-labelledby="{{ cardapio.id }}-tab">
+                        <div class="tab-pane fade" id="{{ cardapio.id }}" style="border-color: #d2c0c6;" role="tabpanel" aria-labelledby="{{ cardapio.id }}-tab">
                             <div class="row">
                                 {% for item in cardapio.ItensCardapio %}
                                     <div class="col-md-1" style="padding-top: 5px; min-width: 100px!important; min-height: 100px!important;">
-                                        <div class="card border border-info mb-3 shadow-sm" style="background-color: #ffffff; font-size: x-small; min-height: 100px; padding-top: 10px;">
-                                            {% if item.ProdutoServico.0.Imagem != '' %}
-                                                <img src="data:image/png; base64,{{ item.ProdutoServico.0.Imagem }}" class="align-self-center" height="25" width="25"/>
+                                        {% if vendedores != False %}
+                                            {% if mesa_conta.0.NumeroMesa != 0 %}
+                                                <a href="{% url 'restaurante:add_item_mesa' mesa=mesa_conta.0.NumeroMesa item=item.ProdutoEmpresaReferencia.0.id %}" class="vendedor_select" >
                                             {% else %}
-                                                <img src="{% static "restaurante/hamburguer.png" %}" class="align-self-center" height="25" width="25"/>
+                                                <a href="{% url 'restaurante:add_item_mesa' conta=mesa_conta.0.NumeroMesaConta item=item.ProdutoEmpresaReferencia.0.id %}" class="vendedor_select" >
                                             {% endif %}
-                                            <p class="text-center">{{ item.DescricaoTela }}</p>
-                                        </div>
+                                        {% else %}
+                                            {% if mesa_conta.0.NumeroMesa != 0 %}
+                                                <a href="{% url 'restaurante:add_item_mesa' mesa=mesa_conta.0.NumeroMesa item=item.ProdutoEmpresaReferencia.0.id %}">
+                                            {% else %}
+                                                <a href="{% url 'restaurante:add_item_mesa' conta=mesa_conta.0.NumeroMesaConta item=item.ProdutoEmpresaReferencia.0.id %}">
+                                            {% endif %}
+                                        {% endif %}
+                                            <div class="card border border-info mb-3 shadow-sm" style="background-color: #ffffff; font-size: x-small; min-height: 100px; padding-top: 10px;">
+                                                {% if item.ProdutoServico.0.Imagem != '' %}
+                                                    <img src="data:image/png; base64,{{ item.ProdutoServico.0.Imagem }}" class="align-self-center" height="25" width="25" style="margin-bottom: 60px;"/>
+                                                {% else %}
+                                                    <img src="{% static "restaurante/hamburguer.png" %}" class="align-self-center" height="25" width="25"/>
+                                                {% endif %}
+                                                <div class="text-center" style="background-color: #497C90; color: #FFF; min-height: 50px; padding: 2px; margin-top: 5px; ">
+                                                    <span class="align-bottom">{{ item.DescricaoTela }}</span>
+                                                </div>
+                                            </div>
+                                        </a>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -54,14 +75,20 @@
             </div>
             <div class="col-md-3">
                 <div class="card border border-info" style="background-color: #edf9ff;">
+                    <div class="col-md-12" style="background-color: #3C7EA3;color: #FFF;">
+                        <h3 class="text-center" >{% if mesa_conta.0.NumeroMesa != 0 %}MESA {{ mesa_conta.0.NumeroMesa }}{% else %}CONTA {{ mesa_conta.0.NumeroMesaConta }}{% endif %}</h3>
+                    </div>
+                    <div class="col-md-12" style="background-color: #3B879F; font-weight: bold; color: #FFF;">
+                        <p>Aberta em {{ mesa_conta.0.DataHora }}</p>
+                    </div>
                     {% for item in mesa_conta %}
-                    <div class="col-md-12">
+                    <div class="col-md-12" {% if item.Cancelado is True %}style="opacity: 0.3"{% endif %}>
                         <div class="row">
                             <div class="col-md-12">
                                 {{ item.Descricao }}
                             </div>
                             <div class="col-md-6">
-                                {{ item.Quantidade }} {{ item.Unidade }} X {{ item.ValorUnitario|floatformat:-2 }}
+                                {{ item.Quantidade }} {{ item.Unidade }} X R$ {{ item.ValorUnitario|floatformat:2 }} = R$ {{ item.total|floatformat:2 }}
                             </div>
                             <div class="col-md-6">
                                 Garçom:
@@ -71,23 +98,107 @@
                                     Nenhum
                                 {% endif %}
                             </div>
-                            <hr />
+                            {% if item.Observacoes %}
+                            <div class="col-md-12">
+                                {{ item.Observacoes }}
+                            </div>
+                            {% endif %}
+                            <hr style="width: 100%"/>
                         </div>
                     </div>
                     {% endfor %}
+                    <div class="col-md-12" style="background-color: #3B879F; font-weight: bold; color: #FFF;">
+                        <p>R$ {{ total|floatformat:2 }}</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div id="modais"></div>
+    <form action="{% url 'restaurante:fechar_conta' %}" method="post">
+        <div class="modal fade" id="modal_pagamento" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Finalização de conta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <input type="hidden" name="item" value="{{ produto.id }}">
+                        {% if mesa_conta.0.NumeroMesa != 0 %}
+                            <input type="hidden" name="mesa" value="{{ mesa_conta.0.NumeroMesa}}">
+                        {% else %}
+                            <input type="hidden" name="conta" value="{{ mesa_conta.0.NumeroMesaConta }}">
+                        {% endif %}
+                        <div class="form-group">
+                            <label for="dinheiro">Dinheiro</label>
+                            <input type="text" name="dinheiro" id="dinheiro" class="form-control text-right" value="0.00"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="cartao_credito">Cartão de Credito</label>
+                            <input type="text" name="cartao_credito" id="cartao_credito" class="form-control text-right" value="0.00"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="cartao_debito">Cartão de Credito</label>
+                            <input type="text" name="cartao_debito" id="cartao_debito" class="form-control text-right" value="0.00"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="outros">Outras formas</label>
+                            <input type="text" name="outros" id="outros" class="form-control text-right" value="0.00"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="observacao">Observação</label>
+                            <input type="text" name="observacao" id="observacao" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Finalizar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
     <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'jquery-mask/jquery.mask.min.js' %}"></script>
     <script type="text/javascript">
         $('.flex-column').on('shown.bs.tab', 'a', function (e) {
             if (e.relatedTarget) {
                 $(e.relatedTarget).removeClass('active');
                 $(e.relatedTarget).removeClass('show');
             }
-        })
+        });
+        $(document).ready(function(){
+            $('#dinheiro').mask(
+                '0.000.000.000.000.000.000.000.000.000.000.000.000.000.000,00',
+            {reverse: true});
+            $('#cartao_credito').mask(
+                '0.000.000.000.000.000.000.000.000.000.000.000.000.000.000,00',
+            {reverse: true});
+            $('#cartao_debito').mask(
+                '0.000.000.000.000.000.000.000.000.000.000.000.000.000.000,00',
+            {reverse: true});
+            $('#outros').mask(
+                '0.000.000.000.000.000.000.000.000.000.000.000.000.000.000,00',
+            {reverse: true});
+            $(".vendedor_select").click(function(e){
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr("href"),
+                    type: 'get',
+                    data: {}
+                }).done(function(msg){
+                    $("#modais").html(msg);
+                }).fail(function(jqXHR, textStatus, msg){
+                    alert(msg);
+                });
+            });
+        });
     </script>
 </body>
 </html>
