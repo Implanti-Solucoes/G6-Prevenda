@@ -45,8 +45,18 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'sngpc:index' %}">Sngpc</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'restaurante:index' %}">Restaurante</a>
+                    <li class="nav-item dropdown" role="presentation">
+                        <a class="nav-link text-white" href="#" data-toggle="dropdown">Restaurante</a>
+                        <div class="dropdown">
+                            <ul class="dropdown-menu">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'restaurante:index' %}">Inicio</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link text-dark" href="{% url 'restaurante:lista_mesas_fechadas' %}">Lista mesas fechadas</a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>

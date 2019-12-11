@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
+</head>
+<body style="background-color: #BCD4DE;">
+    {% include "menu.html" %}
+    <div class="container-fluid">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Mesa / Conta</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                    <th>Dinheiro</th>
+                    <th>Cartão Credito</th>
+                    <th>Cartão Débito</th>
+                    <th>Outros</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for x in mesas %}
+                <tr>
+                    {% if x.mesa != 0 %}<td>{{ x.mesa }}</td>{% else %}<td>{{ x.conta }}</td>{% endif %}
+                    <td>{{ x.created_at }}</td>
+                    <td>R$ {{ x.total|floatformat:2 }}</td>
+                    <td>R$ {{ x.dinheiro|floatformat:2 }}</td>
+                    <td>R$ {{ x.cartao_credito|floatformat:2 }}</td>
+                    <td>R$ {{ x.cartao_debito|floatformat:2 }}</td>
+                    <td>R$ {{ x.outros|floatformat:2 }}</td>
+                    <td><a href="{% url 'restaurante:comprovante' x.id %}">Comprovante</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

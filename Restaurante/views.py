@@ -349,7 +349,7 @@ def fechar_conta(request):
             total=float("%.2f" % total_prod)
         )
         db_mesas.fechar_mesa(mesa['_id'])
-    return redirect('restaurante:index')
+    return redirect('restaurante:comprovante', mesa_record.id)
 
 
 @login_required(redirect_field_name='next')
@@ -372,4 +372,12 @@ def comprovante(request, id):
     context['comprovante_itens'] = ItensMesaContaMongo.objects.all().filter(
         mesa_conta=id
     )
+    return render(request, template_name, context)
+
+
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('restaurante.lista_mesas_fechadas'))
+def lista_mesas_fechadas(request):
+    template_name = 'restaurante/lista_mesas_fechadas.html'
+    context = {'mesas': MesasConta.objects.all()}
     return render(request, template_name, context)

@@ -282,3 +282,8 @@ def prevendas_por_usuario(request):
         return render(request, 'relatorios/prevendas_por_usuario.html', context)
     else:
         return redirect('relatorios:index')
+
+
+def mcmm(request):
+    context = {}
+    return render(request, 'relatorios/mcmm.html', context)

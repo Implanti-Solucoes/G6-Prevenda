@@ -18,6 +18,8 @@ class MesasConta(models.Model):
     cartao_credito = models.FloatField('Cartão credito', default=0.0)
     cartao_debito = models.FloatField('Cartão debito', default=0.0)
     outros = models.FloatField('Outros', default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class ItensMesaContaMongo(models.Model):
