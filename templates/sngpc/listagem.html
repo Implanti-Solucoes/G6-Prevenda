@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Title</title>
     {% load static %}
+    {% load sngpc_templatetags %}
     <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
@@ -53,8 +54,11 @@
                     <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">NF-e / NFC-e</div>
                     <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Operação</div>
                     <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Data da Operação</div>
-                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">CNPJ Origem</div>
-                    <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">CNPJ Destino</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">CNPJ Origem</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">CNPJ Destino</div>
+                    <div class="col-md-2 border border-info text-center font-weight-bold text-uppercase">Data de Entrada</div>
+                </div>
+                <div class="row">
                     <div class="col-md-2 border border-info">
                         {{ entrada.notaFiscalEntradaMedicamento.numeroNotaFiscal }}
                     </div>
@@ -70,46 +74,36 @@
                     <div class="col-md-2 border border-info">
                         {{ entrada.notaFiscalEntradaMedicamento.dataNotaFiscal }}
                     </div>
-                    <div class="col-md-3 border border-info">{{ entrada.notaFiscalEntradaMedicamento.cnpjOrigem }}</div>
-                    <div class="col-md-3 border border-info">
+                    <div class="col-md-2 border border-info">{{ entrada.notaFiscalEntradaMedicamento.cnpjOrigem }}</div>
+                    <div class="col-md-2 border border-info{% if entrada.notaFiscalEntradaMedicamento.cnpjDestino != file.cabecalho.cnpjEmissor %} bg-danger{% endif %}">
                         {{ entrada.notaFiscalEntradaMedicamento.cnpjDestino }}
                     </div>
-                    <div class="col-md-1"></div>
-                    <div class="col-md-10">
+                    <div class="col-md-2 border border-info{{ entrada.dataRecebimentoMedicamento|valida_data_start:file.cabecalho.dataInicio }}{{ entrada.dataRecebimentoMedicamento|valida_data_end:file.cabecalho.dataFim }}">{{ entrada.dataRecebimentoMedicamento }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-11">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Nome do Produto</th>
+                                    <th>Nome no Sistema</th>
+                                    <th>Nome na Anvisa</th>
                                     <th>Classe Terapeutica</th>
                                     <th>MS Medicamento</th>
                                     <th>Lote Medicamento</th>
                                     <th>Quantidade</th>
                                     <th>Unidade Medida Medicamento</th>
-                                    <th>Enviar</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for medicamento in entrada.medicamentoEntrada %}
-                                    <tr>
+                                    <tr{{ medicamento.registroMSMedicamento|busca_produto_anvisa_valida:ms_dict }}>
                                         <td>{{ medicamento.registroMSMedicamento|busca_produto }}</td>
+                                        <td>{{ medicamento.registroMSMedicamento|busca_produto_anvisa:ms_dict }}</td>
                                         <td>{% if medicamento.classeTerapeutica == 1 %}Antimicrobiano{% elif medicamento.classeTerapeutica == 2 %}Sujeito a controle Especial{% endif %}</td>
                                         <td>{{ medicamento.registroMSMedicamento }}</td>
-                                        <td>
-                                            <label>
-                                                <input type="text" name="entrada_lote_" placeholder="{{ medicamento.numeroLoteMedicamento }}" class="form-control">
-                                            </label>
-                                        </td>
-                                        <td>
-                                            <label>
-                                                <input type="text" name="entrada_quantidade_" placeholder="{{ medicamento.quantidadeMedicamento }}" class="form-control">
-                                            </label>
-                                        </td>
+                                        <td>{{ medicamento.numeroLoteMedicamento }}</td>
+                                        <td>{{ medicamento.quantidadeMedicamento }}</td>
                                         <td>{% if medicamento.unidadeMedidaMedicamento == 1 %}Caixas{% elif medicamento.Frascos == 2 %}Sujeito a controle Especial{% endif %}</td>
-                                        <td>
-                                            <label>
-                                                <input type="checkbox" name="entrada_enviar_" checked="checked">
-                                            </label>
-                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -140,13 +134,13 @@
                             Receita Antimicrobiano em 2 vias
                         {% endif %}
                     </div>
-                    <div class="col-md-3 border border-info">
+                    <div class="col-md-3 border border-info{{ saida.numeroNotificacaoMedicamento|valida_notificao:saida.tipoReceituarioMedicamento }}">
                         {{ saida.numeroNotificacaoMedicamento }}
                     </div>
                     <div class="col-md-3 border border-info">
                         {{ saida.dataPrescricaoMedicamento }}
                     </div>
-                    <div class="col-md-3 border border-info">
+                    <div class="col-md-3 border border-info{{ saida.prescritorMedicamento.conselhoProfissional|valida_conselho:saida.dataPrescricaoMedicamento  }}">
                          {% if saida.dataPrescricaoMedicamento == 1 %}
                              Humano
                         {% elif saida.dataPrescricaoMedicamento == 2 %}
@@ -163,7 +157,7 @@
                     <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">UF Conselho</div>
                     <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.nomePrescritor }}</div>
                     <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.numeroRegistroProfissional }}</div>
-                    <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.conselhoProfissional }}</div>
+                    <div class="col-md-3 border border-info{{ saida.prescritorMedicamento.conselhoProfissional|valida_conselho:saida.dataPrescricaoMedicamento  }}">{{ saida.prescritorMedicamento.conselhoProfissional }}</div>
                     <div class="col-md-3 border border-info">{{ saida.prescritorMedicamento.UFConselho }}</div>
                 </div>
                 <br />
@@ -228,48 +222,36 @@
                     <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">sexo</div>
                     <div class="col-md-3 border border-info text-center font-weight-bold text-uppercase">Cid</div>
                     <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.nome }}</div>
-                    <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.idade }} {% if saida.pacienteMedicamento.unidadeIdade == 1 %}Ano(s){% elif saida.pacienteMedicamento.unidadeIdade == 2 %}Mese(s){% endif %}</div>
+                    <div class="col-md-3 border border-info{% if saida.pacienteMedicamento.idade < 0 %} bg-danger{% endif %}">{{ saida.pacienteMedicamento.idade }} {% if saida.pacienteMedicamento.unidadeIdade == 1 %}Ano(s){% elif saida.pacienteMedicamento.unidadeIdade == 2 %}Mese(s){% endif %}</div>
                     <div class="col-md-3 border border-info">{% if saida.pacienteMedicamento.sexo == 1 %}Masculino{% elif saida.pacienteMedicamento.sexo == 2 %}Feminino{% endif %}</div>
                     <div class="col-md-3 border border-info">{{ saida.pacienteMedicamento.cid }}</div>
                 </div>
                 <br />
                 <div class="row">
                     <div class="col-md-1"></div>
-                    <div class="col-md-10">
+                    <div class="col-md-11">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Nome do Produto</th>
+                                    <th>Nome no Sistema</th>
+                                    <th>Nome na Anvisa</th>
                                     <th>Uso Prolongado</th>
                                     <th>MS Medicamento</th>
                                     <th>Lote Medicamento</th>
                                     <th>Quantidade</th>
                                     <th>Unidade Medida Medicamento</th>
-                                    <th>Enviar</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for medicamento in saida.medicamentoVenda %}
-                                    <tr>
+                                    <tr{{ medicamento.registroMSMedicamento|busca_produto_anvisa_valida:ms_dict }}>
                                         <td>{{ medicamento.registroMSMedicamento|busca_produto }}</td>
+                                        <td>{{ medicamento.registroMSMedicamento|busca_produto_anvisa:ms_dict }}</td>
                                         <td>{{ medicamento.usoProlongado }}</td>
-                                        <td>{{ medicamento.registroMSMedicamento }}</td>
-                                        <td>
-                                            <label>
-                                                <input name="saida_lote_" placeholder="{{ medicamento.numeroLoteMedicamento }}" class="form-control">
-                                            </label>
-                                        </td>
-                                        <td>
-                                            <label>
-                                                <input name="saida_quantidade_" placeholder="{{ medicamento.quantidadeMedicamento }}" class="form-control">
-                                            </label>
-                                        </td>
+                                        <td{{ medicamento.registroMSMedicamento|valida_ms }}>{{ medicamento.registroMSMedicamento}}</td>
+                                        <td>{{ medicamento.numeroLoteMedicamento }}</td>
+                                        <td>{{ medicamento.quantidadeMedicamento }}</td>
                                         <td>{% if medicamento.unidadeMedidaMedicamento == 1 %}Caixas{% elif medicamento.Frascos == 2 %}Sujeito a controle Especial{% endif %}</td>
-                                        <td>
-                                            <label>
-                                                <input type="checkbox" name="saida_enviar_" checked="checked">
-                                            </label>
-                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
