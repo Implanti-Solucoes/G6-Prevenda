@@ -1,14 +1,21 @@
 from pymongo import MongoClient
 from pymongo.cursor import Cursor
+from lxml import objectify
 
 
 class Uteis:
     def __init__(self):
-        self.client = MongoClient('127.0.0.1',
-                                  username='root',
-                                  password='|cSFu@5rFv#h8*=',
-                                  authSource='DigisatServer',
-                                  port=12220)
+        f = open(r'C:\DigiSat\SuiteG6\Sistema\ConfiguracaoClient.xml', 'r')
+        data = f.read()
+        f.close()
+        data = data.replace('<?xml version="1.0" encoding="utf-8"?>\n', '')
+        data = data.replace('ï»¿', '')
+        xml = objectify.fromstring(data)
+        host = str(xml.Ip) if hasattr(xml, 'Ip') else '127.0.0.1'
+        self.client = MongoClient(
+            host, username='root', password='|cSFu@5rFv#h8*=',
+            authSource='DigisatServer', port=12220
+        )
 
     @property
     def conexao(self):

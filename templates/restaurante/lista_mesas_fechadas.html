@@ -12,32 +12,106 @@
 <body style="background-color: #BCD4DE;">
     {% include "menu.html" %}
     <div class="container-fluid">
-        <table class="table table-striped">
+        <div class="row mt-2 mb-2" style="background-color: #f3f4f5;">
+            <form class="form-inline mb-2" style="margin-left: auto; margin-right: auto;" method="get" action="{% url 'restaurante:lista_mesas_fechadas' %}">
+                <div class="form-group mt-2 mb-2">
+                    <label class="col-form-label font-weight-bold" for="date_start">Data Inicial</label>
+                    <input type="date" name="date_start" class="form-control ml-2" required="required"{% if date_start %} value="{{ date_start|date:"Y-m-d"  }}"{% endif %}/>
+                </div>
+                <div class="form-group mt-2 mb-2 ml-5">
+                    <label class="col-form-label ml-1 font-weight-bold" for="date_end">Data Final</label>
+                    <input type="date" name="date_end" class="form-control ml-2" required="required"{% if date_end %} value="{{ date_end|date:"Y-m-d" }}"{% endif %}/>
+                </div>
+                <div class="form-group mt-2 mb-2 ml-5">
+                    <label class="col-form-label ml-1 font-weight-bold" for="products">Exibir produtos ?</label>
+                    <select name="products" class="form-control select2-dropdown ml-1">
+                        <option value="1"{% if products_visible == '1' %} selected="selected"{% endif %}>Exibir vendas</option>
+                        <option value="2"{% if products_visible == '2' %} selected="selected"{% endif %}>Exibir vendas + Produtos</option>
+                        <option value="3"{% if products_visible == '3' %} selected="selected"{% endif %}>Exibir somente Produtos</option>
+                    </select>
+                </div>
+                <div class="form-group mt-2 mb-2 ml-3">
+                    <button type="submit" class="btn btn-primary">Gerar</button>
+                </div>
+            </form>
+        </div>
+        <table class="table table-striped" style="background-color:white;">
             <thead>
-                <tr>
-                    <th>Mesa / Conta</th>
-                    <th>Data</th>
-                    <th>Total</th>
-                    <th>Dinheiro</th>
-                    <th>Cartão Credito</th>
-                    <th>Cartão Débito</th>
-                    <th>Outros</th>
-                    <th>Ações</th>
-                </tr>
+                {% if products_visible == '1' or products_visible == '2' %}
+                    <tr>
+                        <th>Mesa / Conta</th>
+                        <th>Data</th>
+                        <th>Dinheiro</th>
+                        <th>Cartão Credito</th>
+                        <th>Cartão Débito</th>
+                        <th>Outros</th>
+                        <th>Total</th>
+                        <th>Ações</th>
+                    </tr>
+                {% elif products_visible == '3'%}
+                    <tr style="background-color: #343637;" class="text-light font-weight-bold">
+                        <th colspan="2">PRODUTO</th>
+                        <th colspan="2">GARÇOM</th>
+                        <th>QUANTIDADE</th>
+                        <th>VALOR UNITÁRIO</th>
+                        <th>TOTAL</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                {% endif %}
             </thead>
             <tbody>
                 {% for x in mesas %}
-                <tr>
-                    {% if x.mesa != 0 %}<td>{{ x.mesa }}</td>{% else %}<td>{{ x.conta }}</td>{% endif %}
-                    <td>{{ x.created_at }}</td>
-                    <td>R$ {{ x.total|floatformat:2 }}</td>
-                    <td>R$ {{ x.dinheiro|floatformat:2 }}</td>
-                    <td>R$ {{ x.cartao_credito|floatformat:2 }}</td>
-                    <td>R$ {{ x.cartao_debito|floatformat:2 }}</td>
-                    <td>R$ {{ x.outros|floatformat:2 }}</td>
-                    <td><a href="{% url 'restaurante:comprovante' x.id %}">Comprovante</a></td>
-                </tr>
+                    {% if products_visible == '1' or products_visible == '2' %}
+                        <tr>
+                            {% if x.mesa != 0 %}<td>{{ x.mesa }}</td>{% else %}<td>{{ x.conta }}</td>{% endif %}
+                            <td>{{ x.created_at|date:"d/m/Y" }}</td>
+                            <td>R$ {{ x.dinheiro|floatformat:2 }}</td>
+                            <td>R$ {{ x.cartao_credito|floatformat:2 }}</td>
+                            <td>R$ {{ x.cartao_debito|floatformat:2 }}</td>
+                            <td>R$ {{ x.outros|floatformat:2 }}</td>
+                            <td>R$ {{ x.total|floatformat:2 }}</td>
+                            <td><a href="{% url 'restaurante:comprovante' x.id %}">Comprovante</a></td>
+                        </tr>
+                    {% elif products_visible == '2' %}
+                        <tr style="background-color: #343637;" class="text-light font-weight-bold">
+                            <td colspan="2">PRODUTO</td>
+                            <td colspan="2">GARÇOM</td>
+                            <td>QUANTIDADE</td>
+                            <td>VALOR UNITÁRIO</td>
+                            <td>TOTAL</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    {% endif %}
+                    {% if products_visible == '2' or products_visible == '3' %}
+                        {% for y in x.itens.all %}
+                            <tr style="background-color: #343637;" class="text-light">
+                                <td colspan="2">{{ y.produto }}</td>
+                                <td colspan="2">{{ y.garcom_nome }}</td>
+                                <td>{{ y.quantidade }}</td>
+                                <td>R$ {{ y.unitario }}</td>
+                                <td>R$ {{ y.total }}</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
                 {% endfor %}
+                {% if products_visible == '1' or products_visible == '2' %}
+                    <tr>
+                        <td colspan="2" class="text-right font-weight-bold">TOTAIS</td>
+                        <td>R$ {{ totais.dinheiro|floatformat:2 }}</td>
+                        <td>R$ {{ totais.cartao_credito|floatformat:2 }}</td>
+                        <td>R$ {{ totais.cartao_debito|floatformat:2 }}</td>
+                        <td>R$ {{ totais.outros|floatformat:2 }}</td>
+                        <td>R$ {{ totais.total|floatformat:2 }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                {% elif products_visible == '3' %}
+                    <tr>
+                        <td colspan="6" class="text-right font-weight-bold">TOTAIS</td>
+                        <td>R$ {{ totais.total|floatformat:2 }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

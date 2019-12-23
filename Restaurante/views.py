@@ -1,6 +1,8 @@
 import datetime
 from bson import ObjectId
 import math
+
+from django.core import exceptions
 from django.shortcuts import render, redirect
 from .models import ItensMesaContaMongo, CardapiosMongo, MesasConta
 from Pessoas.models import PessoasMongo
@@ -379,5 +381,47 @@ def comprovante(request, id):
 @user_passes_test(lambda u: u.has_perm('restaurante.lista_mesas_fechadas'))
 def lista_mesas_fechadas(request):
     template_name = 'restaurante/lista_mesas_fechadas.html'
-    context = {'mesas': MesasConta.objects.all()}
+
+    date_start = request.GET.get('date_start')
+    date_end = request.GET.get('date_end')
+    products_visible = request.GET.get('products')
+    if products_visible is None:
+        products_visible = 1
+
+    if date_start is not None and date_end is not None:
+        try:
+            year, month, day = map(int, date_start.split('-'))
+            date_start = datetime.datetime(year, month, day, 00, 00, 00)
+
+            year, month, day = map(int, date_end.split('-'))
+            date_end = datetime.datetime(year, month, day, 23, 59, 59)
+            mesas = MesasConta.objects.filter(
+                created_at__gte=date_start,
+                created_at__lte=date_end
+            )
+        except ValueError:
+            mesas = MesasConta.objects.filter(
+                created_at__gte=datetime.date.today())
+    else:
+        mesas = MesasConta.objects.filter(created_at__gte=datetime.date.today())
+    totais = {
+        'cartao_debito': 0,
+        'cartao_credito': 0,
+        'dinheiro': 0,
+        'outros': 0,
+        'total': 0
+    }
+    for x in mesas:
+        totais['cartao_debito'] += x.cartao_debito
+        totais['cartao_credito'] += x.cartao_credito
+        totais['dinheiro'] += x.dinheiro
+        totais['outros'] += x.outros
+        totais['total'] += x.total
+    context = {
+        'mesas': mesas,
+        'totais': totais,
+        'products_visible': products_visible,
+        'date_start': date_start,
+        'date_end': date_end
+    }
     return render(request, template_name, context)

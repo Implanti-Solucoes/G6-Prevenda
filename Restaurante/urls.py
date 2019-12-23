@@ -17,5 +17,5 @@ urlpatterns = [
     url(r'^comprovante/(?P<id>[0-9]+)/$', views.comprovante,
         name='comprovante'),
     url(r'^lista_mesas_fechadas/$', views.lista_mesas_fechadas,
-        name='lista_mesas_fechadas'),
+        name='lista_mesas_fechadas')
 ]
