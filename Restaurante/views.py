@@ -1,14 +1,14 @@
 import datetime
-from bson import ObjectId
-import math
 
-from django.core import exceptions
-from django.shortcuts import render, redirect
-from .models import ItensMesaContaMongo, CardapiosMongo, MesasConta
-from Pessoas.models import PessoasMongo
-from Estoque.models import Products
-from core.models import Configuracoes, Uteis
+import pytz
+from bson import ObjectId
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect
+
+from Estoque.models import Products
+from Pessoas.models import PessoasMongo
+from core.models import Configuracoes, Uteis
+from .models import ItensMesaContaMongo, CardapiosMongo, MesasConta
 
 
 @login_required(redirect_field_name='next')
@@ -391,10 +391,14 @@ def lista_mesas_fechadas(request):
     if date_start is not None and date_end is not None:
         try:
             year, month, day = map(int, date_start.split('-'))
-            date_start = datetime.datetime(year, month, day, 00, 00, 00)
+            date_start = datetime.datetime(
+                year=year, month=month, day=day, hour=23, minute=59, second=59,
+                tzinfo=pytz.UTC)
 
             year, month, day = map(int, date_end.split('-'))
-            date_end = datetime.datetime(year, month, day, 23, 59, 59)
+            date_end = datetime.datetime(
+                year=year, month=month, day=day, hour=23, minute=59, second=59,
+                tzinfo=pytz.UTC)
             mesas = MesasConta.objects.filter(
                 created_at__gte=date_start,
                 created_at__lte=date_end
@@ -403,7 +407,8 @@ def lista_mesas_fechadas(request):
             mesas = MesasConta.objects.filter(
                 created_at__gte=datetime.date.today())
     else:
-        mesas = MesasConta.objects.filter(created_at__gte=datetime.date.today())
+        mesas = MesasConta.objects.filter(
+            created_at__gte=datetime.date.today())
     totais = {
         'cartao_debito': 0,
         'cartao_credito': 0,
