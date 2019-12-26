@@ -1,11 +1,10 @@
-import datetime
-
-import pytz
+from django.utils import timezone
+from pytz import timezone as timezone1
 from bson import ObjectId
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
-
 from Estoque.models import Products
+from G6 import settings
 from Pessoas.models import PessoasMongo
 from core.models import Configuracoes, Uteis
 from .models import ItensMesaContaMongo, CardapiosMongo, MesasConta
@@ -382,33 +381,36 @@ def comprovante(request, id):
 def lista_mesas_fechadas(request):
     template_name = 'restaurante/lista_mesas_fechadas.html'
 
-    date_start = request.GET.get('date_start')
-    date_end = request.GET.get('date_end')
+    date_start_get = request.GET.get('date_start')
+    date_end_get = request.GET.get('date_end')
     products_visible = request.GET.get('products')
     if products_visible is None:
-        products_visible = 1
-
-    if date_start is not None and date_end is not None:
+        products_visible = '1'
+    tz = timezone1(settings.TIME_ZONE)
+    date_start = timezone.datetime(
+        year=timezone.now().year, month=timezone.now().month,
+        day=timezone.now().day, hour=00, minute=00, second=00,
+        tzinfo=tz)
+    date_end = timezone.datetime(
+        year=timezone.now().year, month=timezone.now().month,
+        day=timezone.now().day, hour=23, minute=59, second=59,
+        tzinfo=tz)
+    if date_start_get is not None and date_end_get is not None:
         try:
-            year, month, day = map(int, date_start.split('-'))
-            date_start = datetime.datetime(
-                year=year, month=month, day=day, hour=23, minute=59, second=59,
-                tzinfo=pytz.UTC)
+            year, month, day = map(int, date_start_get.split('-'))
+            date_start = timezone.datetime(
+                year=year, month=month, day=day, hour=00, minute=00, second=00,
+                tzinfo=tz)
 
-            year, month, day = map(int, date_end.split('-'))
-            date_end = datetime.datetime(
+            year, month, day = map(int, date_end_get.split('-'))
+            date_end = timezone.datetime(
                 year=year, month=month, day=day, hour=23, minute=59, second=59,
-                tzinfo=pytz.UTC)
-            mesas = MesasConta.objects.filter(
-                created_at__gte=date_start,
-                created_at__lte=date_end
-            )
+                tzinfo=tz)
         except ValueError:
-            mesas = MesasConta.objects.filter(
-                created_at__gte=datetime.date.today())
-    else:
-        mesas = MesasConta.objects.filter(
-            created_at__gte=datetime.date.today())
+            pass
+    mesas = MesasConta.objects.filter(
+        created_at__gte=date_start,
+        created_at__lte=date_end)
     totais = {
         'cartao_debito': 0,
         'cartao_credito': 0,

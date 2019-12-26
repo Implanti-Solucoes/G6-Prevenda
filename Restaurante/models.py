@@ -149,6 +149,8 @@ class ItensMesaContaMongo(models.Model):
     total = models.FloatField('Total', default=0.0)
     mesa_conta = models.ForeignKey(
         MesasConta, on_delete=models.CASCADE, related_name='itens')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class CardapiosMongo:
