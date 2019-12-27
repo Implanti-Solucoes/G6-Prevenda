@@ -18,6 +18,7 @@ class MesasConta(models.Model):
     cartao_credito = models.FloatField('Cartão credito', default=0.0)
     cartao_debito = models.FloatField('Cartão debito', default=0.0)
     outros = models.FloatField('Outros', default=0.0)
+    troco = models.FloatField('Troco', default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -100,6 +101,7 @@ class ItensMesaContaMongo(models.Model):
             return dados
         else:
             database = uteis.conexao
+
             collection = database["ItensMesaConta"]
             pipeline = []
             if self.__query__ != {}:
@@ -122,9 +124,9 @@ class ItensMesaContaMongo(models.Model):
                 for doc in cursor:
                     doc['id'] = str(doc['_id'])
                     dados.append(doc)
-                return dados
             finally:
                 uteis.fecha_conexao()
+                return dados
 
     class Meta:
         default_permissions = (

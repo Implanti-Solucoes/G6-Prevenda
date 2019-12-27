@@ -1,5 +1,5 @@
+import socket
 from pymongo import MongoClient
-from pymongo.cursor import Cursor
 from lxml import objectify
 
 
@@ -12,9 +12,17 @@ class Uteis:
         data = data.replace('ï»¿', '')
         xml = objectify.fromstring(data)
         host = str(xml.Ip) if hasattr(xml, 'Ip') else '127.0.0.1'
+        try:
+            socket.inet_aton(host)
+        except socket.error:
+            try:
+                host = socket.gethostbyname(host)
+            except:
+                host = '127.0.0.1'
         self.client = MongoClient(
-            host, username='root', password='|cSFu@5rFv#h8*=',
-            authSource='DigisatServer', port=12220
+            host=host, username='root', password='|cSFu@5rFv#h8*=',
+            authSource='admin', port=12220, serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=10000, authMechanism='SCRAM-SHA-1'
         )
 
     @property

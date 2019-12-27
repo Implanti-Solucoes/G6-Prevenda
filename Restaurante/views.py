@@ -13,6 +13,7 @@ from .models import ItensMesaContaMongo, CardapiosMongo, MesasConta
 @login_required(redirect_field_name='next')
 @user_passes_test(lambda u: u.has_perm('restaurante.index'))
 def index(request):
+
     template_name = 'restaurante/index.html'
     context = {}
     db_mesas = ItensMesaContaMongo()
@@ -227,7 +228,7 @@ def set_add_item_mesa(request):
         "Observacoes": observacoes,
         "Impresso": False,
         "Cancelado": False,
-        "DataHora": datetime.datetime.now(),
+        "DataHora": timezone.now(),
         "NumeroMesaContaOrigem": 0,
         "Descricao": item['ProdutosServicos'][0]['Descricao'],
         "Codigo": item['ProdutosServicos'][0]['CodigoInterno'],
@@ -304,6 +305,34 @@ def fechar_conta(request):
         if mesa is not False:
             return redirect('restaurante:mesa', mesa)
 
+    troco = float("%.2f" % total)
+    troco -= float("%.2f" % cartao_credito)
+    if troco <= 0:
+        print("O valor passado é maior do que total da mesa/conta")
+        if conta is not False:
+            return redirect('restaurante:conta', conta)
+        if mesa is not False:
+            return redirect('restaurante:mesa', mesa)
+
+    troco -= float("%.2f" % cartao_debito)
+    if troco <= 0:
+        print("O valor passado é maior do que total da mesa/conta")
+        if conta is not False:
+            return redirect('restaurante:conta', conta)
+        if mesa is not False:
+            return redirect('restaurante:mesa', mesa)
+
+    troco -= float("%.2f" % outros)
+    if troco <= 0:
+        print("O valor passado é maior do que total da mesa/conta")
+        if conta is not False:
+            return redirect('restaurante:conta', conta)
+        if mesa is not False:
+            return redirect('restaurante:mesa', mesa)
+
+    troco -= float("%.2f" % dinheiro)
+    troco = troco * -1
+    dinheiro = float("%.2f" % dinheiro) - troco
     mesa_record = MesasConta.objects.create(
         mesa=mesa,
         conta=conta,
@@ -311,7 +340,8 @@ def fechar_conta(request):
         dinheiro=float("%.2f" % dinheiro),
         cartao_credito=float("%.2f" % cartao_credito),
         cartao_debito=float("%.2f" % cartao_debito),
-        outros=float("%.2f" % outros)
+        outros=float("%.2f" % outros),
+        troco=float("%.2f" % troco),
     )
 
     for mesa in mesas_result:
