@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import render
 from .models import Movimentacoes
 from Financeiro.models import Financeiro, Contratos
-from core.models import Uteis
+from core.models import Uteis, Configuracoes
 from django.contrib.auth.decorators import login_required
 
 
@@ -27,6 +27,8 @@ def listagem_prevenda(request):
         items.append(x)
 
     context = {'items': items, }
+    for x in Configuracoes.objects.all().filter(usuario_id=request.user.id):
+        context[x.registro] = x.valor
     return render(request, 'movimentacoes/listagem.html', context)
 
 

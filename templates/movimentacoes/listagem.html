@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
     <script type="text/javascript" charset="utf-8">
        $(document).ready(function() {
-            $('#pre_vendas').DataTable({
+            var table = $('#pre_vendas').DataTable({
                 "language": {
                         "lengthMenu": "Quantidade de movimentações por pagina _MENU_",
                         "zeroRecords": "Nem uma movimentação encontrado",
@@ -27,6 +27,11 @@
                 },
                 "order": [[ 3, "desc" ]]
             });
+           $('#pre_vendas_filter > label > input').on( 'keyup', function (e) {
+				if(e.keyCode == 13) {
+					table.search( this.value ).draw();
+				}
+			} );
        });
     </script>
 </head>

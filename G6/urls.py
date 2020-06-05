@@ -31,4 +31,7 @@ urlpatterns = [
     url('restaurante/',
         include(('Restaurante.urls', 'restaurante'),
                 namespace='restaurante')),
+    url('configuracoes/',
+        include(('core.urls', 'configuracoes'),
+                namespace='configuracoes'))
 ]

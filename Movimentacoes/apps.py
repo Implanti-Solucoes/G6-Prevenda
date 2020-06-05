@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class PrevendaConfig(AppConfig):
+class MovimentacoesConfig(AppConfig):
     name = 'Movimentacoes'

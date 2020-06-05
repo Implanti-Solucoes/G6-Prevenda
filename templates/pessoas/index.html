@@ -10,7 +10,7 @@
     <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
     <script type="text/javascript" charset="utf-8">
        $(document).ready(function() {
-            $('#cliente').DataTable({
+            var table = $('#cliente').DataTable({
                 "language": {
                         "lengthMenu": "Quantidade de clientes por pagina _MENU_",
                         "zeroRecords": "Nem um cliente encontrado",
@@ -26,6 +26,11 @@
                         },
                 },
             });
+           $('#cliente_filter > label > input').on( 'keyup', function (e) {
+				if(e.keyCode == 13) {
+					table.search( this.value ).draw();
+				}
+			} );
        });
     </script>
 </head>

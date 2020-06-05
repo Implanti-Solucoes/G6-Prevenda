@@ -1,3 +1,5 @@
+from django.db import models
+from django.contrib.auth.models import User
 import socket
 from pymongo import MongoClient
 from lxml import objectify
@@ -312,7 +314,7 @@ class Uteis:
                         comissao_venda = bruto * venda['Vendedor']['Vendedor']['PercentualComissao'] / 100
 
                     venda['comissao'] = venda['comissao'] + comissao_venda
-            x = x+1
+            x = x + 1
 
         venda['bruto_extenso'] = self.num_to_currency(venda['bruto'])
         venda['desconto_extenso'] = self.num_to_currency(venda['desconto'])
@@ -360,7 +362,7 @@ class Uteis:
         return venda
 
 
-class Configuracoes:
+class Configuracoes(models.Model):
     @staticmethod
     def configuracoes():
         # Importe Uteis para criar conexao com mongo
@@ -386,3 +388,49 @@ class Configuracoes:
         retorno = collection.find_one(query)
         Uteis().fecha_conexao()
         return retorno
+
+    @staticmethod
+    def get_users_g6():
+        query = {
+            'Ativo': True,
+            "$and": [
+                {
+                    u"$and": [
+                        {
+                            u"AcessoAlternativo": {
+                                u"$ne": u"suporte"
+                            }
+                        }
+                    ]
+                },
+                {
+                    u"$and": [
+                        {
+                            u"AcessoAlternativo": {
+                                u"$ne": u"revenda"
+                            }
+                        }
+                    ]
+                }
+            ]}
+
+        uteis = Uteis()
+        return uteis.execute(
+            tabela='Usuarios',
+            query=query,
+            projection={},
+            sort={},
+            limit=1000
+        )
+
+    registro = models.CharField(
+        verbose_name='Registro',
+        max_length=100)
+    valor = models.CharField(
+        verbose_name='Valor',
+        max_length=100)
+    usuario = models.ForeignKey(
+        User,
+        verbose_name='Usuario',
+        on_delete=models.CASCADE,
+        related_name='parcelas')

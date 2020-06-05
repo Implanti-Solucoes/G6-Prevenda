@@ -1,7 +1,6 @@
 from django.db import models
 
 
-# Create your models here.
 class McmmForNextMonth(models.Model):
     razao_social = models.CharField('Razão Social', max_length=100)
     registro_anp = models.CharField('Registro ANP', max_length=40)

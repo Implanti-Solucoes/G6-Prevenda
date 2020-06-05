@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from Pessoas.models import PessoasMongo
 from Financeiro.models import Contratos
+from core.models import Configuracoes
 
 
 def listagem(request):
@@ -16,5 +17,7 @@ def listagem(request):
         cliente['cont_ati'] = len(contratos.filter(id_g6_cliente=str(cliente['_id']), excluido=False))
         clientes1.append(cliente)
     context = {'clientes': clientes1}
+    for x in Configuracoes.objects.all().filter(usuario_id=request.user.id):
+        context[x.registro] = x.valor
     return render(request, template_name, context)
 

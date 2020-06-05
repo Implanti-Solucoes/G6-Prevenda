@@ -13,7 +13,6 @@ from .models import ItensMesaContaMongo, CardapiosMongo, MesasConta
 @login_required(redirect_field_name='next')
 @user_passes_test(lambda u: u.has_perm('restaurante.index'))
 def index(request):
-
     template_name = 'restaurante/index.html'
     context = {}
     db_mesas = ItensMesaContaMongo()
