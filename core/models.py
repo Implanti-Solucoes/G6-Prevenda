@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import socket
 from pymongo import MongoClient
+from bson import ObjectId
 from lxml import objectify
 
 
@@ -422,6 +423,27 @@ class Configuracoes(models.Model):
             sort={},
             limit=1000
         )
+
+    def get_user_g6(self, user_id):
+        user_id_g6 = Configuracoes.objects.all().filter(
+            usuario__exact=user_id,
+            registro__exact='user_id_g6')
+
+        if len(user_id_g6) == 1:
+            uteis = Uteis()
+            query = {}
+            for x in user_id_g6:
+                query = {
+                    'Ativo': True,
+                    '_id': ObjectId(x.valor)
+                }
+            return uteis.execute(
+                tabela='Usuarios',
+                query=query,
+                projection={},
+                sort={},
+                limit=1
+            )
 
     registro = models.CharField(
         verbose_name='Registro',

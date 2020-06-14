@@ -1,12 +1,16 @@
-from datetime import datetime
-from bson import ObjectId
+import pymongo
+from bson import *
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
-from core.models import Uteis
+from core.models import Uteis, Configuracoes
 from Movimentacoes.models import Movimentacoes
 from .models import Financeiro, Contratos, Parcelas
 from Pessoas.models import PessoasMongo
+import datetime
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.gerar_financeiro'))
 def gerar_financeiro(request):
     # Recebendo valores e tratando
     id = request.POST['id']
@@ -57,7 +61,8 @@ def gerar_financeiro(request):
         tipo=1,
         id_g6=cursor['id'],
         id_g6_cliente=str(cursor['Pessoa']['PessoaReferencia']),
-        excluido=False
+        excluido=False,
+        usuario_id=request.user.id
     )
 
     # Tratando valores da parcela
@@ -65,6 +70,10 @@ def gerar_financeiro(request):
     if cursor['liquido'] > 0:
         valor_parcela = cursor['liquido'] / parcelas
         valor_parcela = float('%.2f' % valor_parcela)
+
+    # Carregando o usuario
+    config = Configuracoes()
+    user_g6 = config.get_user_g6(request.user.id)
 
     # gerando parcela de entrada
     if entrada > 0:
@@ -80,8 +89,9 @@ def gerar_financeiro(request):
             centro_custo=centro_custo,
             planos_contas=planos_contas,
             valor_parcela=entrada,
-            vencimento=datetime.now(),
-            entrada=True
+            vencimento=datetime.datetime.now(),
+            entrada=True,
+            nome_usuario=user_g6['Nome'] if 'Nome' in user_g6 else 'Usuário Administrador'
         )
         if id is not None:
             contrato.parcelas.create(id_g6=id, valor=entrada)
@@ -103,7 +113,8 @@ def gerar_financeiro(request):
                 planos_contas=planos_contas,
                 valor_parcela=valor_parcela,
                 vencimento=x,
-                entrada=False
+                entrada=False,
+                nome_usuario=user_g6['Nome'] if 'Nome' in user_g6 else 'Usuário Administrador'
             )
             if id is not None:
                 contrato.parcelas.create(id_g6=id, valor=valor_parcela)
@@ -111,7 +122,7 @@ def gerar_financeiro(request):
 
     # Vamos configurar as movimentações
     try:
-        cursor['InformacoesPesquisa'] = Financeiro().\
+        cursor['InformacoesPesquisa'] = Financeiro(). \
             remove_repetidos(cursor['InformacoesPesquisa'])
         # Configurando CFOP para não gerar financeiro
         z = 0
@@ -151,6 +162,8 @@ def gerar_financeiro(request):
         print(e)
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.comprovante_debito'))
 def comprovante_de_debito_por_movimentacao(request, id):
     template_name = 'movimentacoes/comprovante_de_debito.html'
 
@@ -239,7 +252,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
     context = {
         'Mov': mov,
         'Contrato': contrato,
-        'Data': datetime.now(),
+        'Data': datetime.datetime.now(),
         'Parcelamento': parcelamento,
         'Emitente': emitente,
         'Cliente': cliente,
@@ -249,6 +262,8 @@ def comprovante_de_debito_por_movimentacao(request, id):
     return render(request, template_name, context)
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.listagem_contratos'))
 def listagem_contratos(request, id, cancelado):
     template_name = 'contratos/index.html'
     contratos_ativos = Contratos.objects.all().filter(id_g6_cliente=id, excluido=0)
@@ -262,6 +277,8 @@ def listagem_contratos(request, id, cancelado):
     return render(request, template_name, context)
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.parcelas_cliente'))
 def listagem_parcelas_cliente(request, id):
     template_name = 'financeiro/index.html'
     financeiro = Financeiro()
@@ -303,6 +320,8 @@ def listagem_parcelas_cliente(request, id):
     return render(request, template_name, {'parcelas': par})
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.renegociacao'))
 def renegociacao(request):
     template_name = 'financeiro/renegociar.html'
     parcelas = request.POST.getlist('parcela')
@@ -349,9 +368,9 @@ def renegociacao(request):
 
     valores = {
         1: total,
-        2: (total+juro),
-        3: (total+multa),
-        4: (total+multa+juro),
+        2: (total + juro),
+        3: (total + multa),
+        4: (total + multa + juro),
     }
     context = {
         'cliente': cliente,
@@ -364,6 +383,8 @@ def renegociacao(request):
     return render(request, template_name, context)
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.renegociacao'))
 def renegociacao_lancamento(request):
     # Separação de dados
     conta = request.POST['conta']
@@ -401,6 +422,8 @@ def renegociacao_lancamento(request):
     juro = 0
     multa = 0
 
+    id_delete = []  # Salvando os IDs para deletar dps de tudo pronto
+    bson_renegociadas = ""  # Preparando string das parcelas pra salvar
     for parcela in parcelas:
         financeiro = Financeiro()
         financeiro.set_query_id(parcela)
@@ -409,15 +432,12 @@ def renegociacao_lancamento(request):
         x = financeiro.execute_one()
         financeiro.unset_all()
 
-        if id_cliente == str(x['PessoaReferencia']):
-            # Atualizando a parcela
-            database = Uteis().conexao
-            database['Recebimentos'].update(
-                {'_id': ObjectId(parcela)},
-                {'$set': {'Ativo': False}}
-            )
-            Uteis().fecha_conexao()
+        # Guardando ID da parcela pra deleta daqui a pouco
+        id_delete.append(x['_id'])
 
+        # Salvando parcelas para possivel relançamento
+        bson_renegociadas += str(x) + 'DELIMITADOR OK'
+        if id_cliente == str(x['PessoaReferencia']):
             total += x['Historico'][0]['Valor']
             if 'Juro' in x:
                 juro += financeiro.calcular_juros(
@@ -459,11 +479,22 @@ def renegociacao_lancamento(request):
         tipo=2,
         id_g6='',
         id_g6_cliente=id_cliente,
+        bson_renegociadas=bson_renegociadas,
         excluido=False,
-        desconto=desconto
+        desconto=desconto,
+        usuario_id=request.user.id
     )
 
+    # Excluíndo parcela pois não há mais utilidade
+    for x in id_delete:
+        database = Uteis().conexao
+        database['Recebimentos'].delete_one({'_id': x})
+        Uteis().fecha_conexao()
     y = 0
+
+    # Carregando o usuario
+    config = Configuracoes()
+    user_g6 = config.get_user_g6(request.user.id)
 
     if entrada > 0:
         y = 1
@@ -478,8 +509,9 @@ def renegociacao_lancamento(request):
             centro_custo=centro_custo,
             planos_contas=planos_contas,
             valor_parcela=entrada,
-            vencimento=datetime.now(),
-            entrada=True
+            vencimento=datetime.datetime.now(),
+            entrada=True,
+            nome_usuario=user_g6['Nome'] if 'Nome' in user_g6 else 'Usuário Administrador'
         )
         if id is not None:
             contrato.parcelas.create(id_g6=id, valor=entrada)
@@ -492,13 +524,14 @@ def renegociacao_lancamento(request):
             pessoa=id_cliente,
             emitente=emitente['_id'],
             documento=contrato.id,
-            num=y+1,
+            num=y + 1,
             conta=conta,
             centro_custo=centro_custo,
             planos_contas=planos_contas,
             valor_parcela=valor_parcela,
             vencimento=x,
-            entrada=False
+            entrada=False,
+            nome_usuario=user_g6['Nome'] if 'Nome' in user_g6 else 'Usuário Administrador'
         )
         if id is not None:
             contrato.parcelas.create(id_g6=id, valor=valor_parcela)
@@ -507,6 +540,8 @@ def renegociacao_lancamento(request):
                     contrato.id)
 
 
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.gerador_cartas'))
 def cartas_gerador(request):
     if request.method == 'GET':
         cursor = PessoasMongo()
@@ -529,7 +564,7 @@ def cartas_gerador(request):
         emitente = cursor.execute_all()
         if len(emitente) > 0:
             emitente = emitente[0]
-        data_atual = datetime.now()
+        data_atual = datetime.datetime.now()
         cursor = PessoasMongo()
         if cliente != '':
             cursor.set_query_id(cliente)
@@ -561,3 +596,124 @@ def cartas_gerador(request):
         )
     else:
         return redirect('movimentacoes:listagem_prevenda')
+
+
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.cancelar_contrato'))
+def cancelar_contrato(request, id_contrato):
+    if request.method == 'GET':
+        template_name = 'contratos/cancelar_contrato.html'
+        context = {'parcelas': [], 'contrato': Contratos.objects.all().filter(id=id_contrato)[0]}
+
+        pessoas = PessoasMongo()
+        pessoas.set_query_id(context['contrato'].id_g6_cliente)
+        context['cliente'] = pessoas.execute_all()[0]
+        context['Juros'] = 0
+        context['Multa'] = 0
+        context['Valor'] = 0
+
+        parcelas = context['contrato'].parcelas.all()
+        for x in parcelas:
+            financeiro = Financeiro()
+            financeiro.set_query_id(x.id_g6)
+            parcela = financeiro.execute_one()
+            if type(parcela) is dict and 'Situacao' in parcela:
+                parcela['Situacao']['t'] = parcela['Situacao']['_t']
+                parcela['Historico'] = parcela['Historico'][len(parcela['Historico']) - 1]
+                parcela['Historico']['Juros'] = financeiro.calcular_juros(
+                    valor=parcela['Historico']['Valor'],
+                    vencimento=parcela['Vencimento'],
+                    tipo=parcela['Juro']['Codigo'],
+                    percentual=parcela['Juro']['Percentual'],
+                    dias_carencia=parcela['Juro']['DiasCarencia'],
+                    data_quitacao=parcela['DataQuitacao']
+                )
+                parcela['Historico']['Multa'] = financeiro.calcular_juros(
+                    valor=parcela['Historico']['Valor'],
+                    vencimento=parcela['Vencimento'],
+                    tipo=3,
+                    percentual=parcela['Juro']['Percentual'],
+                    dias_carencia=parcela['Juro']['DiasCarencia'],
+                    data_quitacao=parcela['DataQuitacao']
+                )
+
+                context['Valor'] += parcela['Historico']['Valor']
+                context['Juros'] += parcela['Historico']['Juros']
+                context['Multa'] += parcela['Historico']['Multa']
+                context['parcelas'].append(
+                    parcela
+                )
+        return render(request, template_name, context)
+    elif request.method == 'POST':
+        template_name = 'contratos/cancelar_contrato.html'
+        context = {'parcelas': [], 'contrato': Contratos.objects.all().filter(id=id_contrato)[0]}
+        idcontrato = int(request.POST.get('id_contrato'))
+        contrato = Contratos.objects.all().filter(id=idcontrato)[0]
+        motivo = request.POST.get('motivo')
+        id_delete = []
+        # Só siga com requisição se o contrato não tiver cancelado
+        if contrato.excluido is False:
+            database = Uteis().conexao
+            parcelas = ""
+            for x in contrato.parcelas.all():
+                financeiro = Financeiro()
+                financeiro.set_query_id(x.id_g6)
+                parcela = financeiro.execute_one()
+                # Vamos deletar as parcelas do banco do G6, porém vamos salvar no
+                # SQLite Caso seja necessario voltar as mesma para o G6
+                if type(parcela) is dict:
+                    parcelas += str(parcela) + 'DELIMITADOR OK'
+                    id_delete.append(parcela['_id'])
+                contrato.bson_data = parcelas
+
+            # Se o contrato cancelado for de renegociação, é necessario voltar
+            # As parcelas renegociadas para banco do G6
+            if contrato.tipo == 2:
+                if contrato.bson_renegociadas is not None and contrato.bson_renegociadas is not False and \
+                        contrato.bson_renegociadas != '':
+                    data = ""  # String de contrato caso seja necessario atualizar
+                    update_bson_renegociadas = 0  # Parametro de referencia para dizer se precisa atualizar
+                    parcelas = contrato.bson_renegociadas[0:len(contrato.bson_renegociadas) - 14]
+                    parcelas = parcelas.split('DELIMITADOR OK')
+                    for x in parcelas:
+                        x = eval(x)
+                        cont = 0
+                        while cont < 1:
+                            try:
+                                # Tentando re-inserir essa parcela no banco do G6
+                                result = database['Recebimentos'].insert(x)
+                                if type(result) == ObjectId:
+                                    data = str(x) + 'DELIMITADOR OK'
+                                    cont = 1  # Deu certo, vamos continuar
+                                # Não conseguimos, vamos ver os erros abaixo
+                            except pymongo.errors.DuplicateKeyError:
+                                # O ID ja foi usado, vamos ver se essa parcela tem contrato
+                                # Caso tenha, set um novo ID e altere no contrato
+                                x['_id'] = ObjectId()
+                                update_bson_renegociadas = 1  # Set parametro para atualizar string de contratos
+                                # Atualize o ID no SQLite também, caso tenha encontrado
+                                par = Parcelas.objects.all().filter(id_g6=str(x['_id']))
+                                if len(par) == 1:
+                                    par[0].id_g6 = x['_id']
+                                    par[0].save()
+
+                    # Houve alteração de ID, então vamos salvar os novos IDs
+                    if update_bson_renegociadas == 1:
+                        contrato.bson_renegociadas = data
+
+            contrato.data_alteracao = datetime.datetime.now()
+            contrato.usuario_id = request.user.id
+            contrato.excluido = True
+            contrato.motivo = motivo
+            contrato.save()
+
+            # Deletando as parcelas, pois não tem mais utilidade
+            for x in id_delete:
+                database['Recebimentos'].delete_one({'_id': x})
+        return render(request, template_name, context)
+
+
+@login_required(redirect_field_name='next')
+@user_passes_test(lambda u: u.has_perm('financeiro.anular_cancelamento_contrato'))
+def anular_cancelamento_contrato(request, id_contrato):
+    pass

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancelar / Estornar - Contrato</title>
+    {% load static %}
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
+</head>
+<body>
+    {% include "menu.html" %}
+    <div class="container">
+        <div class="row text-center">
+            <h2 class="col-12">CONTRATO NUMERO {{ contrato.id }}</h2>
+        </div>
+        <div class="row">
+            <div class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                CLIENTE:<br />
+                {{ cliente.Nome }}
+            </div>
+            <div class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                Total Parcelamento<br />
+                {{ Valor|floatformat:2  }}
+            </div>
+            <div class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                Total Juros<br />
+                {{ Juros|floatformat:2  }}
+            </div>
+            <div class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                Total Multa<br />
+                {{ Multa|floatformat:2  }}
+            </div>
+        </div>
+        <table class="table" id="parcelas">
+            <thead>
+                <tr>
+                    <th>Parcela</th>
+                    <th>Valor</th>
+                    <th>Juros</th>
+                    <th>Multa</th>
+                    <th>Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for contrato in parcelas %}
+                <tr>
+                    <td>{{ contrato.Descricao }}</td>
+                    <td>{{ contrato.Historico.Valor|floatformat:2 }}</td>
+                    <td>{{ contrato.Historico.Juros|floatformat:2 }}</td>
+                    <td>{{ contrato.Historico.Multa|floatformat:2 }}</td>
+                    <td>{{ contrato.Situacao.t }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <form method="post" action="#">
+            {% csrf_token %}
+            <input type="hidden" name="id_contrato" value="{{ contrato.id }}">
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <input type="motivo" class="form-control" name="motivo" id="motivo" aria-describedby="motivoHelp" required="required">
+                <small id="motivoHelp" class="form-text text-muted">Digite o motivo do cancelamento desse contrato.</small>
+            </div>
+            <button type="submit" class="btn btn-danger btn-lg btn-block">Cancelar Contrato</button>
+        </form>
+    </div>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static "datatables/1.10.16/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/1.10.16/js/dataTables.bootstrap4.min.js" %}"></script>
+</body>
+</html>

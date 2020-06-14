@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^renegociao/$', views.renegociacao, name='renegociacao'),
     url(r'^renegociacao_lancamento/$', views.renegociacao_lancamento, name='renegociacao_lancamento'),
     url(r'^cartas_gerador/$', views.cartas_gerador, name='cartas_gerador'),
+    url(r'^cancelar_contrato/(?P<id_contrato>[0-9]+)$', views.cancelar_contrato, name='cancelar_contrato'),
 ]

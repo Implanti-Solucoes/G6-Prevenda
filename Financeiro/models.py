@@ -4,6 +4,7 @@ from Pessoas.models import PessoasMongo
 from core.models import Uteis, Configuracoes
 from bson.tz_util import FixedOffset
 from django.db import models
+from django.contrib.auth.models import User
 import clr
 
 
@@ -162,7 +163,8 @@ class Financeiro:
 
     def gerar_parcela(self, titulo, informacoes_pesquisa, pessoa,
                       emitente, documento, num, conta, centro_custo,
-                      planos_contas, valor_parcela, vencimento, entrada=False):
+                      planos_contas, valor_parcela, vencimento, entrada=False,
+                      nome_usuario='Usuário Administrador'):
         cursor = PessoasMongo()
         cursor.set_query_id(pessoa)
         pessoa = cursor.execute_all()
@@ -235,7 +237,7 @@ class Financeiro:
                     'CentroCustoCodigoUnico': centro_custo,
                     'ContaReferencia': conta,
                     'EmpresaReferencia': emitente['_id'],
-                    'NomeUsuario': 'Usuário Administrador',
+                    'NomeUsuario': nome_usuario,
                     'Data': vencimento if type(vencimento) == datetime else
                     datetime.strptime(vencimento, '%Y-%m-%d'),
                     'ChequeReferencia': ObjectId('000000000000000000000000')
@@ -255,7 +257,7 @@ class Financeiro:
                     'CentroCustoCodigoUnico': centro_custo,
                     'ContaReferencia': conta,
                     'EmpresaReferencia': emitente['_id'],
-                    'NomeUsuario': 'Usuário Administrador',
+                    'NomeUsuario': nome_usuario,
                     'Data':
                         vencimento if type(vencimento) == datetime else
                         datetime.strptime(vencimento, '%Y-%m-%d'),
@@ -265,7 +267,7 @@ class Financeiro:
             'Situacao': {},
             'ContaReferencia': conta,
             'EmpresaReferencia': emitente['_id'],
-            'NomeUsuario': 'Usuário Administrador',
+            'NomeUsuario': nome_usuario,
             'DataQuitacao': '0001-01-01T00:00:00.000+0000',
             'AcrescimoInformado': 0.0,
             'DescontoInformado': 0.0,
@@ -327,7 +329,7 @@ class Financeiro:
                 'CentroCustoCodigoUnico': centro_custo,
                 'ContaReferencia': conta,
                 'EmpresaReferencia': emitente['_id'],
-                'NomeUsuario': 'Usuário Administrador',
+                'NomeUsuario': nome_usuario,
                 'Data': vencimento if type(vencimento) == datetime else
                 datetime.strptime(vencimento, '%Y-%m-%d'),
                 'ChequeReferencia': ObjectId('000000000000000000000000'),
@@ -492,11 +494,14 @@ class Financeiro:
         return True
 
     @staticmethod
-    def calcular_juros(valor, vencimento, tipo, percentual, dias_carencia):
+    def calcular_juros(valor, vencimento, tipo, percentual, dias_carencia, data_quitacao: datetime = None):
         # Verificando configurações para aplicar juros e multa
         config = Configuracoes().configuracoes()
         if 'Financeiro' in config:
-            dias = int((datetime.now().date() - vencimento.date()).days)-1
+            if type(data_quitacao) == datetime and data_quitacao is not None:
+                dias = int((data_quitacao.date() - vencimento.date()).days) - 1
+            else:
+                dias = int((datetime.now().date() - vencimento.date()).days) - 1
             juros = 0
             if dias > 0:
                 if tipo == 1:
@@ -510,11 +515,33 @@ class Financeiro:
 
 class Contratos(models.Model):
     tipo = models.IntegerField()
-    id_g6 = models.CharField('id da movimentacao', max_length=24)
-    id_g6_cliente = models.CharField('id do cliente', max_length=24)
+    id_g6 = models.CharField(
+        verbose_name='id da movimentacao',
+        max_length=24)
+    id_g6_cliente = models.CharField(
+        verbose_name='id do cliente',
+        max_length=24)
     excluido = models.BooleanField()
-    motivo = models.CharField('Motivo do cancelamento', max_length=250)
-    desconto = models.FloatField('Desconto', default=0.00)
+    motivo = models.CharField(
+        verbose_name='Motivo do cancelamento',
+        max_length=250)
+    desconto = models.FloatField(
+        verbose_name='Desconto',
+        default=0.00)
+    usuario = models.ForeignKey(
+        User,
+        verbose_name='Usuario',
+        on_delete=models.CASCADE,
+        related_name='contratos_user')
+    data_alteracao = models.DateField(auto_now=True)
+    bson_data = models.TextField(
+        verbose_name='Dados para re-inserir',
+        null=True
+    )
+    bson_renegociadas = models.TextField(
+        verbose_name='Dados para re-inserir',
+        null=True
+    )
 
 
 class Parcelas(models.Model):
@@ -522,3 +549,4 @@ class Parcelas(models.Model):
         Contratos, on_delete=models.CASCADE, related_name='parcelas')
     id_g6 = models.CharField('id da parcela', max_length=24)
     valor = models.FloatField('Valor Parcela')
+

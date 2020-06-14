@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Tabela de Preço</title>
+    <title>LISTAGEM DE PESSOAS</title>
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <script defer src="{% static 'fontawesome/js/fontawesome-all.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static "datatables/1.10.16/css/dataTables.bootstrap4.min.css" %}">
@@ -36,12 +36,14 @@
 </head>
 <body>
     {% include "menu.html" %}
-    <div class="container">
+    <div class="container-fluid">
         <table class="table" id="cliente">
             <thead>
                 <tr>
                     <th>CLIENTE</th>
                     <th>DOCUMENTO</th>
+                    <th>CONTRATOS ATIVOS</th>
+                    <th>CONTRATOS CANCELADOS</th>
                     <th>CONTRATOS</th>
                     <th>AÇÕES</th>
                 </tr>
@@ -52,19 +54,20 @@
                     <td>{{ cliente.Nome }}</td>
                     <td>{% if cliente.Cpf and cliente.Cnpj %}CPF: {{ cliente.Cpf }} / CNPJ: {{ cliente.Cnpj }}{% else %}{% if cliente.Cpf %}CPF {{ cliente.Cpf }}{% endif %}{% if cliente.Cnpj %}CNPJ {{ cliente.Cnpj }}{% endif %}{% endif %}</td>
                     <td>
-                        <a href="{% url 'financeiro:listagem_contratos' cliente.id 0 %}">Todos</a> |
                         {% if cliente.cont_ati > 0 %}
                             <a href="{% url 'financeiro:listagem_contratos' cliente.id 1 %}">Ativos {{ cliente.cont_ati }}</a>
                         {% else %}
                             Ativos {{ cliente.cont_ati }}
                         {% endif %}
-                         |
+                    </td>
+                    <td>
                         {% if cliente.cont_can > 0 %}
                             <a href="{% url 'financeiro:listagem_contratos' cliente.id 2 %}">Cancelados {{ cliente.cont_can }}</a>
                         {% else %}
                         Cancelados {{ cliente.cont_can }}
                         {% endif %}
                     </td>
+                    <td><a href="{% url 'financeiro:listagem_contratos' cliente.id 0 %}">Todos</a></td>
                     <td><a href="{% url 'financeiro:listagem_parcelas_cliente' cliente.id %}">Parcelas</a></td>
                 </tr>
                 {% endfor %}
