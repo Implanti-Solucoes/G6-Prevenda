@@ -542,7 +542,17 @@ class Contratos(models.Model):
         verbose_name='Dados para re-inserir',
         null=True
     )
-
+    class Meta:
+        permissions = (
+            ('gerar_financeiro','Pode Gerar Financeiro'),
+            ('comprovante_debito','Imprimir Comprovante de debito'),
+            ('listagem_contratos','Listar Contratos'),
+            ('parcelas_cliente','Exibir Parcelos do cliente'),
+            ('renegociacao','Renegociar parcelas'),
+            ('gerador_cartas','Gerador de cartas'),
+            ('cancelar_contrato','Cancelar contrato'),
+            ('anular_cancelamento_contrato','Anular cancelamento'),
+        )
 
 class Parcelas(models.Model):
     contrato = models.ForeignKey(

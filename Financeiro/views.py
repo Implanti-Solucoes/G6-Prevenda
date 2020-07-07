@@ -1,6 +1,6 @@
 import pymongo
 from bson import *
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.shortcuts import render, redirect
 from core.models import Uteis, Configuracoes
 from Movimentacoes.models import Movimentacoes
@@ -10,7 +10,7 @@ import datetime
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.gerar_financeiro'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.gerar_financeiro'))
 def gerar_financeiro(request):
     # Recebendo valores e tratando
     id = request.POST['id']
@@ -163,7 +163,7 @@ def gerar_financeiro(request):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.comprovante_debito'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.comprovante_debito'))
 def comprovante_de_debito_por_movimentacao(request, id):
     template_name = 'movimentacoes/comprovante_de_debito.html'
 
@@ -263,7 +263,7 @@ def comprovante_de_debito_por_movimentacao(request, id):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.listagem_contratos'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.listagem_contratos'))
 def listagem_contratos(request, id, cancelado):
     template_name = 'contratos/index.html'
     contratos_ativos = Contratos.objects.all().filter(id_g6_cliente=id, excluido=0)
@@ -278,7 +278,7 @@ def listagem_contratos(request, id, cancelado):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.parcelas_cliente'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.parcelas_cliente'))
 def listagem_parcelas_cliente(request, id):
     template_name = 'financeiro/index.html'
     financeiro = Financeiro()
@@ -321,7 +321,7 @@ def listagem_parcelas_cliente(request, id):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.renegociacao'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.renegociacao'))
 def renegociacao(request):
     template_name = 'financeiro/renegociar.html'
     parcelas = request.POST.getlist('parcela')
@@ -384,7 +384,7 @@ def renegociacao(request):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.renegociacao'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.renegociacao'))
 def renegociacao_lancamento(request):
     # Separação de dados
     conta = request.POST['conta']
@@ -541,7 +541,7 @@ def renegociacao_lancamento(request):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.gerador_cartas'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.gerador_cartas'))
 def cartas_gerador(request):
     if request.method == 'GET':
         cursor = PessoasMongo()
@@ -599,7 +599,7 @@ def cartas_gerador(request):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.cancelar_contrato'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.cancelar_contrato'))
 def cancelar_contrato(request, id_contrato):
     if request.method == 'GET':
         template_name = 'contratos/cancelar_contrato.html'
@@ -714,6 +714,6 @@ def cancelar_contrato(request, id_contrato):
 
 
 @login_required(redirect_field_name='next')
-@user_passes_test(lambda u: u.has_perm('financeiro.anular_cancelamento_contrato'))
+@user_passes_test(lambda u: u.has_perm('Financeiro.anular_cancelamento_contrato'))
 def anular_cancelamento_contrato(request, id_contrato):
     pass

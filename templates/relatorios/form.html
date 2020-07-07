@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Relatorios</title>
@@ -10,28 +10,22 @@
     <script>
         window.onload=function() {
             document.getElementById('relatorio').relatorioAction.onchange = function () {
-                const clientediv = document.getElementById('clientediv');
-                const cliente = document.getElementById('cliente');
+                clientediv = document.getElementById('clientediv');
+                cliente = document.getElementById('cliente');
 
-                const inicialdiv = document.getElementById('inicialdiv');
-                const inicial = document.getElementById('inical');
+                vendedordiv = document.getElementById('vendedordiv');
+                vendedor = document.getElementById('vendedor');
 
-                const finaldiv = document.getElementById('finaldiv');
-                const final = document.getElementById('final');
+                mostradiv = document.getElementById('mostradiv');
+                vendas = document.getElementById('vendas');
 
-                const vendedordiv = document.getElementById('vendedordiv');
-                const vendedor = document.getElementById('vendedor');
-
-                const mostradiv = document.getElementById('mostradiv');
-                const vendas = document.getElementById('vendas');
-
-                const fiscaldiv = document.getElementById('fiscaldiv');
-                const fiscal = document.getElementById('fiscal');
+                fiscaldiv = document.getElementById('fiscaldiv');
+                fiscal = document.getElementById('fiscal');
 
                 var newaction = this.value;
                 document.getElementById('relatorio').action = newaction;
 
-                if (newaction === "{% url 'relatorios:operacoes_por_pessoa' %}"){
+                if (newaction == "{% url 'relatorios:operacoes_por_pessoa' %}"){
                     clientediv.style.display = "block";
                     cliente.required = true;
 
@@ -41,7 +35,7 @@
                     mostradiv.style.display = "none";
                     fiscaldiv.style.display = "block";
 
-                }else if (newaction === "{% url 'relatorios:prevendas_por_vendedor' %}"){
+                }else if (newaction == "{% url 'relatorios:prevendas_por_vendedor' %}"){
                     mostradiv.style.display = "block";
 
                     clientediv.style.display = "none";
@@ -51,7 +45,7 @@
                     vendedor.required = false;
 
                     fiscaldiv.style.display = "none";
-                }else if(newaction === "{% url 'relatorios:prevendas_por_usuario' %}"){
+                }else if(newaction == "{% url 'relatorios:prevendas_por_usuario' %}"){
                     mostradiv.style.display = "block";
 
                     clientediv.style.display = "none";
@@ -62,30 +56,7 @@
 
                     fiscaldiv.style.display = "none";
                 }
-                else if(newaction === "{% url 'relatorios:listagem_produtos_personalizado1' %}"){
-                    mostradiv.style.display = "none";
-
-                    clientediv.style.display = "none";
-                    cliente.required = false;
-
-                    vendedordiv.style.display = "none";
-                    vendedor.required = false;
-
-                    inicialdiv.style.display = 'none';
-                    inicial.required = false;
-
-                    finaldiv.style.display = "none";
-                    final.required = false;
-
-                    fiscaldiv.style.display = "none";
-                }
                 else{
-                    inicialdiv.style.display = 'block';
-                    inicial.required = true;
-
-                    finaldiv.style.display = "block";
-                    final.required = true;
-
                     clientediv.style.display = "none";
                     cliente.required = false;
 
@@ -115,7 +86,6 @@
                             <option value="{% url 'relatorios:sintetico_produtos' %}">Sinteticos de produtos</option>
                             <option value="{% url 'relatorios:prevendas_por_vendedor' %}">Pré-Vendas por Vendedor</option>
                             <option value="{% url 'relatorios:prevendas_por_usuario' %}">Pré-Vendas por Usuario</option>
-                            <option value="{% url 'relatorios:listagem_produtos_personalizado1' %}">Listagem de Produtos Personalizado 1</option>
                         </select>
                     </div>
                     <div class="form-group" id="clientediv" style="display: none;">
@@ -136,19 +106,19 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group" style="display: block;" id="inicialdiv">
+                    <div class="form-group">
                         <label for="inical" class="col-sm-6 col-form-label">Escolha a data inicial</label>
                         <input type="date" name="inical" id="inical" class="form-control" required="required">
                     </div>
-                    <div class="form-group" style="display: block;" id="finaldiv">
+                    <div class="form-group">
                         <label for="final" class="col-sm-6 col-form-label">Escolha a data final</label>
                         <input type="date" name="final" id="final" class="form-control" required="required">
                     </div>
-                    <div class="form-group" style="display: none;" id="mostradiv">
+                    <div class="form-group" style="display: none;" id="mostradiv" align="left">
                         <label for="vendas" class="col-sm-6 col-form-label">Mostrar vendas</label>
                         <input type="checkbox" name="vendas" id="vendas" class="form-control">
                     </div>
-                    <div class="form-group" style="display: none;" id="fiscaldiv">
+                    <div class="form-group" style="display: none;" id="fiscaldiv" align="left">
                         <label for="fiscal" class="col-sm-6 col-form-label">Somente notas fiscais</label>
                         <input type="checkbox" name="fiscal" id="fiscal" class="form-control">
                     </div>
