@@ -24,6 +24,8 @@ def listagem_prevenda(request):
             x['NotaFiscalServico'] = 1
         elif 'DocumentoAuxiliarVendaOrdemServico' in x['t']:
             x['DocumentoAuxiliarVendaOrdemServico'] = 1
+        if "Documento" not in x['Pessoa']:
+            x['naotemdocumento'] = 1
         items.append(x)
 
     context = {'items': items, }
