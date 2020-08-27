@@ -47,14 +47,17 @@
         <!-- Empresa emitente -->
         <div class="row" align="center">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {% if venda.tipo == 'NotaFiscalServico'%}
-                <h1>ORÇAMENTO</h1><br />
-                {% else %}
-                <b>
-                    DOCUMENTO AUXILIAR DE VENDA - PRÉ-VENDA<br>
+                {% if venda.DocumentoAuxiliarVendaOrdemServico == 1 %}
+                    <h1>ORÇAMENTO</h1><br />
+                {% elif venda.PreVenda == 1 %}
+                    <b>PRÉ-VENDA<br>
+                        NÃO É DOCUMENTO FISCAL - NÃO É VÁLIDO COMO RECIBO E COMO GARANTIA DE<br>
+                        MERCADORIA - NÃO COMPROVA PAGAMENTO
+                    </b>
+                {% elif venda.DocumentoAuxiliarVenda == 1 %}
+                    <b>DOCUMENTO AUXILIAR DE VENDA<br>
                     NÃO É DOCUMENTO FISCAL - NÃO É VÁLIDO COMO RECIBO E COMO GARANTIA DE<br>
-                    MERCADORIA - NÃO COMPROVA PAGAMENTO
-                </b>
+                    MERCADORIA - NÃO COMPROVA PAGAMENTO</b>
                 {% endif %}
             </div>
         </div>

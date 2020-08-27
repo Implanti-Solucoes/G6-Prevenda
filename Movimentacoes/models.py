@@ -178,7 +178,6 @@ class Movimentacoes:
             self.unset_all()
             return busca
         else:
-            items = []
             if len(self.query) > 0:
                 self.__pipeline__.append({
                     u"$match": self.query
@@ -190,6 +189,7 @@ class Movimentacoes:
                 self.__pipeline__,
                 allowDiskUse=False
             )
+            items = []
             try:
                 for doc in cursor:
                     items.append(doc)
@@ -249,6 +249,29 @@ class Movimentacoes:
         finally:
             self.uteis.fecha_conexao()
 
+    # Metodo feito para inserir informações de controle
+    @staticmethod
+    def informacoes_controle(busca):
+        items = []
+        for doc in busca:
+            if 'PreVenda' in doc['_t']:
+                doc['PreVenda'] = 1
+            elif 'NotaFiscalServico' in doc['_t']:
+                doc['NotaFiscalServico'] = 1
+            elif 'DocumentoAuxiliarVenda' in doc['_t']:
+                doc['DocumentoAuxiliarVenda'] = 1
+            elif 'DocumentoAuxiliarVendaOrdemServico' in doc['_t']:
+                doc['DocumentoAuxiliarVendaOrdemServico'] = 1
+
+            if 'Documento' in doc['Pessoa']:
+                if len(doc['Pessoa']['Documento']) == 14:
+                    doc['Pessoa']['Tipo'] = 'CPF'
+                else:
+                    doc['Pessoa']['Tipo'] = 'CNPJ'
+            items.append(doc)
+        return items
+
+    # Configurando o cadastro do cliente para ser inserido na movimentação
     @staticmethod
     def pessoas_movimentacao(id_cliente):
         cursor = PessoasMongo()

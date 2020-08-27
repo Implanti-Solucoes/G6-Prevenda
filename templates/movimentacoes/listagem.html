@@ -42,6 +42,7 @@
             <thead>
                 <tr>
                     <th>Código</th>
+                    <th>Tipo</th>
                     <th>Cliente</th>
                     <th>Data Hora de Emissao</th>
                     <th>#</th>
@@ -51,18 +52,26 @@
                 {% for item in items %}
                 <tr>
                     <td>{{ item.Numero }}</td>
+                    <td>{% if item.PreVenda == 1 %}Pre-Venda
+                        {% elif item.NotaFiscalServico == 1 %}O.S
+                        {% elif item.DocumentoAuxiliarVenda == 1 %}DAV
+                        {% elif item.DocumentoAuxiliarVendaOrdemServico == 1 %}DAV O.S
+                        {% else %}Desconhecido{% endif %}
+                    </td>
                     <td>{{ item.Pessoa.Nome }}</td>
                     <td>{{ item.DataHoraEmissao|date:"d/m/Y" }}</td>
                     <td>
                         {% if item.prevenda == 1 %}
-                            <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
+                            <a href="{% url 'movimentacoes:impressao1' item.id %}">Imprimir</a>
                             {% if item.Situacao.Codigo == 1 %}
                                 | <a href="{% if item.naotemdocumento == 1 %}#" onclick="confirm('Falta coloca CPF ou CNPJ no documento');{% else %}{% url 'movimentacoes:gerar_financeiro' item.id %}{% endif %}">Gerar Financeiro</a>
                             {% elif item.PagamentoRecebimento.0.id > 0 %}
                                 | <a href="{% url 'financeiro:comprovante_de_debito_por_movimentacao' item.PagamentoRecebimento.0.id  %}">Comprovante de Débito</a>
                             {% endif %}
                         {% elif item.NotaFiscalServico == 1 %}
-                            <a href="{% url 'movimentacoes:impressao_prevenda' item.id %}">Imprimir</a>
+                            <a href="{% url 'movimentacoes:impressao1' item.id %}">Imprimir</a>
+                        {% elif item.DocumentoAuxiliarVenda == 1 %}
+                            <a href="{% url 'movimentacoes:impressao1' item.id %}">Imprimir</a>
                         {% endif %}
                     </td>
                 </tr>

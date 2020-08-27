@@ -7,9 +7,8 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required(redirect_field_name='next')
-def listagem_prevenda(request):
+def listagem_movimentacoes(request):
     movimentacao = Movimentacoes()
-    movimentacao.set_query_t('PreVenda')
     movimentacao.set_sort_emissao(type='desc')
     item = movimentacao.execute_all()
     items = []
@@ -18,36 +17,23 @@ def listagem_prevenda(request):
         contrato = Contratos.objects.all().filter(id_g6=x['id'])
         if len(contrato) == 1:
             x['PagamentoRecebimento'] = contrato
-        if 'PreVenda' in x['t']:
-            x['prevenda'] = 1
-        elif 'NotaFiscalServico' in x['t']:
-            x['NotaFiscalServico'] = 1
-        elif 'DocumentoAuxiliarVendaOrdemServico' in x['t']:
-            x['DocumentoAuxiliarVendaOrdemServico'] = 1
+
         if "Documento" not in x['Pessoa']:
             x['naotemdocumento'] = 1
         items.append(x)
-
-    context = {'items': items, }
+    context = {'items': movimentacao.informacoes_controle(items), }
     for x in Configuracoes.objects.all().filter(usuario_id=request.user.id):
         context[x.registro] = x.valor
     return render(request, 'movimentacoes/listagem.html', context)
 
 
 @login_required(redirect_field_name='next')
-def impresso_prevenda(request, id):
-    movimentacoes = Movimentacoes()
+def impressao1(request, id):
+    movimentacao = Movimentacoes()
     uteis = Uteis()
-    movimentacoes.set_query_id(id)
-    movimentacoes.set_query_t('PreVenda', 'or')
-    movimentacoes.set_query_t('NotaFiscalServico', 'or')
-    cursor = movimentacoes.execute_one()
-
-    if 'NotaFiscalServico' in cursor['_t']:
-        cursor['tipo'] = 'NotaFiscalServico'
-    elif 'PreVenda' in cursor['_t']:
-        cursor['tipo'] = 'PreVenda'
-
+    movimentacao.set_query_id(id)
+    cursor = [movimentacao.execute_one()]
+    cursor = movimentacao.informacoes_controle(cursor)[0]
     cursor = uteis.total_venda(cursor)
     if 'Documento' in cursor['Pessoa']:
         if len(cursor['Pessoa']['Documento']) == 14:
@@ -67,6 +53,7 @@ def gerar_financeiro(request, id):
     movimentacao.set_query_situacao_codigo(1)
     movimentacao.set_sort_emissao()
     cursor = movimentacao.execute_one()
+
     contas = Financeiro().get_contas
     centros_custos = Financeiro().get_centros_custos
     planos_conta = Financeiro().get_planos_conta

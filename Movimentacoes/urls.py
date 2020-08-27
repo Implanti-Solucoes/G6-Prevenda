@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.listagem_prevenda, name='listagem_prevenda'),
+    url(r'^$', views.listagem_movimentacoes, name='listagem_movimentacoes'),
     url(r'^gerar_financeiro/(?P<id>[a-zA-Z0-9]+)$', views.gerar_financeiro, name='gerar_financeiro'),
-    url(r'^impresso/(?P<id>[a-zA-Z0-9]+)/$', views.impresso_prevenda, name='impressao_prevenda'),
+    url(r'^impresso1/(?P<id>[a-zA-Z0-9]+)/$', views.impressao1, name='impressao1'),
 ]
